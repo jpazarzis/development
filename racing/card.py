@@ -8,16 +8,53 @@ from random import choice
 from analytics import factor_manager
 import pickle
 import random
+from tools import colors
 from urllib import urlopen
+from fraction_evaluator import *
 
 
 distances = {990: '4f', 1100: '5f', 1210:'5.5f', 1320:'6f', 1430:'6.5f', 1540:'7f', 1650:'7.5f', 1760:'1m',1799:'*1m40',1800:'1m40', 1830:'1m 70', 1870:'1m 1/16', 1980:'1m 1/8', 2200:'1m 1/4'}
 
+months = [ 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun','Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec' ]
+
+def format_time(t):
+    try:
+            t = float(t)
+            i = int(t)
+
+            fifths = ((t - i) *10)/ 2
+            fifths = int(fifths+ 0.001)
+           
+            if i < 60: 
+                return '   {0:>2}.{1}'.format(i,fifths)
+            else:
+                minutes = i / 60
+                seconds = i % 60
+                return ' {0:1}:{1:02d}.{2}'.format(minutes,seconds,fifths)
+    except:
+        return t
+
+
+
 def format_distance(d):
     v =  int(float(d))
+    prefix = ''
+    if v < 0:
+        v = -1 * v
+        prefix = '*'
+
     if v not in distances:
-        print 'sorry', v, 'not in distances'
-    return distances[int(float(d))]
+        return d
+
+    return prefix+distances[v]
+
+def format_date(d):
+
+    year = d[2:4]
+    month = months[int(d[4:6])-1]
+    day = d[6:]
+    return '{0}{1}{2}'.format(day,month,year)
+
 
 
 
@@ -263,11 +300,49 @@ class PastPerformance:
             if self.track == 'PRX' :
                 self.track = 'PHA'
 
+            
+
+    def get_days_ago(self):
+        todays_date = self.parent.parent.parent.date
+        todays_date = datetime.date(int(todays_date[0:4]),int(todays_date[4:6]),int(todays_date[6:]))
+        pp_date  = datetime.date(int(self.date[0:4]),int(self.date[4:6]),int(self.date[6:]))
+
+        return (todays_date - pp_date).days 
+
+
     def is_valid(self):
         return len(self.date.strip()) > 0
 
     def __repr__(self):
-            return  '{0:>10} {1:2} {2:3} {3:10} {4:10} {5:2} {6:12} {7:15} {8:2}'.format(self.date, self.race_number, self.track, self.track_condition, format_distance(self.distance), self.surface, self.race_classification, self.jockey, self.finish_position)
+            s = '{0:>5} '.format(self.get_days_ago())
+
+            if 'T' in self.surface or 't' in self.surface:
+                s += colors.GREEN
+            s += '{0:>3} '.format(self.track)
+            s += '{0:>2} '.format(self.track_condition)
+
+            if 'T' in self.surface or 't' in self.surface:
+                s += colors.ENDC
+
+            s += '{0:15} '.format(self.race_classification)
+            s += '{0:10} '.format(format_distance(self.distance))
+            s += '{0:5} '.format(self.weight)
+
+
+
+            oc = evaluate_opening_call_of_race(self)
+            ft = evaluate_final_time_of_race(self)
+            closing = evaluate_closing_for_starter(self)
+
+            s +=fancy_format(oc, '{0:10} '.format(format_time(self.four_fulrongs_fraction)))
+            s +=fancy_format(ft, '{0:10} '.format(format_time(self.final_time)))
+            s +=fancy_format(closing, '{0:>8} '.format(format_time(get_closing_time_for_starter(self))))
+            s+= get_fractions_for_starter(self)
+
+            return s
+
+
+            return  '{0:>10} {1:2} {2:3} {3:10} {4:10} {5:2} {6:12} {7:15} {8:2}'.format(format_date(self.date), self.race_number, self.track, self.track_condition, format_distance(self.distance), self.surface, self.race_classification, self.jockey, self.finish_position)
 
 
 
@@ -300,4 +375,5 @@ class Card:
                 self.races.append(race)
             starter.parent = race
             race.starters.append(starter)
+
 
