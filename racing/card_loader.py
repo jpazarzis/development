@@ -1,5 +1,9 @@
 #!/usr/bin/python
 
+'''
+    Creates a race feed that can be used for back testing. 
+'''
+
 import os
 import csv
 import math
@@ -8,9 +12,24 @@ from random import choice
 import pickle
 import random
 from card import Card
+from handicapping_factors import assign_factors
+from globals import *
 
 
-REPOSITORY_PATH= '/home/john/development/alogatas/horse-racing/Documents/PastPerformances/BrisFiles'
+
+def make_race(track, date, racenumber):
+    year = date[0:4]
+    month_day = date[4:]
+    filename = '{0}/{1}/{2}{3}.DRF'.format(REPOSITORY_PATH, year, track, month_day)
+    if not os.path.isfile(filename):
+        filename = '{0}/{1}/{2}{3}.MCP'.format(REPOSITORY_PATH, year, track, month_day)
+    if not os.path.isfile(filename):
+        raise Exception('File: {0} was not found'.format(filename))
+    card = Card(filename)
+    return card.races[racenumber-1]
+
+    
+
 
 def race_feed():
         ''' returns an iterator to existing races'''
@@ -37,4 +56,6 @@ def get_random_race():
 
 if __name__ == '__main__':
     race = get_random_race()
+    assign_factors(race)
     print race
+    race.handicapping_factor_summary()

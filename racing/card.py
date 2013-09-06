@@ -1,5 +1,12 @@
 #!/usr/bin/python
+
+'''
+    Constructs a Card object given a bris past performances file. 
+'''
+
+
 #module: card_repository
+
 import os
 import csv
 import math
@@ -11,11 +18,46 @@ import random
 from tools import colors
 from urllib import urlopen
 from fraction_evaluator import *
+import race_results 
 
 
 distances = {990: '4f', 1100: '5f', 1210:'5.5f', 1320:'6f', 1430:'6.5f', 1540:'7f', 1650:'7.5f', 1760:'1m',1799:'*1m40',1800:'1m40', 1830:'1m 70', 1870:'1m 1/16', 1980:'1m 1/8', 2200:'1m 1/4'}
 
 months = [ 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun','Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec' ]
+
+
+def get_race_condition_from_equibase(equibase_condition):
+    equibase_condition=equibase_condition.strip()
+    if 'OC' in equibase_condition: return 'OPTIONAL CLAIMER'
+    if 'Clm' in equibase_condition: return 'CLAIMER'
+    if 'Alw' in equibase_condition or 'Hcp' in equibase_condition: 
+        if equibase_condition[-1] == 's':
+            return 'STARTER ALLOWANCE'
+        else:
+            return 'ALLOWANCE'
+    if equibase_condition.endswith('-G1'):
+        return 'GRADED'
+    if equibase_condition.endswith('-G2'):
+        return 'GRADED'
+    if equibase_condition.endswith('-G3'):
+        return 'GRADED'
+    if equibase_condition.startswith('G1'):
+        return 'GRADED'
+    if equibase_condition.startswith('G2'):
+        return 'GRADED'
+    if equibase_condition.startswith('G3'):
+        return 'GRADED'
+    if equibase_condition.startswith('GR'):
+        return 'GRADED'
+    if equibase_condition.endswith('k'):
+        return 'STAKES'
+    if 'MdSpWt' in equibase_condition: return 'MSW'
+    if 'Md' in equibase_condition: return 'MCL'
+    if 'Moc' in equibase_condition: return 'MCL'
+    if 'Stk' in equibase_condition:
+        return 'STAKES'
+    return 'STAKES'
+
 
 def format_time(t):
     try:
@@ -277,12 +319,45 @@ class Starter:
                 self.morning_line_odds = self.odds
                 self.past_performances=tuple(pp)
 
+
+        def __iter__(self):
+            return iter(self.past_performances)
+
+        def finalize(self):
+            for pp in self:
+                pp.finalize()
+
+            try:
+                self.prime_power = int(float(self.prime_power))
+            except:
+                self.prime_power =0
+
+
+        def get_race_condition(self):
+            return get_race_condition_from_equibase(self.todays_race_equibase_race_condition)
+
+
+
         def __repr__(self):
-                strg =  '{0:>2}.{1:25}{2:20}{3:3} {4:20}\n'.format(self.program_number, self.name, self.jockey, self.weight, self.trainer)
+                strg =  '{0:>2}.{1:25}{2:20}{3:3} {4:20} {5:>3}\n'.format(self.program_number, self.name, self.jockey, self.weight, self.trainer, self.prime_power)
+                    
+                if hasattr(self, 'finish_position'):
+                    strg += 'finish position: {0} \n'.format(self.finish_position)
+
+                if hasattr(self, 'final_odds'):
+                    strg += 'final odds: {0}\n'.format(self.final_odds)
+
+
+    
+                
                 if self.past_performances and len(self.past_performances) > 0:
                         for s in self.past_performances:
                             strg += str(s) + '\n'
-
+                
+                if hasattr(self, 'matching_factors'):
+                    strg += ' Matching Factors \n'
+                    for f in self.matching_factors:
+                        strg += f.__name__ + '\n'
 
                 return strg
 
@@ -300,21 +375,24 @@ class PastPerformance:
             if self.track == 'PRX' :
                 self.track = 'PHA'
 
-            
 
-    def get_days_ago(self):
+    def finalize(self):
+        # add days ago
         todays_date = self.parent.parent.parent.date
         todays_date = datetime.date(int(todays_date[0:4]),int(todays_date[4:6]),int(todays_date[6:]))
         pp_date  = datetime.date(int(self.date[0:4]),int(self.date[4:6]),int(self.date[6:]))
+        self.days_ago = (todays_date - pp_date).days 
 
-        return (todays_date - pp_date).days 
+        self.opening_call_metric = evaluate_opening_call_of_race(self)
+        self.final_time_metric = evaluate_final_time_of_race(self)
+        self.closing_time_metric = evaluate_closing_for_starter(self)
 
-
+        
     def is_valid(self):
         return len(self.date.strip()) > 0
 
     def __repr__(self):
-            s = '{0:>5} '.format(self.get_days_ago())
+            s = '{0:>5} '.format(self.days_ago)
 
             if 'T' in self.surface or 't' in self.surface:
                 s += colors.GREEN
@@ -328,22 +406,12 @@ class PastPerformance:
             s += '{0:10} '.format(format_distance(self.distance))
             s += '{0:5} '.format(self.weight)
 
-
-
-            oc = evaluate_opening_call_of_race(self)
-            ft = evaluate_final_time_of_race(self)
-            closing = evaluate_closing_for_starter(self)
-
-            s +=fancy_format(oc, '{0:10} '.format(format_time(self.four_fulrongs_fraction)))
-            s +=fancy_format(ft, '{0:10} '.format(format_time(self.final_time)))
-            s +=fancy_format(closing, '{0:>8} '.format(format_time(get_closing_time_for_starter(self))))
+            s +=fancy_format(self.opening_call_metric, '{0:10} '.format(format_time(self.four_fulrongs_fraction)))
+            s +=fancy_format(self.final_time_metric, '{0:10} '.format(format_time(self.final_time)))
+            s +=fancy_format(self.closing_time_metric, '{0:>8} '.format(format_time(get_closing_time_for_starter(self))))
             s+= get_fractions_for_starter(self)
 
             return s
-
-
-            return  '{0:>10} {1:2} {2:3} {3:10} {4:10} {5:2} {6:12} {7:15} {8:2}'.format(format_date(self.date), self.race_number, self.track, self.track_condition, format_distance(self.distance), self.surface, self.race_classification, self.jockey, self.finish_position)
-
 
 
 class Race:
@@ -353,9 +421,45 @@ class Race:
         self.parent = parent
         self.exists_in_db = False
         self.race_id = None
+        self.favorite = None
+
+    def __iter__(self):
+        return iter(self.starters)
+
+
+    def retrieve_results(self):
+        race_results.retrieve_results(self)
+
+    def handicapping_factor_summary(self):
+        factors = {}
+        for starter in self.starters:
+            if not hasattr(starter, 'matching_factors'):
+                continue
+            for factor in starter.matching_factors:
+                name = factor.__name__
+                if name not in factors:
+                    factors[name] = 1
+                else:
+                    factors[name] += 1
+
+        for name in factors:
+            print '{0:40} {1:>5}'.format(name, factors[name])
+                
 
     def __repr__(self):
         strg =  'Race number: {0}\n'.format(self.number)
+
+        if self.results_available:
+            strg += "RESULTS ARE AVAILABLE\n"
+
+        if hasattr(self,'winner') and self.winner:
+            strg +=  'Winner:\n {0}\n'.format(self.winner.name)
+
+        if hasattr(self,'favorite') and self.favorite:
+            strg +=  'Favorite:\n {0}\n'.format(self.favorite.name)
+
+
+
         for s in self.starters:
             strg += str(s) + '\n'
 
@@ -367,6 +471,7 @@ class Card:
         self.date=get_date_from_fullpath(fullpath)
         self.races=[]
         race=None
+        self.results_available = False
         for tokens in csv.reader(open(fullpath)):
             starter=Starter(tokens)
             assert(starter is not None)
@@ -374,6 +479,31 @@ class Card:
                 race = Race(starter.race_number,self)
                 self.races.append(race)
             starter.parent = race
+            starter.finalize()
             race.starters.append(starter)
+        self.retrieve_results()
+
+    def __iter__(self):
+        return iter(self.races)
+
+    def __getitem__(self, index):
+        return self.races[index]
+
+    def retrieve_results(self):
+        self.results_available = race_results.card_exists_in_db(self.track,self.date)
+        if self.results_available:
+            map( lambda x : x.retrieve_results(), self.races)
+        
+
+if __name__ == '__main__':
+    from globals import *
+    c = Card('{0}/2010/AQU0101.MCP'.format(REPOSITORY_PATH))
+
+    print c[2]
+
+
+
+
+
 
 
