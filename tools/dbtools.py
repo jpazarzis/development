@@ -30,6 +30,15 @@ def close_connection():
         db_connection.close()
         db_connection=None
 
+
+def execute_query2(sql,*args):
+        connect_if_needed()
+        cur = db_connection.cursor(mdb.cursors.DictCursor)
+        cur.execute(sql.format(*args))
+        for i in range(cur.rowcount):
+            yield cur.fetchone()
+
+
 def execute_query(sql,*args):
         ''' executes a sql statement returning each row as an object
             with property names matching the columns requested in the sql '''
