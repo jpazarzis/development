@@ -39,10 +39,6 @@ class Figurable:
         else:
             return FIGURE.fast
 
-
-
-
-
     def __call__(self, value):
         return self.get_figure(value)
 
@@ -74,11 +70,6 @@ def fancy_format(m, value):
         else:
             return value
 
-
-
-    
-
-
 class DistanceMetrics:
     def __init__(self, filename='/home/john/development/alogatas/horse-racing/race_info/fractions.csv'):
             self.distance_metrics = {}
@@ -89,14 +80,12 @@ class DistanceMetrics:
                 key = (dm.track, dm.distance, dm.surface)
                 self.distance_metrics[key] = dm
 
-
     def get_fractions_for_starter(self,pp):
         
         try:
             finish_beaten_lengths_only = pp.finish_beaten_lengths_only.strip()
             if not finish_beaten_lengths_only:
                 finish_beaten_lengths_only = "0"
-
 
             second_call_lengths = pp.second_call_beaten_lengths_only.strip()
             if not second_call_lengths:
@@ -120,10 +109,6 @@ class DistanceMetrics:
             except:
                 pass
             return s
-
-
-            return '{0:>2} {1:>2} {2} {3}'.format(  second_call_position, finish_position, second_call_lengths, finish_beaten_lengths_only)
-
 
         except:
             return '*'
@@ -153,9 +138,6 @@ class DistanceMetrics:
         except:
             return '*'
 
-
-
-
     def evaluate_closing_for_starter(self,pp):
         try:
             key = (pp.track.strip(), pp.distance.strip(), pp.surface.strip())
@@ -166,7 +148,6 @@ class DistanceMetrics:
         except:
             return 'N/A'
 
-
     def evaluate_final_time(self, track, surface, distance, final_time):
         try:
             key = (track.strip(), distance, pp.surface.strip())
@@ -175,8 +156,6 @@ class DistanceMetrics:
             return final_time_metric(final_time)
         except:
             return 'N/A'
-
-
 
     def evaluate_final_time_of_race(self,pp):
         try:
@@ -187,7 +166,6 @@ class DistanceMetrics:
             return final_time_metric(final_time)
         except:
             return 'N/A'
-
     
     def evaluate_opening_call_of_race(self,pp):
         try:
@@ -200,15 +178,12 @@ class DistanceMetrics:
             return 'N/A'
 
 
-
 def get_evaluator():
     global distance_metrics
     if  distance_metrics is None:
         distance_metrics = DistanceMetrics()
     assert(None is not distance_metrics)
     return distance_metrics
-
-
 
 def evaluate_opening_call_of_race(pp):
     return get_evaluator().evaluate_opening_call_of_race(pp)
@@ -225,11 +200,6 @@ def get_closing_time_for_starter(pp):
 def get_fractions_for_starter(pp):
     return  get_evaluator().get_fractions_for_starter(pp)
 
-
-
-
-
-
 if __name__ == '__main__':
     from card_loader import race_feed
     for race in race_feed():
@@ -240,16 +210,3 @@ if __name__ == '__main__':
                 print fancy_format(evaluate_final_time_of_race(pp), 'FINAL'),
                 print evaluate_final_time_of_race(pp),
                 print evaluate_closing_for_starter(pp)
-
-
-
-
-
-
-
-
-
-
-
-
-
