@@ -75,7 +75,59 @@ def get_all():
         f.flag = flag
         flag *= 2
 
-    return ff
+    return f
+
+
+def recent_races_are_bad(starter):
+    ''' (1) requires at least 4 starts.
+        (2) The last two races must be bad
+    '''
+    def pp_is_bad(pp):
+        return pp.finish_position >=5 and int(pp.second_call_position) >= 4
+
+    if len(starter.past_performances) < 4:
+        return False
+    
+    return pp_is_bad(starter.past_performances[0]) and pp_is_bad(starter.past_performances[1]) 
+
+def recent_races_are_good(starter):
+    ''' (1) requires at least 4 starts.
+        (2) The last two races must be bad
+    '''
+    def pp_is_good(pp):
+        return 1 <= pp.finish_position <=3 
+
+    if len(starter.past_performances) < 4:
+        return False
+    
+    return pp_is_good(starter.past_performances[0]) and pp_is_good(starter.past_performances[1]) 
+    
+
+
+def no_workouts_since_last_race(starter):
+    if first_time_out(starter):
+        return False
+
+    return starter.number_of_workouts_since_last_race() == 0
+    
+
+def one_workout_since_last_race(starter):
+    if first_time_out(starter):
+        return False
+
+    return starter.number_of_workouts_since_last_race() == 1
+
+def two_workouts_since_last_race(starter):
+    if first_time_out(starter):
+        return False
+
+    return starter.number_of_workouts_since_last_race() == 2
+
+def three_or_more_workouts_since_last_race(starter):
+    if first_time_out(starter):
+        return False
+
+    return starter.number_of_workouts_since_last_race() >=3
 
 
 
@@ -174,6 +226,32 @@ def short_layoff(starter):
         return LONG_LAYOFF_DAYS >= days_off >= SHORT_LAYOFF_DAYS
     except:
         return False
+
+
+def _layoff_by_days(starter, days_off):
+    try:
+        return days_off >= int(starter.days_off)
+    except:
+        return False
+
+
+def _second_of_layoff_by_days(starter,layoff_days):
+    try:
+        if first_time_out(starter) or layoff_by_days(starter,layoff_days) : return False
+        days_offor_last_race = int(starter.past_performances[0].days_off)
+        return days_offor_last_race >= layoff_days
+    except:
+        return False    
+
+
+
+def _third_of_layoff_by_days(starter,layoff_days):
+    try:
+        if first_time_out(starter) or layoff_by_days(starter,layoff_days)  or second_of_layoff_by_days(starter,layoff_days): return False
+        days_offor_previous_to_last_race = int(starter.past_performances[1].days_off)
+        return days_offor_previous_to_last_race >= layoff_days
+    except:
+        return False    
 
 
 def layoff(starter):
