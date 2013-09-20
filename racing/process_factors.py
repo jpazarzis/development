@@ -7,13 +7,6 @@ from collections import Counter
 import sys
 from race_metrics import assign_metrics
 
-
-favorite_win_percent = 0.36
-
-
-#race.takeout = 1.0 - 1.0 / sum( [ 1.0 / (1.0 + s.final_odds) for s in race.starters] )
-
-
 class FactorStats:
     def __init__(self, factor_function):
         self.factor_function = factor_function
@@ -31,20 +24,15 @@ class FactorStats:
     def verify(self):
         observed_total =  self.observed_matching_winners + self.observed_non_matching_winners
         expected_total =  self.expected_matching_winners + self.expected_non_matching_winners
-
         print 'observed winners: {0:10.2f} expected winners: {1:10.2f}'.format(self.observed_matching_winners, self.expected_matching_winners)
-
         print 'observed total: {0:10.2f} expected total: {1:10.2f}'.format(observed_total, expected_total)
-
         print self.observed_matching_winners - self.expected_matching_winners,
         print self.observed_non_matching_winners - self.expected_non_matching_winners
 
     def chi_square(self):
         def get_factor(observed, expected):
             observed, expected = observed *1.0 , expected *1.0
-            
             diff = abs(observed - expected) - 0.5 # Yates correction
-
             return (diff ** 2) / expected
 
         chi = get_factor(self.observed_matching_winners, self.expected_matching_winners)
@@ -54,14 +42,10 @@ class FactorStats:
         
 
     def add(self,race):
-        
         matches = [ starter for starter in race if self.factor_function(starter) ]
-
         if len(matches) == 0:
             return
-
         non_matches = [ starter for starter in race if not self.factor_function(starter) ]
-
         if len(non_matches) == 0:
             return
 
@@ -80,8 +64,6 @@ class FactorStats:
         self.expected_non_matching_winners += sum( [s.crowd_probability for s in non_matches])
 
 
-
-
     def show_details(self):
         print self.factor_function.__name__
 
@@ -97,10 +79,6 @@ class FactorStats:
             print ' NOT significant'
         print '='*40 
         
-
-
-
-
     def __repr__(self):
         total_starters = self.observed_loosers + self.observed_winners
         if total_starters == 0 :
@@ -116,35 +94,6 @@ class FactorStats:
         return ','.join(tokens)
 
 
-
-
-def all_favorites(starter):
-    return starter.parent.favorite is starter
-
-def foo(days_off):
-    def x(starter):
-        return layoff_by_days(starter, days_off)
-    return x        
-
-
-def tlo(days_off):
-    def x(starter):
-        return third_of_layoff_by_days(starter, days_off)
-    return x        
-
-def slo(days_off):
-    def x(starter):
-        return second_of_layoff_by_days(starter, days_off)
-    return x        
-
-
-def turf(starter):
-    return 'T' in starter.todays_surface.upper()
-    
-def dirt(starter):
-    return 'D' in starter.todays_surface.upper()
-
-    
 
 
 
@@ -211,9 +160,6 @@ def analyze_favorites():
         f.__name__ = '3rd of layoff_{0}_dirt'.format(days_off)
         func = FactorStats(f)
         factor_stats_dirt.append(func)
-
-
-
 
     count = 0
 
@@ -318,8 +264,6 @@ def analyze_by_metric():
         factor_stats = factors_by_metric[m]
         map(lambda f : f.show_details() , factor_stats)
 
-
-    
     
 if __name__ == '__main__':
 
