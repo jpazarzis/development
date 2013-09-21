@@ -91,8 +91,9 @@ def recent_races_are_bad(starter):
     return pp_is_bad(starter.past_performances[0]) and pp_is_bad(starter.past_performances[1]) 
 
 def recent_races_are_good(starter):
+    
     ''' (1) requires at least 4 starts.
-        (2) The last two races must be bad
+        (2) The last two races must be good
     '''
     def pp_is_good(pp):
         return 1 <= pp.finish_position <=3 
