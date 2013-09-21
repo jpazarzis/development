@@ -1,5 +1,10 @@
 #!/usr/bin/python
 
+'''
+Implements a factor evaluation mechanism that can be applied
+to any function that can serve as a handicapping factor.
+'''
+
 from card_loader import race_feed
 from handicapping_factors import *
 from tools import colors
@@ -10,14 +15,10 @@ from race_metrics import assign_metrics
 class FactorStats:
     def __init__(self, factor_function):
         self.factor_function = factor_function
-
         self.observed_matching_winners = 0
         self.expected_matching_winners = 0
-
         self.observed_non_matching_winners = 0
         self.expected_non_matching_winners = 0
-
-
         self.total_winnings = 0.0
         self.total_winnings_no_take_out = 0.0
    
@@ -37,10 +38,8 @@ class FactorStats:
 
         chi = get_factor(self.observed_matching_winners, self.expected_matching_winners)
         chi += get_factor(self.observed_non_matching_winners, self.expected_non_matching_winners)
-
         return chi
         
-
     def add(self,race):
         matches = [ starter for starter in race if self.factor_function(starter) ]
         if len(matches) == 0:
@@ -56,13 +55,11 @@ class FactorStats:
             self.total_winnings += (1.0 + race.winner.final_odds)
             self.total_winnings_no_take_out  += (1.0 + (1 - race.winner.crowd_probability) / race.winner.crowd_probability)
 
-
         if race.winner in non_matches:
             self.observed_non_matching_winners += 1
 
         self.expected_matching_winners += sum( [s.crowd_probability for s in matches])
         self.expected_non_matching_winners += sum( [s.crowd_probability for s in non_matches])
-
 
     def show_details(self):
         print self.factor_function.__name__
@@ -83,9 +80,7 @@ class FactorStats:
         total_starters = self.observed_loosers + self.observed_winners
         if total_starters == 0 :
             return ''
-
         tokens = []
-
         tokens.append(self.factor_function.__name__)
         tokens.append('{0:10.2f}'.format(self.expected_winners))
         tokens.append('{0:10.2f}'.format(self.observed_winners))
@@ -109,8 +104,6 @@ def analyze(factors):
 
         except Exception as e:
             print 'here',e, race.parent.track, race.parent.date, race.number
-
-
     map(lambda f : f.show_details() , factor_stats)
         
 def analyze_by_metric():
@@ -120,7 +113,6 @@ def analyze_by_metric():
         if len([s for s in race if s.final_odds < 0.01 or len(s.entry_indicator.strip()) > 0]) > 0:
                     continue
         assign_metrics(race)
-
         for m in race.metrics:
             if m not in factors_by_metric:
                 factors_by_metric[m] = [ FactorStats(f) for f in [just_broke_the_maiden]]
@@ -133,7 +125,6 @@ def analyze_by_metric():
                     factor_stats = factors_by_metric[m]
                     map(lambda f : f.add(race), factor_stats)
                 count += 1
-
         except Exception as e:
             print 'here',e, race.parent.track, race.parent.date, race.number
 
@@ -148,17 +139,10 @@ def combine_factors(*foos):
             if not foo(x):
                 return False
         return True
-        
     return f
-
-
     
 if __name__ == '__main__':
-
     recency_factors = [layoff, long_layoff, second_of_layoff, third_of_layoff, deep_form_cycle]
-    performance_factors = [recent_races_are_bad,recent_races_are_good]
-
-    #recency_factors = [long_layoff,layoff]
     performance_factors = [recent_races_are_bad,recent_races_are_good]
     
     factors = []
@@ -167,14 +151,5 @@ if __name__ == '__main__':
             composite_factor = combine_factors(f1,f2)
             composite_factor.__name__ = '{0}_and_{1}'.format(f1.__name__, f2.__name__)
             factors.append(composite_factor)
-            
-
 
     analyze(factors)
-
-
-
-
-
-
-

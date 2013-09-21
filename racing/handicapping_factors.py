@@ -2,6 +2,24 @@ import math
 import sys
 import random
 
+'''
+Implements basic handicapping factors that can later be
+composed to higher level multiple factors
+
+The requirements for a function to behave like a factor are
+the following:
+
+    - receive a single parameter which should implement
+      the interface of a starter
+
+    - return True / False
+
+For fast access the factors should be precalculated and
+assigned to a unique binary mask that will allow for quick
+retrievals using binary operators.
+
+'''
+
 SHORT_LAYOFF_DAYS = 45
 LONG_LAYOFF_DAYS = 120
 
@@ -34,16 +52,11 @@ top_trainers = ['PLETCHER TODD A',
                 'SADLER JOHN W'
             ]
 
-
-
 factors = None
-
-
 
 def assign_factors(race):
     for starter in race:
         evaluate(starter)
-
 
 def evaluate(starter):
     global factors
@@ -57,8 +70,6 @@ def evaluate(starter):
 
     for f in [mf for mf in factors if mf(starter)]:
         starter.matching_factors.append(f)
-
-
 
 def get_all():
     ff=[]
@@ -76,7 +87,6 @@ def get_all():
         flag *= 2
 
     return f
-
 
 def recent_races_are_bad(starter):
     ''' (1) requires at least 4 starts.
@@ -102,8 +112,6 @@ def recent_races_are_good(starter):
         return False
     
     return pp_is_good(starter.past_performances[0]) and pp_is_good(starter.past_performances[1]) 
-    
-
 
 def no_workouts_since_last_race(starter):
     if first_time_out(starter):
@@ -111,7 +119,6 @@ def no_workouts_since_last_race(starter):
 
     return starter.number_of_workouts_since_last_race() == 0
     
-
 def one_workout_since_last_race(starter):
     if first_time_out(starter):
         return False
@@ -130,9 +137,6 @@ def three_or_more_workouts_since_last_race(starter):
 
     return starter.number_of_workouts_since_last_race() >=3
 
-
-
-
 def claimed_in_last_race(starter):
     try:
         if len(starter.past_performances) == 0:
@@ -140,7 +144,6 @@ def claimed_in_last_race(starter):
         return starter.past_performances[0].claimed_code == 'c'
     except:
         return False
-
 
 def top_trainer(starter):
     try:
@@ -153,7 +156,6 @@ def top_jockey(starter):
         return starter.jockey in top_jockeys
     except:
         return False
-    
 
 def superior_speed_figure(starter):
 
@@ -192,8 +194,6 @@ def superior_speed_figure(starter):
             return False
 
     return True
-     
-    
 
 def blinkers_off(starter):
     try:
@@ -213,7 +213,6 @@ def no_blinkers_change(starter):
     except:
         return -1
 
-
 def first_time_out(starter):
     """first time out"""
     return int(starter.life_time_starts) == 0
@@ -228,13 +227,11 @@ def short_layoff(starter):
     except:
         return False
 
-
 def _layoff_by_days(starter, days_off):
     try:
         return days_off >= int(starter.days_off)
     except:
         return False
-
 
 def _second_of_layoff_by_days(starter,layoff_days):
     try:
@@ -243,8 +240,6 @@ def _second_of_layoff_by_days(starter,layoff_days):
         return days_offor_last_race >= layoff_days
     except:
         return False    
-
-
 
 def _third_of_layoff_by_days(starter,layoff_days):
     try:
@@ -387,9 +382,6 @@ def more_than_10_times_on_distance(starter):
     return int(starter.todays_distance_starts) > 10
 
 
-
-
-
 # class
 
 def entered_for_claim(starter):
@@ -416,14 +408,11 @@ def entered_for_claim_first_time(starter):
     except:
         return False
 
-
-
 def just_broke_the_maiden(starter):
     try:
         return starter.past_performances[0].finish_position == 1 and int(starter.life_time_wins) ==  1
     except:
         return False
-
 
 def class_drop(starter):
     try:
@@ -646,8 +635,6 @@ def top_primer_power(starter):
     except:
         print 'error here3'
         return False
-
-
     
 # some utilities
 def _todays_par(starter):
