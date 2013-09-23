@@ -1,6 +1,9 @@
 #!/usr/bin/python
 from tick_feed import get_tick
 import random
+import cPickle
+from time import gmtime, strftime
+
 '''
 This program implements a sample model using the tick feed, simulating the
 behavior of a simple strategy. We can create more sophisticate models using
@@ -20,11 +23,11 @@ def random_model(tick,engine):
         return None
 
     if engine.current_trade and tick.bid > engine.current_trade.buy_price + 0.002:
-        print 'won', 'bought at: ', engine.current_trade.buy_price, 'sold at: ',tick.bid,
+        
         return_value = 1
         engine.current_trade = None
     elif engine.current_trade and tick.bid < engine.current_trade.buy_price - 0.002:
-        print 'lost', 'bought at: ', engine.current_trade.buy_price, 'sold at: ',tick.bid,
+       
         return_value = -1
         engine.current_trade = None
     else:
@@ -40,10 +43,10 @@ def trivial_model(tick,engine):
     if tick.ask > max_bid_so_far and engine.current_trade is None:
         engine.current_trade = BuyTrade(tick.bid)
 
-    if engine.current_trade and tick.bid >= engine.current_trade.buy_price + 0.00002:
+    if engine.current_trade and tick.bid > engine.current_trade.buy_price + 0.00002:
         return_value = 1
         engine.current_trade = None
-    elif engine.current_trade and tick.bid <= engine.current_trade.buy_price - 0.00002:
+    elif engine.current_trade and tick.bid < engine.current_trade.buy_price - 0.00002:
         return_value = -1
         engine.current_trade = None
     else:
@@ -72,10 +75,9 @@ class ModelEngine:
         return return_value
         
         
-        
 
-if __name__ == '__main__':
-    #model = ModelEngine(trivial_model,1000)
+
+def test_model():
     model = ModelEngine(random_model,1000)
 
     i = 0    
@@ -87,7 +89,50 @@ if __name__ == '__main__':
             continue
         if r == 1: wins += 1
         if r == -1: loses += 1
-        print ' wins: {0}, losses: {1}'.format(wins, loses)
+        print ' wins: {0}, losses: {1} total: {2}'.format(wins, loses, i)
 
+def test_model2():
+
+
+    print 'loading ticks...' 
+    ticks = load_ticks('./historical-ticks/EUR_USD.csv')
+
+    print 'start processining at: ', strftime("%Y-%m-%d %H:%M:%S", gmtime())
+    print 'processing {0} ticks'.format(len(ticks))
+    model = ModelEngine(random_model,1000)
+
+    i = 0    
+    wins, loses = 0,0
+    for tick in ticks:
+        i+=1
+        r = model.process(tick,i)
+        if r is None:
+            continue
+        if r == 1: wins += 1
+        if r == -1: loses += 1
+        
+
+    print ' wins: {0}, losses: {1} total: {2}'.format(wins, loses, i)
+    print 'done at: ', strftime("%Y-%m-%d %H:%M:%S", gmtime())
+
+def load_ticks(filename):
+    i = 0    
+    ticks = []
+    for tick in get_tick('./historical-ticks/EUR_USD.csv'):
+        i += 1
+        ticks.append(tick)
+        if i >=2000000:
+            break
+    return ticks
+
+if __name__ == '__main__':
+    print 'sample model\n'
     
+    test_model2()
+    #ticks = load_ticks('./historical-ticks/EUR_USD.csv')
+    #create_pickle_file()
+    #model = ModelEngine(trivial_model,1000)
+    #open_pickle_file()
+    
+    #test_timimg()
 
