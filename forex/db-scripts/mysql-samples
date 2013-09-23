@@ -1,0 +1,45 @@
+CREATE DATABASE IF NOT EXISTS forex_db;
+
+use forex_db;
+
+
+CREATE TABLE instruments
+(
+    instrument_id int NOT NULL AUTO_INCREMENT,
+    name varchar(20) NOT NULL,
+    PRIMARY KEY (instrument_id),
+    CONSTRAINT uc_name UNIQUE(name)
+);
+
+
+insert into instruments (name) values ('test')
+
+
+DELIMITER //  
+CREATE PROCEDURE create_instrument ( instrument_name VARCHAR(20)) 
+BEGIN  
+        insert into instruments (name) values (instrument_name);
+        SELECT LAST_INSERT_ID() as new_id;
+END //
+DELIMITER ;
+
+// example of use
+CALL create_instrument('test3')
+
+
+GRANT ALL PRIVILEGES ON *.* TO 'john'@'localhost' WITH GRANT OPTION;
+
+
+create table candle_sticks
+(
+        instrument_id int,
+        date int,
+        time char(8),
+        openMid float,
+        highMid float,
+        lowMid float,
+        closeMid float,
+        volume  int,
+        PRIMARY KEY (instrument_id, date, time)
+);
+
