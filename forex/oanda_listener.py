@@ -7,10 +7,17 @@ from tick import show_all_instruments
 import time
 
 def start_tick_retriever(instruments):
+    i = 0
     t = Tick(instruments)
     while True:
-        t.retrieve()
-        time.sleep(1)
+        try:
+                t.retrieve()
+                time.sleep(1)
+                i += 1
+                print '------', i
+        except Exception as e:
+            print 'error: ', e
+            time.sleep(1)
         
 
 
