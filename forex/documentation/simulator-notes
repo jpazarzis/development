@@ -1,0 +1,45 @@
+Tick
+    Represents a tick 
+    created by a csv file containing historical data
+
+Instrument
+    Represents an instrument (currency pair)
+    Contains related information like lot size
+
+TickFeed
+    Opens a tick file creating a stream of ticks
+    Allows listeners to register by providing a callback
+
+TickFeedmanager
+    Contains and manages a pool of feeds. A client can
+    request a specific feed based in the instrument so
+    it can register with it.
+
+Account
+    Contains the data of an account and is aggregated by a model
+
+Model
+    Implements the trading algorithm and is will be used for 
+    optimization. Exposes a call-back function that will be 
+    called by the tick feed for each new tick.
+    
+    Based in the outcome of the algorithm it can create an Order
+    and execute it using the Order Manager
+
+Order 
+    Encapsulates all the details of an order. Is created by the model
+    and closed by the OrderManager.
+
+OrderManager
+    Registers with the tick feed to receive a notification for each
+    new tick. Is responsible for the closing of all the orders
+    
+
+
+
+
+
+    
+    
+
+
