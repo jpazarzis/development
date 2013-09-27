@@ -91,7 +91,7 @@ class SpecificMinuteModel:
 
     The objective of the simulator will be to optimize these variables
     '''
-    def __init__(self):
+    def __init__(self, bid_move1 = 0.001, bid_move2 = 0.001, delta_move = 1.0):
         self.PNL = 0
         self.current_hour = 9999
         self.trading_minute = 40
@@ -104,6 +104,12 @@ class SpecificMinuteModel:
         self.feed = None
         self.orders = []
 
+        self.bid_move1 = bid_move1 
+        self.bid_move2 = bid_move2
+        self.delta_move = delta_move
+
+
+
     def __call__(self,tick):
         if tick.timestamp.hour != self.current_hour:
             self.current_hour = tick.timestamp.hour
@@ -115,9 +121,9 @@ class SpecificMinuteModel:
             delta *= 10000
             self.deltas.append(delta)
             order = None
-            if delta >= self.mean + 1.0 * self.std:
+            if delta >= self.mean + self.delta_move * self.std:
                 self.number_of_sell += 1    
-                order = Order(ORDER_SIDE.SELL, tick, tick.bid + 0.001, tick.bid - 0.001)
+                order = Order(ORDER_SIDE.SELL, tick, tick.bid + self.bid_move1, tick.bid - self.bid_move2)
             #elif delta <= self.mean - 1.0 * self.std:
             #    self.number_of_buy += 1    
             #    order = Order(ORDER_SIDE.BUY, tick, tick.ask - 0.001, tick.ask + 0.001)
@@ -128,8 +134,16 @@ class SpecificMinuteModel:
                 self.feed.register(order)
 
             self.has_triggered = True
-        
-        
+
+    def __repr__(self):
+        s = '{0},{1},{2},'.format(self.bid_move1, self.bid_move2, self.delta_move)
+        sell_orders = [ order for order in self.orders if order.side == 'SELL']
+        s += '{0},'.format(len(sell_orders))
+        s += '{0},'.format(len( [ order for order in sell_orders if order.status == 'WON']))
+        s += '{0},'.format(len( [ order for order in sell_orders if order.status == 'LOST']))
+        s += '{0}'.format(sum( [ order.value for order in sell_orders]))
+        return s
+    
 
 
 if __name__ == '__main__':

@@ -1,29 +1,28 @@
 #!/usr/bin/python
+import sys
 from models import *
 from tick_feed_manager import get_feed
 
 if __name__ == '__main__':
     feed = get_feed('EUR_USD')
-    m = SpecificMinuteModel()
-    feed.register(m)
-    m.feed = feed
-    feed.start(4000000)
-    print m.number_of_buy,m.number_of_sell
-    print 'total orders: ', len(m.orders)
 
-    sell_orders = [ order for order in m.orders if order.side == 'SELL']
+    bid_moves  = [0.0003,0.0005,0.0007,0.001,0.0012, 0.0014, 0.0015,0.0020]
+    delta_moves = [0.8, 1.0, 1.2, 1.4, 1.6]
 
-    print 'sell orders: ', len(sell_orders)
-    print 'won: ' , len( [ order for order in sell_orders if order.status == 'WON'])
-    print 'lost: ' , len( [ order for order in sell_orders if order.status == 'LOST'])
+    #bid_moves  = [0.0003,0.001]
+    #delta_moves = [0.8, 1.0]
 
-    print 'value: ' , sum( [ order.value for order in sell_orders])
-    print '========'
-    buy_orders = [ order for order in m.orders if order.side == 'BUY']
+    models = []
+    for b1 in bid_moves:
+        for b2 in bid_moves:
+            for dm in delta_moves:
+                m = SpecificMinuteModel(b1,b2,dm)
+                feed.register(m)
+                m.feed = feed
+                models.append(m)
 
-    print 'buy orders: ', len(buy_orders)
-    print 'won: ' , len( [ order for order in buy_orders if order.status == 'WON'])
-    print 'lost: ' , len( [ order for order in buy_orders if order.status == 'LOST'])
-
-    print 'value: ' , sum( [ order.value for order in buy_orders])
+    
+    feed.start(5000000)
+    for m in models:
+        print m
 
