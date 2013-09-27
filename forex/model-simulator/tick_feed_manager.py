@@ -43,15 +43,20 @@ class TickFeed:
         for i, line in enumerate(open(filename)):
             if max_ticks and i >= max_ticks:
                 break
-            if i % 100000 == 0:
+            if i % 1000000 == 0:
                 print i
             tokens = line.rstrip().split(',')
             timestamp, bid,ask = make_time(tokens[0]),float(tokens[1]), float(tokens[2])
             tick = Tick(self.instrument, timestamp, bid, ask)
             for listener in self.listeners:
                 listener(tick)
+
     def register(self, listener):
         self.listeners.append(listener)
+
+    def unregister(self, listener):
+        self.listeners.remove(listener)
+
         
     
 

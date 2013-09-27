@@ -3,6 +3,61 @@
 import scipy.stats
 import numpy
 
+class Enum(set):
+    def __getattr__(self, name):
+        if name in self:
+            return name
+        raise AttributeError
+
+
+ORDER_SIDE = Enum(('BUY', 'SELL'))
+
+ORDER_STATUS = Enum(('WON', 'LOST', 'OPEN'))
+
+
+class Order:
+    def __init__(self, side,tick, stop_loss, take_profit):
+        self.side = side
+        self.stop_loss = stop_loss
+        self.take_profit = take_profit
+        self.value = 0.0
+
+        if self.side == ORDER_SIDE.BUY:
+            self.cost = tick.ask
+        elif self.side == ORDER_SIDE.SELL:
+            self.cost = tick.bid
+
+        self.status = ORDER_STATUS.OPEN
+        self.feed = None
+        
+    def __call__(self,tick):
+        if not self.status == ORDER_STATUS.OPEN:
+            return
+        if self.side == ORDER_SIDE.BUY:
+                current_price = tick.bid
+                delta = abs(current_price - self.cost)
+                if current_price <= self.stop_loss:
+                    self.value = (-1.0) * delta * 100000
+                    self.status = ORDER_STATUS.LOST
+                elif current_price >= self.take_profit:
+                    self.value = delta * 100000
+                    self.status = ORDER_STATUS.WON
+                    
+        elif self.side == ORDER_SIDE.SELL:
+                current_price = tick.ask
+                delta = abs(current_price - self.cost)
+                if current_price >= self.stop_loss:
+                    self.value = (-1.0) * delta * 100000
+                    self.status = ORDER_STATUS.LOST
+                elif current_price <= self.take_profit:
+                    self.value = delta * 100000
+                    self.status = ORDER_STATUS.WON
+
+        if not self.status == ORDER_STATUS.OPEN:
+            self.feed.unregister(self)
+            
+
+
 class VanilaModel:
     def __init__(self):
         self.PNL = 0
@@ -42,6 +97,12 @@ class SpecificMinuteModel:
         self.trading_minute = 40
         self.has_triggered = False
         self.deltas = []
+        self.mean = -0.271714467814 
+        self.std = 14.0694776224
+        self.number_of_buy = 0 
+        self.number_of_sell = 0
+        self.feed = None
+        self.orders = []
 
     def __call__(self,tick):
         if tick.timestamp.hour != self.current_hour:
@@ -51,22 +112,23 @@ class SpecificMinuteModel:
         elif tick.timestamp.minute == self.trading_minute and not self.has_triggered:
             closing_price = tick.bid
             delta = self.open_price - closing_price
-            self.deltas.append(delta*10000)
+            delta *= 10000
+            self.deltas.append(delta)
+            order = None
+            if delta >= self.mean + 1.0 * self.std:
+                self.number_of_sell += 1    
+                order = Order(ORDER_SIDE.SELL, tick, tick.bid + 0.001, tick.bid - 0.001)
+            #elif delta <= self.mean - 1.0 * self.std:
+            #    self.number_of_buy += 1    
+            #    order = Order(ORDER_SIDE.BUY, tick, tick.ask - 0.001, tick.ask + 0.001)
+
+            if order:
+                order.feed = self.feed
+                self.orders.append(order)
+                self.feed.register(order)
+
             self.has_triggered = True
         
-    def show_stats(self):
-        deltas = self.deltas
-        print 'count', len(deltas)
-        print 'min:{0} max:{1}'.format(min(deltas),max(deltas))
-        mean = numpy.average(deltas)   
-        std = numpy.std(deltas)
-        p = scipy.stats.normaltest(deltas)[1]
-        print 'mean: {0} std: {1}'.format(mean, std)
-        print 'p = ',p,
-        if p >= 0.5:
-            print 'Is Normal'
-        else:
-            print 'not normal'
         
 
 
