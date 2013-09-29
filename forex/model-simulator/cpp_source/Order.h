@@ -63,6 +63,8 @@ class Order: public TickProcessor
                             double take_profit, 
                             double enter_price);
 
+        static int orders_count() ;
+
         virtual PROCESSOR_RESULT process(const Tick& tick);
 
         std::string get_instrument() const;

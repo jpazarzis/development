@@ -82,14 +82,27 @@ class TickEngine
 
             long tick_count = 0;
 
+            bool needs_to_print_first = true;
+
             while ( (bytes_read =fread ( psz, LINE_LENGTH, BUFFER_SIZE, f)) > 0) 
             {
-                for(register int i = 0; i < BUFFER_SIZE; ++i)
-                    psz[ (i+1)*LINE_LENGTH ] = '\0';       
+                
+                for(register int i = 0; i < bytes_read; ++i)
+                {
+                    if(psz[i] == '\n') 
+                        psz[i] = '\0';  
+                }
+                         
 
                 for(register int i = 0; i < BUFFER_SIZE; ++i)
                 {
                     parse_tick((char*) &psz[i*LINE_LENGTH], tick);
+
+                    if(needs_to_print_first)
+                    {
+                        std::cout << "first tick-> year" << tick.year << " month: " << tick.month << " day: " << tick.day << std::endl;
+                        needs_to_print_first = false;
+                    }
 
                     tick_count += 1;
     
@@ -121,14 +134,15 @@ class TickEngine
                 }
 
             }      
+            std::cout << "last tick-> year" << tick.year << " month: " << tick.month << " day: " << tick.day << std::endl;
             fclose (f);
-            std::cout << "done" << std::endl;
         }
 
     private:
 
         static void parse_tick(char* psz, Tick& tick)
         {
+            using namespace std;
             psz[2] = '\0';
             psz[5] = '\0';
             psz[8] = '\0';
@@ -145,6 +159,7 @@ class TickEngine
             tick.second = atoi((char*)&psz[15]);
             tick.bid = fast_atof((char*)&psz[18]);
             tick.ask = fast_atof((char*)&psz[26]);
+
         }
 
         static double fast_atof (const char *p)

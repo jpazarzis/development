@@ -55,10 +55,16 @@ void test3()
     cout << ctime(&current_time) << endl;
 
     TickEngine te;
-    BuyAtSpecificMinuteModel model =  BuyAtSpecificMinuteModel("EUR_USD", 40, 0.0008, 0.0008, 0.0008);
-    model.bind_tick_engine(&te);
-    te.start("../../historical-ticks/EUR_USD.csv", 10000000);
-    model.show_stats();    
+
+    for (int i = 0; i <100; ++i)
+    {
+        BuyAtSpecificMinuteModel* p_model =  new BuyAtSpecificMinuteModel("EUR_USD", 40, 0.0008, 0.0008, 0.0008);
+        p_model->bind_tick_engine(&te);
+    }   
+    
+    te.start("../../historical-ticks/EUR_USD.csv", 15000000);
+    //model.show_stats();    
+    cout << "number of orders created: " << Order::orders_count() << endl;
     cout << "done" << endl;
     current_time = time(NULL);
     cout << ctime(&current_time) << endl;

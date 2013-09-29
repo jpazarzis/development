@@ -23,6 +23,12 @@ class OrderPool
 OrderPool Order::_order_pool;
 
 
+int Order::orders_count() 
+{
+    return Order::_order_pool._pool.size(); 
+}
+
+
 Order::Order(   OrderType order_type,  
                 const std::string& instrument, 
                 double stop_loss, 
@@ -64,7 +70,6 @@ PROCESSOR_RESULT Order::process(const Tick& tick)
 
         if(delta <= _stop_loss || delta >= _take_profit)        
         {
-            cout << "here" << endl;
             _sell_price = current_price;
             _order_status = CLOSED;
         }
