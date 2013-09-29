@@ -36,20 +36,38 @@ void test1()
     cout << ctime(&current_time) << endl;
 }
 
+void test2()
+{
+    cout << "here" << endl;    
+    Tick t;
+    ORDER_PTR p_order1 = Order::make(BUY, "test", 100.1, 100.2, 100.0);
+    ORDER_PTR p_order2 = Order::make(BUY, "test", 100.1, 100.2, 100.0);
+    Tick t2;
+    int i = p_order1->process(t2);
+    cout << i << endl;
+
+}
+
+void test3()
+{
+    time_t current_time;
+    current_time = time(NULL);
+    cout << ctime(&current_time) << endl;
+
+    TickEngine te;
+    BuyAtSpecificMinuteModel model =  BuyAtSpecificMinuteModel("EUR_USD", 40, 0.0008, 0.0008, 0.0008);
+    model.bind_tick_engine(&te);
+    te.start("../../historical-ticks/EUR_USD.csv", 10000000);
+    model.show_stats();    
+    cout << "done" << endl;
+    current_time = time(NULL);
+    cout << ctime(&current_time) << endl;
+}
 
 
 
 int main()
 { 
-    cout << "here" << endl;    
-    Tick t;
-    ORDER_REF order1 = Order::make(BUY, "test", 100.1, 100.2, 100.0);
-    ORDER_REF order2 = Order::make(BUY, "test", 100.1, 100.2, 100.0);
-    Tick t2;
-    int i = order1.process(t2);
-    cout << i << endl;
-
-    
-    
+    test3();
     return 0;
 }

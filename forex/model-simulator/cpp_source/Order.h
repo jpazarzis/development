@@ -20,7 +20,7 @@ class OrderPool;
 class Order;
 
 typedef Order& ORDER_REF ;
-
+typedef Order* ORDER_PTR ;
 
 
 
@@ -57,7 +57,7 @@ class Order: public TickProcessor
 
         virtual ~Order(); 
 
-        static ORDER_REF make( OrderType order_type, 
+        static ORDER_PTR make( OrderType order_type, 
                             const std::string& instrument, 
                             double stop_loss, 
                             double take_profit, 

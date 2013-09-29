@@ -64,6 +64,7 @@ PROCESSOR_RESULT Order::process(const Tick& tick)
 
         if(delta <= _stop_loss || delta >= _take_profit)        
         {
+            cout << "here" << endl;
             _sell_price = current_price;
             _order_status = CLOSED;
         }
@@ -85,7 +86,7 @@ PROCESSOR_RESULT Order::process(const Tick& tick)
 }
 
 
-ORDER_REF Order::make(  OrderType order_type,
+ORDER_PTR Order::make(  OrderType order_type,
                      const std::string& instrument,  
                      double stop_loss, 
                      double take_profit, 
@@ -93,7 +94,7 @@ ORDER_REF Order::make(  OrderType order_type,
 {
         Order* p_order = new Order(order_type,instrument, stop_loss, take_profit, enter_price);
         _order_pool._pool.push_back(p_order);
-        return *p_order;
+        return p_order;
 }
 
 std::string Order::get_instrument() const { return _instrument; }
@@ -107,12 +108,12 @@ OrderStatus Order::get_order_status() const { return _order_status; }
 
 double Order::get_pnl() const
 {
-    if( _order_status != CLOSED)
+    if( _order_status == CLOSED)
     {
-        throw "Cannot return pnl since the order is still open";
+        return 0.0;
     }
-
-    return _sell_price - _buy_price;
+    cout << _sell_price << " " << _buy_price << endl;
+    return (_sell_price - _buy_price) * 100000.0;
 }
 
 

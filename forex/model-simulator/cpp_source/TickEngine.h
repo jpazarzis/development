@@ -59,7 +59,7 @@ class TickEngine
             }
         }   
 
-        void start(const std::string& filename)
+        void start(const std::string& filename, long max_number_of_ticks = -1)
         {
             FILE* f = fopen (filename.c_str(), "r");
             if (f == NULL) 
@@ -80,6 +80,8 @@ class TickEngine
 
             std::vector<int> indexes_of_processors_to_unregister;
 
+            long tick_count = 0;
+
             while ( (bytes_read =fread ( psz, LINE_LENGTH, BUFFER_SIZE, f)) > 0) 
             {
                 for(register int i = 0; i < BUFFER_SIZE; ++i)
@@ -88,6 +90,9 @@ class TickEngine
                 for(register int i = 0; i < BUFFER_SIZE; ++i)
                 {
                     parse_tick((char*) &psz[i*LINE_LENGTH], tick);
+
+                    tick_count += 1;
+    
                     if (++counter % 1000000 == 0)
                         std::cout << counter << std::endl;
 
@@ -109,6 +114,11 @@ class TickEngine
                 }
 
                 CLEAR_BUFFER(psz)
+
+                if (tick_count >= max_number_of_ticks && max_number_of_ticks > 0)
+                {
+                    break;
+                }
 
             }      
             fclose (f);

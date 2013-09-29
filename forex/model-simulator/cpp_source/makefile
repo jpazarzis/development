@@ -2,7 +2,7 @@ CXX=g++
 #FLAGS=-g -D DEBUG
 FLAGS=-Ofast
 
-main:main.cpp TickEngine.h TickProcessor.h Order.o
+main:main.cpp Models.h TickEngine.h TickProcessor.h Order.o 
 	$(CXX) $(FLAGS) -o main main.cpp Order.o
 
 
