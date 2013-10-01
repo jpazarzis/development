@@ -2,6 +2,18 @@
 #define MODELS_INCLUDED
 #define MODELS_INCLUDED
 
+/////////////////////////////////////////////////////
+// Models.h
+// 
+// Author: John Pazarzis
+//
+// Date  : Sep. 28 2013
+//
+// Summary: 
+//    Implements a sample model
+////////////////////////////////////////////////////////////////////////
+
+
 #include "TickProcessor.h"
 #include "Order.h"
 #include <vector>

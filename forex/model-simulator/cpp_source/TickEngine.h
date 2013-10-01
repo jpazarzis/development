@@ -1,12 +1,18 @@
 #ifndef TICK_ENGINE_INCLUDED
 #define TICK_ENGINE_INCLUDED
 
-/////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////
 // TickEngine.h 
+// 
+// Author: John Pazarzis
 //
-// Implements a tick simulator
+// Date  : Sep. 28 2013
 //
-/////////////////////////////////////////////////////////////////////////////////
+// Summary: 
+//    Implements a tick simulator
+
+////////////////////////////////////////////////////////////////////////
+
 
 #include <sys/types.h>
 #include <string.h>
@@ -106,8 +112,8 @@ class TickEngine
 
                     tick_count += 1;
     
-                    if (++counter % 1000000 == 0)
-                        std::cout << counter << std::endl;
+                    //if (++counter % 1000000 == 0)
+                    //    std::cout << counter << std::endl;
 
                     indexes_of_processors_to_unregister.clear();
 
