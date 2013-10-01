@@ -9,12 +9,14 @@ using namespace std;
 // test-cloning.cpp
 // 
 // Author: John Pazarzis
+//
 // Date  : Sep. 30 213
+//
 // Summary: 
 //      Implemets the functionality to create an optimizable structure
 //      so it can be used by the genetic algorithm
 //
-//Notes:
+// Notes:
 //
 // To make a structure usable by the optimization algorithm it needs to be
 // declared like the following struct A.
@@ -30,6 +32,7 @@ using namespace std;
 //
 // We also need to provide the equality test by overloading the == operator
 // so we can later check if an object already exists in a collection
+//
 ////////////////////////////////////////////////////////////////////////
 
 // Declares an integer variable providing its min-max values. Used to
