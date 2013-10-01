@@ -2,6 +2,23 @@
 #define ORDER_INCLUDED
 #define ORDER_INCLUDED
 
+/////////////////////////////////////////////////////
+// Order.h
+// 
+// Author: John Pazarzis
+//
+// Date  : Sep. 28 2013
+//
+// Summary: 
+//    The Order type is used by the model to create and monitor orders 
+//
+// Notes:
+//
+// As the code matures I will need to add a Trade class as well. For
+// now I encapsulate the trading details within the Order
+////////////////////////////////////////////////////////////////////////
+
+
 #include "TickProcessor.h"
 #include <string>
 #include <vector>
