@@ -91,11 +91,6 @@ struct A
     DECLARE_OPTIMIZABLE_INT(j, 1, 20)
     DECLARE_OPTIMIZABLE_INT(k, 10, 20)
     DECLARE_OPTIMIZABLE_INT(m, 100, 200)
-    DECLARE_OPTIMIZABLE_INT(m1, 100, 200)
-    DECLARE_OPTIMIZABLE_INT(m2, 100, 200)
-    DECLARE_OPTIMIZABLE_INT(m3, 100, 200)    
-    DECLARE_OPTIMIZABLE_INT(m4, 100, 200)
-    DECLARE_OPTIMIZABLE_INT(m5, 100, 200)
 
     //DECLARE_OPTIMIZABLE_DOUBLE(s, 100.0, 110.0)
     
@@ -105,11 +100,6 @@ struct A
         RANDOMIZE_VARIABLE(j)
         RANDOMIZE_VARIABLE(k)
         RANDOMIZE_VARIABLE(m)
-        RANDOMIZE_VARIABLE(m1)
-        RANDOMIZE_VARIABLE(m2)
-        RANDOMIZE_VARIABLE(m3)
-        RANDOMIZE_VARIABLE(m4)
-        RANDOMIZE_VARIABLE(m5)
       //  RANDOMIZE_VARIABLE(s)
     }   
 };
@@ -119,142 +109,109 @@ BEGIN_EQUALITY_TEST(A)
         CHECK_EQUALITY_FOR_INT(j)
         CHECK_EQUALITY_FOR_INT(k)
         CHECK_EQUALITY_FOR_INT(m)
-        CHECK_EQUALITY_FOR_INT(m1)
-        CHECK_EQUALITY_FOR_INT(m2)
-        CHECK_EQUALITY_FOR_INT(m3)
-        CHECK_EQUALITY_FOR_INT(m4)
-        CHECK_EQUALITY_FOR_INT(m5)
         //CHECK_EQUALITY_FOR_DOUBLE(s)
 END_EQUALITY_TEST
 
 
 
-template<class T, int SIZE, int PARENT_SIZE> 
-void create_next_generation( T* a, T* b)
+
+
+template<class T, int SIZE, int FIT_CHROMOSOMES_COUNT> 
+bool create_next_generation1( T** a)
 {
-    for(register int i = 0; i < SIZE;)
+    const int fcc = FIT_CHROMOSOMES_COUNT % 2 == 0 ? FIT_CHROMOSOMES_COUNT : FIT_CHROMOSOMES_COUNT - 1;
+    const int size = SIZE % 2 == 0 ? SIZE : SIZE - 1;
+
+
+    int tries = 0;
+
+    for(register int i = fcc; i < size;)
     {
-            const int index1 = rand() % (PARENT_SIZE);
-            const int index2 = rand() % (PARENT_SIZE);
+            
+            if(tries >= 10)
+            {
+                cout << "seems that I cannot create enough cloning... " << endl;
+                return false;
+            }
+
+            const int index1 = rand() % (fcc);
+            const int index2 = rand() % (fcc);
 
             if(index1 == index2)
             {
                 continue;
             }
 
-            CLONE(T,b[i],b[i+1],a[index1],a[index2])
-            i += 2;
-    }
-}
 
-template<class T, int SIZE, int PARENT_SIZE> 
-void create_next_generation1( T** a, T** b)
-{
-    for(register int i = 0; i < SIZE;)
-    {
-            const int index1 = rand() % (PARENT_SIZE);
-            const int index2 = rand() % (PARENT_SIZE);
+            CLONE(T,*a[i],*a[i+1],*a[index1],*a[index2])
 
-            if(index1 == index2)
+            // If either one of the new chromosomes already exist 
+            // ignore the cloning by not incrementing the index!
+
+            bool new_chromosomes = true;
+            for(register int j = 0; j < i; ++j)
             {
-                continue;
+                if(*a[i] == *a[j] || *a[i+1] == *a[j])
+                {
+                    new_chromosomes = false;
+                    cout <<"already_exists" << endl;
+                    memset((void*)a[i], 0, sizeof(T));
+                    memset((void*)a[i+1], 0, sizeof(T));
+                    tries += 1;
+                    break;
+                }               
             }
-
-            CLONE(T,*b[i],*b[i+1],*a[index1],*a[index2])
-            i += 2;
+            
+            if(new_chromosomes)
+            {
+                i += 2;
+                tries = 0;
+            }
     }
+    return true;
 }
 
-
+#define CHROMOSOME_COUNT 12
 void test2()
 {
-    A a1[10], a2[10];
+    A a1[CHROMOSOME_COUNT];
+    A* pa1[CHROMOSOME_COUNT];
 
-    A* pa1[10];
-    A* pa2[10];
-
-    for(int i = 0; i <10; ++i)
+    for(int i = 0; i <CHROMOSOME_COUNT; ++i)
     {
        pa1[i] = & a1[i];
-       pa2[i] = & a2[i];
     }
 
-    for(int i = 0; i < 10; ++i)
-    {
-        memset((void*)&a2[i], 0, sizeof(A));    
-    }
 
     cout << "before.." << endl;
 
-    for(int i = 0; i < 10; ++i)
+    for(int i = 0; i < CHROMOSOME_COUNT; ++i)
     {
-        cout << a2[i].i << " " << a2[i].j <<" " << a2[i].k << " " << a2[i].m << " " <<endl;
+        cout << a1[i].i << " " << a1[i].j <<" " << a1[i].k << " " << a1[i].m << " " <<endl;
     }
 
-
-    create_next_generation1<A,10,10>(pa1,  pa2);
-
-    cout << "after.." << endl;
-
-    for(int i = 0; i < 10; ++i)
+    if(create_next_generation1<A,CHROMOSOME_COUNT,4>(pa1))
     {
-        cout << a2[i].i << " " << a2[i].j <<" " << a2[i].k << " " << a2[i].m << " " <<endl;
+            cout << "after.." << endl;
+
+            for(int i = 0; i < CHROMOSOME_COUNT; ++i)
+            {
+                cout << a1[i].i << " " << a1[i].j <<" " << a1[i].k << " " << a1[i].m << " " <<endl;
+            }
     }
+    else
+    {
+        cout << "failed" << endl;
+    }
+
+    
 
     
 
 }
 
 
-void test()
-{
-   A a[12];
-    for(int i = 0; i < 12; ++i)
-    {
-        //cout << a[i].i << " " << a[i].j <<" " << a[i].k << " " << a[i].m << " " <<endl;
-    }
 
-    A b[100];
-    int j = 0;
-    while(j < 98)
-    {
-            int index1 = (rand() % (11 - 0) ) + 0;
-            int index2 = (rand() % (11 - 0) ) + 0;
-
-            if(index1 == index2)
-            {
-                continue;
-            }
-            
-
-            CLONE(A,b[j],b[j+1],a[index1],a[index2])
-
-
-            bool already_exists = false;
-            for(int i = 0; i < j - 1; ++ i)
-            {
-                if(b[j] == b[i])
-                {
-                    //cout << "already exists: " << j << " " << i << endl;
-                    already_exists = true;     
-                    break;
-                }
-            }
-
-            if(!already_exists)
-            {
-                j += 2;
-            }
-
-            
-    }
-
-    //cout << "=======================" << endl;
-    for(int i = 0; i < 100; ++i)
-    {
-        //cout << i <<" => "<< b[i].i << " " << b[i].j <<" " << b[i].k << " " << b[i].m << " " << endl;
-    }       
-}
 
 
 int main()
