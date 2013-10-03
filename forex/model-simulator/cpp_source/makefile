@@ -2,7 +2,12 @@ CXX=g++
 #FLAGS=-g -D DEBUG
 FLAGS=-Ofast
 
-test_cloning: test_cloning.cpp
+
+ga_user_sample: ga_user_sample.cpp ga.h
+	$(CXX) $(FLAGS) -o ga_user_sample ga_user_sample.cpp
+
+
+test_cloning: test_cloning.cpp cloner.h
 	$(CXX) $(FLAGS) -o test_cloning test_cloning.cpp
 
 main:main.cpp Models.h TickEngine.h TickProcessor.h Order.o 
