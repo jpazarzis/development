@@ -30,7 +30,8 @@ enum OrderType
 
 enum OrderStatus
 {
-    OPEN, CLOSED};
+    OPEN, CLOSED
+};
 
 class OrderPool;
 
@@ -58,6 +59,10 @@ class Order: public TickProcessor
         OrderStatus _order_status;
         OrderType _order_type;
 
+        static int _id_seed;
+
+        const int _id;
+
         static OrderPool _order_pool;
 
         bool reaching_stop_loss(const Tick& tick) const;
@@ -68,7 +73,7 @@ class Order: public TickProcessor
                 const std::string& instrument, 
                 double stop_loss, 
                 double take_profit,
-                double enter_price);
+                double enter_price) ;
 
     public:
 
@@ -80,9 +85,11 @@ class Order: public TickProcessor
                             double take_profit, 
                             double enter_price);
 
+        static void clear_order_pool();
+
         static int orders_count() ;
 
-        virtual PROCESSOR_RESULT process(const Tick& tick);
+        virtual void process(const Tick& tick);
 
         std::string get_instrument() const;
 
@@ -97,6 +104,8 @@ class Order: public TickProcessor
         OrderType get_order_type() const;
 
         double get_pnl() const;
+
+        std::string to_string() const;
 
 };
 

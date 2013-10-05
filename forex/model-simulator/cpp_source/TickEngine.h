@@ -28,6 +28,7 @@
 #include <time.h>
 #include <functional>
 #include "TickProcessor.h"
+#include "Logger.h"
 
 
 
@@ -40,36 +41,63 @@
 #define CLEAR_BUFFER(buffer) for (int i = 0; i < BUFFER_LENGTH; ++i) buffer[i] = '\0';
 
 
+
+
+
 class TickEngine
 {
-    std::vector<TickProcessor*> _processors;
+        std::vector<TickProcessor*> _processors;
+
+        std::vector<TickProcessor*> _pending_to_register_processors;
+
+        inline void register_pending_processors()
+        {
+            const int size = _pending_to_register_processors.size();
+            for(register int i = 0; i < size; ++i)
+                _processors.push_back(_pending_to_register_processors[i]);
+            _pending_to_register_processors.clear();
+        }
+
+        inline void unregister_pending_processors()
+        {
+            std::vector<TickProcessor*>::iterator iter = _processors.begin();
+
+            while(iter != _processors.end())
+            {
+                TickProcessor* p_tick_processor = (TickProcessor*) *iter;
+                
+                if(p_tick_processor->is_marked_to_stop_feed())
+                {
+                    iter = _processors.erase(iter);
+                }
+                else
+                {
+                    ++iter;
+                }
+            }
+        }
+
+        inline void update_pending_processors()
+        {
+            register_pending_processors();
+            unregister_pending_processors();
+        }
 
     public:
 
         void register_processor(TickProcessor* p_processor)
         {
-            _processors.push_back(p_processor);
+            _pending_to_register_processors.push_back(p_processor);
         }   
 
-        void unregister_processor(TickProcessor* p_processor)
-        {
-            for( std::vector<TickProcessor*>::iterator iter = _processors.begin(); 
-                                                              iter != _processors.end(); 
-                                                              ++iter )
-            {
-                    if( *iter == p_processor )
-                    {
-                        _processors.erase( iter );
-                        break;
-                    }
-            }
-        }   
 
         void start(const std::string& filename, long max_number_of_ticks = -1)
         {
+            using namespace std;
             FILE* f = fopen (filename.c_str(), "r");
             if (f == NULL) 
             {
+                LOG << "failed to open file: " << filename << EOL;
                 throw("Error opening file");
             }
 
@@ -79,68 +107,37 @@ class TickEngine
             double bid, ask;
             int bytes_read;
             int counter = 0;
-
             Tick tick;
-
-            const int processors_count = _processors.size();
-
-            std::vector<int> indexes_of_processors_to_unregister;
-
             long tick_count = 0;
 
-            bool needs_to_print_first = true;
-
+            LOG << "Start reading file: " << filename << EOL;
             while ( (bytes_read =fread ( psz, LINE_LENGTH, BUFFER_SIZE, f)) > 0) 
             {
-                
                 for(register int i = 0; i < bytes_read; ++i)
                 {
                     if(psz[i] == '\n') 
                         psz[i] = '\0';  
                 }
-                         
-
                 for(register int i = 0; i < BUFFER_SIZE; ++i)
                 {
                     parse_tick((char*) &psz[i*LINE_LENGTH], tick);
-
-                    if(needs_to_print_first)
-                    {
-                        std::cout << "first tick-> year" << tick.year << " month: " << tick.month << " day: " << tick.day << std::endl;
-                        needs_to_print_first = false;
-                    }
-
                     tick_count += 1;
-    
-                    //if (++counter % 1000000 == 0)
-                    //    std::cout << counter << std::endl;
-
-                    indexes_of_processors_to_unregister.clear();
-
-                    for(register int i = 0; i < processors_count; ++i)
+                    if(tick_count % 100000 == 0)
+                        cout << "ticks so far: " << tick_count << endl;
+                    update_pending_processors();
+                    const int size = _processors.size();
+                    for(register int i = 0; i < size; ++i)
                     {
-                        
-                        if (_processors[i]->process(tick) == STOP_PROCESSING)
-                        {
-                            indexes_of_processors_to_unregister.push_back(i);
-                        }
-                    }
-
-                    for(register int i = 0; i < indexes_of_processors_to_unregister.size(); ++i)
-                    {
-                        _processors.erase(_processors.begin() + indexes_of_processors_to_unregister[i]);
+                        _processors[i]->process(tick);
+                      
                     }
                 }
-
                 CLEAR_BUFFER(psz)
-
                 if (tick_count >= max_number_of_ticks && max_number_of_ticks > 0)
                 {
                     break;
                 }
-
             }      
-            std::cout << "last tick-> year" << tick.year << " month: " << tick.month << " day: " << tick.day << std::endl;
             fclose (f);
         }
 

@@ -1,6 +1,16 @@
-// ga_usecase2.cpp
+// ga_user_sample.cpp
+// 
+// Author: John Pazarzis
 //
+// Date  : Oct. 2 2013
 //
+// Summary: 
+//    Implements a genetic algorithm client.
+//
+// Notes:
+//
+////////////////////////////////////////////////////////////////////////
+
 #include "ga.h"
 #include <iostream>
 #include <stdio.h>

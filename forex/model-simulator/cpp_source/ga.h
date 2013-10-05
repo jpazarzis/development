@@ -24,6 +24,16 @@
 #include <string> 
 using namespace std;
 
+#define MAXIMIZE_FITNESS 1
+#define MINIMIZE_FITNESS 0
+
+
+// MinMaxValues
+//
+//      Allows the client to narrow the range of a parameter 
+//      Used by ga to initialize a new population with random
+//      values and also used for mutation
+
 struct MinMaxValues
 {
     double _min, _max;
@@ -37,6 +47,15 @@ struct MinMaxValues
         return (_max - _min) * ( (double)rand() / (double)RAND_MAX ) + _min;
     }
 };
+
+
+// Chromosome
+//
+//      Creates a genome consisting of an array of doubles
+//      also is holding the related fitness which is updated
+//      by the client code
+
+
 template <int CHROMOSOME_LENGTH>
 struct Chromosome
 {
@@ -59,6 +78,15 @@ struct Chromosome
 
 };
 
+// Populatebale
+//
+//      An abstract class that needs to be implemeted by any class
+//      to enable it with compatibility with ga
+//
+//      The client specifies how to exchange the data with a chromosome
+//      It also implements a function to get the fitness from the 
+//      client side
+
 template <int CHROMOSOME_LENGTH> class Populatebale
 {
     public:
@@ -66,19 +94,39 @@ template <int CHROMOSOME_LENGTH> class Populatebale
         virtual double get_fitness() const = 0;
 };
 
-template <int CHROMOSOME_LENGTH>
-int compare (const void * a, const void * b)
+// compare_chromosomes 
+//
+//      Compares two chromomes based in their fitness
+//      Used for sorting purposes
+
+template <int CHROMOSOME_LENGTH, int FITNESS_DIRECTION>
+int compare_chromosomes (const void * a, const void * b)
 {
     Chromosome<CHROMOSOME_LENGTH>* p1 = (Chromosome<CHROMOSOME_LENGTH>*) a;
     Chromosome<CHROMOSOME_LENGTH>* p2 = (Chromosome<CHROMOSOME_LENGTH>*) b;
 
-    if(p1->_fitness > p2->_fitness)
-        return 1;
-    else if(p1->_fitness < p2->_fitness)
-        return -1;
+    if(FITNESS_DIRECTION == MINIMIZE_FITNESS)
+    {
+            if(p1->_fitness > p2->_fitness)
+                return 1;
+            else if(p1->_fitness < p2->_fitness)
+                return -1;
+    }
+    else
+    {
+           if(p1->_fitness > p2->_fitness)
+                return -1;
+            else if(p1->_fitness < p2->_fitness)
+                return 1;
+    }
 
     return 0;
 }
+
+
+// equality operator
+//
+//      Compares two chromosomes going through the weight array
 
 template <int CHROMOSOME_LENGTH>
 bool operator == (const Chromosome<CHROMOSOME_LENGTH>& lhp, const Chromosome<CHROMOSOME_LENGTH>& rhp)
@@ -93,7 +141,11 @@ bool operator == (const Chromosome<CHROMOSOME_LENGTH>& lhp, const Chromosome<CHR
     return true;
 }
 
-template <int POPULATIONSIZE, int CHROMOSOME_LENGTH, int ELITISM_FACTOR>
+// GeneticAlgorithm
+//
+//      Implements the genetic algorithm
+
+template <int POPULATIONSIZE, int CHROMOSOME_LENGTH, int ELITISM_FACTOR, int FITNESS_DIRECTION=MINIMIZE_FITNESS>
 struct GeneticAlgorithm
 {
     Chromosome<CHROMOSOME_LENGTH> _chromosome[POPULATIONSIZE];
@@ -177,7 +229,7 @@ struct GeneticAlgorithm
 
     inline void sort()
     {
-        qsort (_chromosome, POPULATIONSIZE, sizeof(Chromosome<CHROMOSOME_LENGTH>), compare<CHROMOSOME_LENGTH>); 
+        qsort (_chromosome, POPULATIONSIZE, sizeof(Chromosome<CHROMOSOME_LENGTH>), compare_chromosomes<CHROMOSOME_LENGTH,FITNESS_DIRECTION>); 
     }
 
     void evolve()
@@ -231,8 +283,8 @@ struct GeneticAlgorithm
 
     std::string to_string() const
     {
-        std::string strg;
         char buffer[1024];
+        std::string strg;
         for(int i = 0; i < POPULATIONSIZE; ++i)
         {
                 const double* w = _chromosome[i]._weight;

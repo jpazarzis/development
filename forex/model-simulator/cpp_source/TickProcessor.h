@@ -16,24 +16,44 @@
 ////////////////////////////////////////////////////////////////////////
 
 
+#include <string>
+#include <stdio.h>
+
 
 struct Tick
 {
     int day, month, year, hour, minute, second;
     double bid, ask;
-};
+    
+    std::string  to_string() const
+    {
+        using namespace std;
+        char buffer[1024];
 
-enum PROCESSOR_RESULT
-{
-    CONTINUE_PROCESSING = 0,
-    STOP_PROCESSING = 1
+        sprintf(buffer, 
+                " %d/%d/%d %d:%d:%d bid: %10.6f ask: %10.6f", 
+                day, month, year, hour, minute, second,bid, ask);
+
+        return buffer;
+    }   
+    
 };
 
 class TickProcessor
 {
-    public:
-        virtual PROCESSOR_RESULT process(const Tick& tick) = 0;
-};
+        bool _marked_to_stop_feed;
 
+    public:
+        TickProcessor() : _marked_to_stop_feed(false) {}
+        
+        virtual ~ TickProcessor() {}
+
+        virtual void process(const Tick& tick) = 0;
+
+        virtual bool is_marked_to_stop_feed() const { return _marked_to_stop_feed; }
+
+        virtual void stop_feed() { _marked_to_stop_feed = true; }
+};
+        
 #endif
 
