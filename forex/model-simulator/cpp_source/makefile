@@ -3,7 +3,7 @@ CXX=g++
 FLAGS=-g -D DEBUG 
 #FLAGS=-Ofast
 
-model_optimizer:model_optimizer.cpp BuyAtSpecificMinuteModel.h Optimizable.h GeneticAlgorithm.h Statistics.h std_include.h TickEngine.h TickProcessor.h Object.h Order.o Identifiable.o CloneableDouble.o  Logger.o Utilities.o
+model_optimizer:model_optimizer.cpp BuyAtSpecificMinuteModel.h Optimizable.h GeneticAlgorithm.h Statistics.h std_include.h TickEngine.h TickProcessor.h Object.h Order.o Identifiable.o CloneableDouble.o  Logger.o Utilities.o Model.h ModelMetrics.h
 	$(CXX) $(FLAGS) -o model_optimizer model_optimizer.cpp CloneableDouble.o Logger.o Order.o Identifiable.o Utilities.o
 
 ga_sample1:ga_sample1.cpp CloneableDouble.o Optimizable.h GeneticAlgorithm.h Statistics.h std_include.h Object.h Logger.o Utilities.o
@@ -23,6 +23,9 @@ Identifiable.o: Identifiable.h Identifiable.cpp
 
 Utilities.o: Utilities.h Utilities.cpp
 	$(CXX) $(FLAGS) -c Utilities.cpp
+
+test1: test.cpp
+	$(CXX) $(FLAGS) -o test1 test.cpp
 
 
     

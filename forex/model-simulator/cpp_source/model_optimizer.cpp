@@ -8,6 +8,7 @@
 #include "Logger.h"
 #include "Identifiable.h"
 #include <fstream>
+#include "GeneticAlgorithm.h"
 using namespace std;
 
 
@@ -19,28 +20,15 @@ void calculate_fitness_for_models(GeneticAlgorithm<BuyAtSpecificMinuteModel>& ga
 
     for (int i = 0; i< ga.size(); ++i)
     {
-        ga[i]->bind_tick_engine(&te);
+        ga[i]->start_listening(&te);
     }   
 
-    te.start("../../../historical-ticks/EUR_USD.csv", 100000);
+    te.start("../../historical-ticks/EUR_USD.csv", 100000);
 
-    for (int i = 0; i <ga.size(); ++i)
+    for (int i = 0; i < ga.size(); ++i)
     {
-        ga[i]->assign_fitness();
+         ga[i]->stop_listening();
     }
-
-    
-
-    for (int i = 0; i <ga.size(); ++i)
-    {
-        cout << ga[i]->to_string() << endl;
-         ga[i]->clear();
-    }
-
-
-
-
-
 }
 
 int main()

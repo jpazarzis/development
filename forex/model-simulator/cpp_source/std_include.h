@@ -18,8 +18,10 @@
 #include <stdio.h>      
 #include <algorithm> 
 #include <vector>
+#include <fstream>
 #include<limits>
 #include "Utilities.h"
+#include "Identifiable.h"
 
 
 #define INVALID_FITNESS -9999999.9
