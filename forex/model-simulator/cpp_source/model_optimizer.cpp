@@ -23,12 +23,40 @@ void calculate_fitness_for_models(GeneticAlgorithm<BuyAtSpecificMinuteModel>& ga
         ga[i]->start_listening(&te);
     }   
 
-    te.start("../../historical-ticks/EUR_USD.csv", 100000);
+    te.start("../../historical-ticks/EUR_USD.csv", 1000000);
+
+    std::vector<double> unnormalized_fitness;
+
+    for (int i = 0; i < ga.size(); ++i)
+    {
+         ga[i]->calculate_metrics();
+    }
+
+    for (int i = 0; i < ga.size(); ++i)
+    {
+         ga[i]->add_unormalized_fitness(unnormalized_fitness);
+    }
+
+    cout << unnormalized_fitness.size() << endl;
+    if(unnormalized_fitness.size() < 10)
+    {
+        throw "cannot continue the processing. It seems that very few models are actually creating orders";
+    }
+
+    const double min_fitness = *std::min_element(unnormalized_fitness.begin(), unnormalized_fitness.end());
+
+    for (int i = 0; i < ga.size(); ++i)
+    {
+         ga[i]->normalize_fitness(min_fitness);
+    }
+
 
     for (int i = 0; i < ga.size(); ++i)
     {
          ga[i]->stop_listening();
     }
+
+    Order::clear_order_pool();
 }
 
 int main()
@@ -38,21 +66,27 @@ int main()
     cout << ctime(&current_time) << endl;
     srand ( time(NULL) );
 
-    GeneticAlgorithm<BuyAtSpecificMinuteModel> ga(200);
-
-    int i = 0;
-    for(;;)
+    try
     {
-        cout << "generation: " << ++i << endl;
-        calculate_fitness_for_models(ga);
-        if (ga.evolve())
-            break;
-        Order::clear_order_pool();
-    }
+            GeneticAlgorithm<BuyAtSpecificMinuteModel> ga(200);
 
-    cout << "done" << endl;
-    current_time = time(NULL);
-    cout << ctime(&current_time) << endl;
+            int i = 0;
+            for(;;)
+            {
+                cout << "generation: " << ++i << endl;
+                calculate_fitness_for_models(ga);
+                if (ga.evolve())
+                    break;
+            }
+
+            cout << "done" << endl;
+            current_time = time(NULL);
+            cout << ctime(&current_time) << endl;
+    }
+    catch (const char* psz)
+    {
+        std::cout << psz << std::endl;
+    }
 
     return 0;
 }

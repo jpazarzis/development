@@ -118,33 +118,31 @@ void Order::process(const Tick& tick)
 
     if(_order_type == BUY)
     {
-
-        const double current_price = tick.bid;
-        const double delta = (current_price - _buy_price) * 10000;
-
-        
-
-        if(delta > 0 && fabs(delta) >= _stop_loss)
-        {    
-            _sell_price = current_price;
-            _order_status = CLOSED;
-        }
-        else if(delta < 0 && fabs(delta) >= _take_profit)
-        {
-            _sell_price = current_price;
-            _order_status = CLOSED;
-        }
         
     }
     else if(_order_type == SELL)
     {
-        const double current_price = tick.ask;
-        const double delta = _sell_price -  current_price;
+        /// I need to buy so I can close the order. Let's see if we reached
+        //either the stop loss or the take profit
         
-        if(delta >= _stop_loss || delta <= _take_profit)        
+        const double current_price = tick.ask;
+        const double delta = fabs((_sell_price -  current_price)* 10000);
+        if(current_price > _sell_price && delta >= _stop_loss)
         {
+            // sorry! the stop loss was reached.. we have to buy at a loss
+
             _buy_price = current_price;
             _order_status = CLOSED;
+            assert(_buy_price > _sell_price);
+        }
+        else if(current_price < _sell_price && delta >= _take_profit)
+        {
+            // Good news! The price went down, so now we can buy at a lower
+            // level closing the order for a profit!!
+
+            _buy_price = current_price;
+            _order_status = CLOSED;
+            assert(_buy_price < _sell_price);
         }
     }
         

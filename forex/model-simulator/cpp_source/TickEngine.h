@@ -94,6 +94,8 @@ class TickEngine
         void start(const std::string& filename, long max_number_of_ticks = -1)
         {
             using namespace std;
+            update_pending_processors();
+
             FILE* f = fopen (filename.c_str(), "r");
             if (f == NULL) 
             {

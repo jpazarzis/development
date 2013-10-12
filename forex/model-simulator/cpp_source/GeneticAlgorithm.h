@@ -73,6 +73,7 @@ class GeneticAlgorithm
             }
             store_current_generation();
             sort();
+            print_all();
             if(!rolled_back) 
             {
                 log_best_chromosome();
@@ -87,10 +88,16 @@ class GeneticAlgorithm
 
         bool current_average_fitness_is_less_than_previous()
         {
-            Statistics current_stats = calculate_fitness_stats();
-            return _generation_index > 1 && current_stats.get_mean() <= _previous_stats.get_mean();
+            double current_mean = calc_mean_fitness();
+            return _generation_index > 1 && current_mean <= _previous_mean;
         }
 
+        void print_all()
+        {
+            int size = _population.size();
+            for(register int i = 0; i < size; ++i)
+               std::cout  << _population[i]->to_string() << endl; 
+        }
 
         void create_new_population()
         {
@@ -136,14 +143,14 @@ class GeneticAlgorithm
                 assert(_population[i]->get_fitness() >= 0);
                 _previous_fitness.push_back(_population[i]->get_fitness());
              }
-             _previous_stats = calculate_fitness_stats();
+             _previous_mean = calc_mean_fitness();
              const int step = _generation_index - _last_productive_generation;
              _productive_generations_step.push_back(step);
         }
 
         void log_best_chromosome()
         {
-            LOG << sformat(_generation_index) << "\t" << sformat(_previous_stats.get_mean()) << "\t" 
+            LOG << sformat(_generation_index) << "\t" << sformat(_previous_mean) << "\t" 
                     << sformat(_population[0] ->get_fitness()) << "\t" << _population[0] ->values_to_string()<< EOL;
         }
 
@@ -186,7 +193,7 @@ class GeneticAlgorithm
             std::sort(_population.begin(), _population.end(), compare_optimizable);
         }
 
-        Statistics calculate_fitness_stats()
+        double calc_mean_fitness()
         {
             const int size = _population.size();
             std::vector<double> fitness;
@@ -195,7 +202,7 @@ class GeneticAlgorithm
                 assert(_population[i]->get_fitness() >= 0);
                 fitness.push_back(_population[i]->get_fitness());
             }
-            return Statistics(fitness);
+            return mean(fitness);
         }
 
         const T_PTR select_randomly(const T_PTR pExclude = NULL) const
@@ -221,8 +228,11 @@ class GeneticAlgorithm
         {
                 if(_productive_generations_step.size() >= 5)
                 {
-                    const Statistics stats = Statistics(_productive_generations_step);
-                    if( _generation_index - _last_productive_generation > stats.get_mean() + 2 * stats.get_stdev() + 10)
+
+                    const double m = mean(_productive_generations_step);
+                    const double sdev = stdev(_productive_generations_step);
+                    
+                    if( _generation_index - _last_productive_generation > m + 2 * sdev + 10)
                     {
                         return true;
                     }
@@ -246,7 +256,7 @@ class GeneticAlgorithm
 
         std::vector<std::string> _previous_chromosomes;
         std::vector<double> _previous_fitness;
-        Statistics _previous_stats;
+        double _previous_mean;
 
         // Keep the generation ids that caused an improvement in fitness will be
         // later used to stop the evolution process..

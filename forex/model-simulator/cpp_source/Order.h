@@ -20,9 +20,7 @@
 
 
 #include "TickProcessor.h"
-#include <string>
-#include <vector>
-#include "Identifiable.h"
+#include "std_include.h"
 
 enum OrderType
 {

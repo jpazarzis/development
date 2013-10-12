@@ -53,6 +53,8 @@ class TickProcessor
         virtual bool is_marked_to_stop_feed() const { return _marked_to_stop_feed; }
 
         virtual void stop_feed() { _marked_to_stop_feed = true; }
+
+        virtual void unmark_stop_feed() { _marked_to_stop_feed = false; }
 };
         
 #endif

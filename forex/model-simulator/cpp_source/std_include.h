@@ -19,6 +19,7 @@
 #include <algorithm> 
 #include <vector>
 #include <fstream>
+#include <assert.h>
 #include<limits>
 #include "Utilities.h"
 #include "Identifiable.h"

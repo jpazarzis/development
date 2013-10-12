@@ -24,7 +24,7 @@ Identifiable.o: Identifiable.h Identifiable.cpp
 Utilities.o: Utilities.h Utilities.cpp
 	$(CXX) $(FLAGS) -c Utilities.cpp
 
-test1: test.cpp
+test1: test.cpp Statistics.h
 	$(CXX) $(FLAGS) -o test1 test.cpp
 
 
