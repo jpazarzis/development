@@ -91,7 +91,7 @@ class TickEngine
         }   
 
 
-        void start(const std::string& filename, long max_number_of_ticks = -1)
+        void run(const std::string& filename, long max_number_of_ticks = -1)
         {
             using namespace std;
             update_pending_processors();
@@ -123,8 +123,8 @@ class TickEngine
                 {
                     parse_tick((char*) &psz[i*LINE_LENGTH], tick);
                     tick_count += 1;
-                    if(tick_count % 1000000 == 0)
-                       cout << "ticks so far: " << tick_count << endl;
+                    //if(tick_count % 1000000 == 0)
+                    //   cout << "ticks so far: " << tick_count << endl;
                     update_pending_processors();
                     const int size = _processors.size();
                     for(register int i = 0; i < size; ++i)

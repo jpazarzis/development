@@ -14,8 +14,10 @@
 
 #include <string>
 
-std::string sformat(int value);
-std::string sformat(double value);
-std::string sformat(const std::string& strg);
+
+std::string sformat(long value, const std::string& format = "%10d");
+std::string sformat(int value, const std::string& format = "%10d");;
+std::string sformat(double value, const std::string& format = "%10.4d");
+std::string sformat(const std::string& strg, const std::string& format = "%10s");
 
 #endif // UTILITIES_INCLUDED

@@ -135,15 +135,37 @@ class BuyAtSpecificMinuteModel: public Model
             }
         }
 
+
+        static std::string printing_header()
+        {
+                std::string strg;
+                strg += sformat("id", "%5s");
+                strg += sformat("min.", "%10s");
+                strg += sformat("delta", "%13s");
+                strg += sformat("stoploss", "%13s");
+                strg += sformat("profittake", "%13s");
+                strg += sformat("pnl", "%13s");
+                strg += sformat("#orders", "%10s");
+                strg += sformat("fitness", "%20s");
+                strg += sformat("drawdown", "%20s");
+                strg += sformat("unn", "%20s");
+                return strg;
+        }
+
         virtual std::string to_string() const
         {
-                using namespace std;
-                char buffer[1024];
-                sprintf(buffer, 
-                        "id: %lu min: %d  trigger: %10.6f stop: %10.6f profit: %10.6f pnl %10.2f orders: %10d fitness: %15.3f mdd: %15.3f unf: %15.3f ", 
-                        _id, (int)_minute_to_buy, (double)_triggering_delta, 
-                        (double)_stop_loss, (double)_take_profit, pnl(), orders_count(), get_fitness(), get_max_drawdown() , get_unnormalized_fitness());
-                return buffer;
+                std::string strg;
+                strg += sformat(_id,"%5d"); 
+                strg += sformat((int)_minute_to_buy,"%10d"); 
+                strg += sformat((double)_triggering_delta, "%13.5f"); 
+                strg += sformat((double)_stop_loss, "%13.5f"); 
+                strg += sformat((double)_take_profit, "%13.5f");
+                strg += sformat(pnl(), "%13.5f"); 
+                strg += sformat(orders_count(),"%10d"); 
+                strg += sformat(get_fitness(), "%20.5f"); 
+                strg += sformat(get_max_drawdown() , "%20.5f"); 
+                strg += sformat(get_unnormalized_fitness(), "%20.5f");
+                return strg;
         }
 };
 
