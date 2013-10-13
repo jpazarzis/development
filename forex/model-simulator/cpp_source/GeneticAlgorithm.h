@@ -98,7 +98,7 @@ class GeneticAlgorithm
         void print_all()
         {
 
-            std::cout  << BuyAtSpecificMinuteModel::printing_header()<< endl; 
+            //std::cout  << BuyAtSpecificMinuteModel::printing_header()<< endl; 
             int size = _population.size();
             for(register int i = 0; i < size; ++i)
                std::cout  << _population[i]->to_string() << endl; 

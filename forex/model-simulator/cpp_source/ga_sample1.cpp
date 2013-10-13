@@ -56,8 +56,8 @@ class EquationSolver: public Optimizable
                 double y = _a.get_value() * x * x + _b.get_value() *x ;
                 f.push_back(fabs(y - sd[i].y));
             }
-            Statistics s(f);
-            set_fitness( 1.0 / s.get_mean());
+
+            set_fitness( 1.0 / mean(f));
         }
 };
 
