@@ -91,7 +91,7 @@ class TickEngine
         }   
 
 
-        void run(const std::string& filename, long max_number_of_ticks = -1)
+        void run(const std::string& filename, long max_number_of_ticks = -1, long start_after = 0)
         {
             using namespace std;
             update_pending_processors();
@@ -119,18 +119,20 @@ class TickEngine
                     if(psz[i] == '\n') 
                         psz[i] = '\0';  
                 }
-                for(register int i = 0; i < BUFFER_SIZE; ++i)
+                for(register int i = 0; i < bytes_read; ++i)
                 {
                     parse_tick((char*) &psz[i*LINE_LENGTH], tick);
                     tick_count += 1;
-                    //if(tick_count % 1000000 == 0)
-                    //   cout << "ticks so far: " << tick_count << endl;
-                    update_pending_processors();
-                    const int size = _processors.size();
-                    for(register int i = 0; i < size; ++i)
+                    if(tick_count >=  start_after)  
                     {
-                        _processors[i]->process(tick);
-                      
+                            if(tick_count % 1000000 == 0)
+                               cout << "ticks so far: " << tick_count << endl;
+                            update_pending_processors();
+                            const int size = _processors.size();
+                            for(register int i = 0; i < size; ++i)
+                            {
+                                _processors[i]->process(tick);
+                            }
                     }
                 }
                 CLEAR_BUFFER(psz)

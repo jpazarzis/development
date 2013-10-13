@@ -104,6 +104,15 @@ class BuyAtSpecificMinuteModel: public Model
         }
 
 
+        void set_values(double minute, double delta, double sl, double pt)
+        {
+            _minute_to_buy.read_from_double(minute);
+            _triggering_delta.read_from_double(delta);
+            _stop_loss.read_from_double(sl);
+            _take_profit.read_from_double(pt);
+        }
+
+
         virtual ~BuyAtSpecificMinuteModel()
         {
         }
@@ -136,6 +145,57 @@ class BuyAtSpecificMinuteModel: public Model
         }
 
 
+        std::string get_full_description() const
+        {
+            std::string strg;
+
+            strg += sformat("minute to trade:", "%20s");
+            strg += sformat((int)_minute_to_buy,"%20d"); 
+            strg += "\n";
+
+            strg += sformat("delta:", "%20s");
+            strg += sformat((double)_triggering_delta, "%20.5f"); 
+            strg += "\n";
+
+            strg += sformat("stop loss:", "%20s");
+            strg += sformat((double)_stop_loss, "%20.5f"); 
+            strg += "\n";
+
+            strg += sformat("profit take:", "%20s");
+            strg += sformat((double)_take_profit, "%20.5f"); 
+            strg += "\n";
+
+            strg += sformat("number of orders:", "%20s");
+            strg += sformat(orders_count(),"%20d"); 
+            strg += "\n";
+
+            strg += sformat("final balance:", "%20s");
+            strg += sformat(get_account_balance(), "%20.2f");
+            strg += "\n";
+
+            strg += sformat("final pnl:", "%20s");
+            strg += sformat(get_pnl(), "%20.2f");
+            strg += "\n";
+
+
+            strg += sformat("low:", "%20s");
+            strg += sformat(get_absolute_low(), "%20.2f");
+            strg += "\n";
+
+            strg += sformat("winning trades:", "%20s");
+            strg += sformat(get_winning_trades_count(), "%20d");
+            strg += "\n";
+
+            strg += sformat("losing trades:", "%20s");
+            strg += sformat(get_loosing_trades_count(), "%20d");
+            strg += "\n";
+
+            return strg;
+
+
+        }
+
+
         static std::string printing_header()
         {
                 std::string strg;
@@ -144,11 +204,13 @@ class BuyAtSpecificMinuteModel: public Model
                 strg += sformat("delta", "%13s");
                 strg += sformat("stoploss", "%13s");
                 strg += sformat("profittake", "%13s");
-                strg += sformat("pnl", "%13s");
                 strg += sformat("#orders", "%10s");
                 strg += sformat("fitness", "%20s");
                 strg += sformat("drawdown", "%20s");
-                strg += sformat("unn", "%20s");
+                strg += sformat("balance", "%20s");
+                strg += sformat("abs_low", "%20s");
+                strg += sformat("win_count", "%20s");
+                strg += sformat("losse_count", "%20s");
                 return strg;
         }
 
@@ -160,11 +222,13 @@ class BuyAtSpecificMinuteModel: public Model
                 strg += sformat((double)_triggering_delta, "%13.5f"); 
                 strg += sformat((double)_stop_loss, "%13.5f"); 
                 strg += sformat((double)_take_profit, "%13.5f");
-                strg += sformat(pnl(), "%13.5f"); 
                 strg += sformat(orders_count(),"%10d"); 
                 strg += sformat(get_fitness(), "%20.5f"); 
                 strg += sformat(get_max_drawdown() , "%20.5f"); 
-                strg += sformat(get_unnormalized_fitness(), "%20.5f");
+                strg += sformat(get_account_balance(), "%20.5f");
+                strg += sformat(get_absolute_low(), "%20.5f");
+                strg += sformat(get_winning_trades_count(), "%20d");
+                strg += sformat(get_loosing_trades_count(), "%20d");
                 return strg;
         }
 };

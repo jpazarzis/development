@@ -17,10 +17,10 @@ class FitnessCalculators
 {   
     public:
 
-        static double calc_fitness( double pnl, 
+        static double calc_fitness( double account_balance, 
                                     const std::vector<double>& account_balance_curve)
         {
-            return pnl / (max_drawdown(account_balance_curve) + 1.0);
+            return account_balance / (max_drawdown(account_balance_curve) + 1.0);
         }
 };
 

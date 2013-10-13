@@ -126,6 +126,12 @@ void Order::process(const Tick& tick)
         //either the stop loss or the take profit
         
         const double current_price = tick.ask;
+
+        if(current_price == 0.0)
+        {
+            std::cout << "Whats going on ? " <<   tick.day << " " << tick.month << " " << tick. year << " " << tick.hour <<" " << tick.minute << " " << tick. second << endl;
+        }
+
         const double delta = fabs((_sell_price -  current_price)* 10000);
         if(current_price > _sell_price && delta >= _stop_loss)
         {
@@ -176,6 +182,12 @@ double Order::get_pnl() const
 {
     if( _order_status == CLOSED)
     {
+        double pnl = (_sell_price - _buy_price) * 100000.0;
+
+        if(pnl > 10000)
+        {
+            std::cout << "Danger: " <<  _sell_price << " " << _buy_price << std::endl;
+        }
         return (_sell_price - _buy_price) * 100000.0;
     }
     else

@@ -13,11 +13,16 @@
 #define UTILITIES_INCLUDED
 
 #include <string>
+#include <vector>
 
 
 std::string sformat(long value, const std::string& format = "%10d");
 std::string sformat(int value, const std::string& format = "%10d");;
 std::string sformat(double value, const std::string& format = "%10.4d");
 std::string sformat(const std::string& strg, const std::string& format = "%10s");
+std::string timestamp();
+void save_curve( std::vector<double> account_balance_curve, const std::string& filename);
+
+
 
 #endif // UTILITIES_INCLUDED

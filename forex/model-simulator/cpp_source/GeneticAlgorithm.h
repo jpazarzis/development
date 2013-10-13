@@ -21,6 +21,7 @@ using namespace std;
 
 bool compare_optimizable(const Optimizable* lph, const Optimizable* rph) 
 { 
+    assert(lph != rph);
     return lph->get_fitness() > rph->get_fitness() ; 
 }
 
@@ -67,15 +68,17 @@ class GeneticAlgorithm
                 }
                 else
                 {
+                    std::cout << "rolling back here.... " << endl;
                     roll_back_to_previous_generation();
                     rolled_back = true;
                 }
             }
             store_current_generation();
             sort();
-            print_all();
+            
             if(!rolled_back) 
             {
+                 print_all();
                 log_best_chromosome();
                 _last_productive_generation = _generation_index;
             }    
