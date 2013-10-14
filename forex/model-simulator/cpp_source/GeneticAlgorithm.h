@@ -1,14 +1,28 @@
-
 // GeneticAlgorithm.h
 //
 // Author        : John Pazarzis
 // Creation date : Wed 09 Oct 2013 02:58:31 PM EDT
 //
 // Summary
-//      Summary goes here
+//
+//     Implements a Genetic Algorithm.  Constructing a GeneticAlgorithm object
+//     we need to provide the class that will be used as a place holder for the
+//     parameters to optimize and the size of the population. This class should
+//     derive from Optimizable which means that it will have a list of Cloneable
+//     fields. The purpose of the GeneticAlgorithm class is to take these fields
+//     and based in their fitnesses to create the next generation which will
+//     continue until a solution is found...
 //
 // Notes
+//     - For the algorithm to work the provided fitness has always to be a
+//     positive value otherwise the roulete selection will fail. In other words
+//     we always need to maximize fitness, so when you have a problem requiring
+//     minimazation you need to workout a fitness algorithm reversing its
+//     effect.
 //
+//     - The previous generation is kept in memory in a form of binary string -
+//     corresponding fitness, so each time a cloning results to a population
+//     with lesses fitness we roll back to the previous cloning again.
 
 #ifndef GENETICALGORITHM_INCLUDED
 #define GENETICALGORITHM_INCLUDED
@@ -19,12 +33,16 @@
 
 using namespace std;
 
+
+// Compares two optimable objects using their fitness
 bool compare_optimizable(const Optimizable* lph, const Optimizable* rph) 
 { 
     assert(lph != rph);
     return lph->get_fitness() > rph->get_fitness() ; 
 }
 
+// GeneticAlgorithm is defined as a template whos type needs to derive from the
+// Optimazable class
 template <class T>
 class GeneticAlgorithm
 {
@@ -32,12 +50,19 @@ class GeneticAlgorithm
 
         typedef T* T_PTR;
     
+        // In the constructor we need to provide the size of the population
+        // which is constant form the whole life span of the class. The provided
+        // Optimazable class needs to have a public constructor as this class
+        // will construct a vector of pointers to it
         GeneticAlgorithm(int size) : _generation_index(0), _last_productive_generation(0)
         {
             for(register int i = 0; i < size; ++i)
                 _population.push_back(new T());
         }
 
+        // The destructor is NOT VIRTUAL, so please do NOT DERIVE from this
+        // class. A memory clean-up is performed here by deleting the objects
+        // that were allocated in the constructor
         ~GeneticAlgorithm()
         {
             int size = _population.size();
@@ -45,16 +70,22 @@ class GeneticAlgorithm
                 delete _population[i];
         }
 
+        // overides the [] operator providing an array-like behavior to the
+        // class returning the contained chromosomes by index
         T_PTR operator[](int index)
         {
             return _population[index];
         }
 
+        // returns the size of the population
         int size() const
         {
             return _population.size();
         }
 
+        // the most interesting method. Based in the fitness that was provided
+        // by the client code it is using roulete selection to create the new
+        // generation who's fitness will next be calculated by the client
         bool evolve(bool print_best_chromosomes = false)
         {
             print_header_if_needed();
