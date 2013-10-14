@@ -55,7 +55,7 @@ class GeneticAlgorithm
             return _population.size();
         }
 
-        bool evolve()
+        bool evolve(bool print_best_chromosomes = false)
         {
             print_header_if_needed();
             ++_generation_index;
@@ -68,7 +68,6 @@ class GeneticAlgorithm
                 }
                 else
                 {
-                    std::cout << "rolling back here.... " << endl;
                     roll_back_to_previous_generation();
                     rolled_back = true;
                 }
@@ -76,9 +75,10 @@ class GeneticAlgorithm
             store_current_generation();
             sort();
             
-            if(!rolled_back) 
+            if(!rolled_back)  
             {
-                 print_all();
+                if(print_best_chromosomes)
+                    print_all();
                 log_best_chromosome();
                 _last_productive_generation = _generation_index;
             }    
@@ -155,8 +155,10 @@ class GeneticAlgorithm
 
         void log_best_chromosome()
         {
-            LOG << sformat(_generation_index) << "\t" << sformat(_previous_mean) << "\t" 
-                    << sformat(_population[0] ->get_fitness()) << "\t" << _population[0] ->values_to_string()<< EOL;
+            LOG << sformat(_generation_index) << "\t" 
+                << sformat(_previous_mean) << "\t" 
+                << sformat(_population[0]->get_fitness()) << "\t" 
+                << _population[0]->values_to_string()<< EOL;
         }
 
         void verify_fitness()

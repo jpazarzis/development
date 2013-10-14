@@ -193,7 +193,8 @@ class Model : virtual public Object, virtual public Identifiable, public TickPro
                     }
                     else
                     {
-                        set_fitness((_account_balance*1.0) / exp(_max_draw_down) );
+                        //set_fitness((_account_balance*1.0) / exp(_max_draw_down) );
+                        set_fitness((_account_balance*1.0) / _max_draw_down);
                     }
 
                     

@@ -21,7 +21,7 @@ void backtest_models(GeneticAlgorithm<BuyAtSpecificMinuteModel>& ga)
     TickEngine te;
     for (int i = 0; i< ga.size(); ++i)
         ga[i]->start_listening(&te);
-    te.run("../../historical-ticks/EUR_USD.csv", 1000000);
+    te.run("../../historical-ticks/EUR_USD.csv", 3000000);
     for (int i = 0; i < ga.size(); ++i)
     {
         ga[i]->calc_fitness();
@@ -78,12 +78,15 @@ void backtest()
 */
 
 //  35      7.15000     14.37000     40.44000 
+//   31     24.20000     14.02000      5.55000    
+//   37     14.92000      4.41000     60.94000
 
     BuyAtSpecificMinuteModel model;
-    model.set_values(  35      ,7.15000     ,14.37000     ,40.44000 );
+    model.set_values(37,14.92000,4.41000,60.94000);
     TickEngine te;
     model.start_listening(&te);
-    te.run("../../historical-ticks/EUR_USD.csv",40000000 ,10000000);
+    //te.run("../../historical-ticks/EUR_USD.csv",40000000, 10000000);
+    te.run("../../historical-ticks/EUR_USD.csv",3000000);
     model.calc_fitness(true);
     cout << model.to_string() << endl << endl;
 

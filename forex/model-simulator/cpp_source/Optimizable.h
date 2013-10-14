@@ -64,11 +64,11 @@ class Optimizable : virtual public Object
             std::string s;
             for(int i = 0; i < _fields.size(); ++i)
             {
-                s += sformat(_fields[i]->get_value());
+                s += sformat((double)_fields[i]->get_value() , "%10.3f");
                 if(i <_fields.size() - 1)
                     s+= "\t";
             }
-            return s;
+            return s ;
         }
 
         // standard override of the Object method
