@@ -21,7 +21,7 @@ void backtest_models(GeneticAlgorithm<BuyAtSpecificMinuteModel>& ga)
     TickEngine te;
     for (int i = 0; i< ga.size(); ++i)
         ga[i]->start_listening(&te);
-    te.run("../../historical-ticks/EUR_USD.csv", 3000000);
+    te.run("../../historical-ticks/EUR_USD.csv", 1000000);
     for (int i = 0; i < ga.size(); ++i)
     {
         ga[i]->calc_fitness();
@@ -34,8 +34,8 @@ int main()
 { 
     cout << timestamp() << endl;
     srand ( time(NULL) );
-    backtest();
-    return 0;
+    //backtest();
+    //return 0;
 
     try
     {
@@ -48,6 +48,9 @@ int main()
                 backtest_models(ga);
                 if (ga.evolve())
                     break;
+                cout << "Winner so far" << endl;
+                cout << ga[0]->get_full_description() << endl;
+
             }
 
             cout << "done" << endl;

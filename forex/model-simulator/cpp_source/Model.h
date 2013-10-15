@@ -15,6 +15,8 @@
 #include "Optimizable.h"
 #include "FitnessCalculators.h"
 #include "Utilities.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 #define ACCOUNT_STARTING_POINT 100000
 #define MIN_NUMBER_OF_ORDERS_TO_USE_FOR_OPTIMAZATION 20
@@ -55,14 +57,7 @@ class Model : virtual public Object, virtual public Identifiable, public TickPro
 
         void start_listening(TickEngine* p_tick_engine)
         {
-            _number_of_orders = 0;
-            _max_draw_down = 0;
-            _account_balance = 0;
-            _absolute_low = 0;
-            _winning_trades = 0;
-            _lossing_trades = 0;
-            _consequtive_wins = 0;
-            _consequtive_losses = 0;
+            initialize();
             set_fitness(0);
             unmark_stop_feed();
             _p_tick_engine = p_tick_engine;
@@ -118,33 +113,23 @@ class Model : virtual public Object, virtual public Identifiable, public TickPro
             _number_of_orders = _orders.size();
             if(_number_of_orders <= MIN_NUMBER_OF_ORDERS_TO_USE_FOR_OPTIMAZATION)
             {
-                _number_of_orders = 0;
-                _max_draw_down = 0;
-                _account_balance = 0;
-                _absolute_low = 0;
-                _winning_trades = 0;
-                _lossing_trades = 0;
-                _consequtive_wins = 0;
-                _consequtive_losses = 0;
-                set_fitness(0);
+               initialize(); 
+               set_fitness(0);
                 _orders.clear();
             }
             else
             {
                     _account_balance = ACCOUNT_STARTING_POINT;
-                    _absolute_low = _account_balance;
-
+                    
                     _consequtive_wins = 0;
                     _consequtive_losses = 0;
-                    double previous_trade_pnl = 0.0;
-
                     std::vector<double> account_balance_curve;
+
+                    account_balance_curve.push_back(_account_balance);
+
                     for(int i = 0; i < _number_of_orders; ++i)
                     {
-
                         const double trade_pnl = _orders[i]->get_pnl();
-
-
                         if(trade_pnl > 0)
                             ++_winning_trades;
                         else if(trade_pnl < 0)
@@ -152,58 +137,71 @@ class Model : virtual public Object, virtual public Identifiable, public TickPro
 
                         _account_balance += trade_pnl;
 
-                        if(_account_balance < _absolute_low)
-                            _absolute_low = _account_balance;
-
                         if(_account_balance <= 0)
-                        {
-                            std::cout<<"got broke"<<std::endl;
-                            _number_of_orders = 0;      
-                            _max_draw_down = 0;
-                            _account_balance = 0;
-                            _winning_trades = 0;
-                            _lossing_trades = 0;
-                            _consequtive_wins = 0;
-                            _consequtive_losses = 0;
+                        {   
+                            // sorry, we have gotten broke
+                            initialize();
+                            _absolute_low = 0;
                             set_fitness(0);
                             _orders.clear();
                             return;
                         }
+
                         account_balance_curve.push_back(_account_balance);
                     }
+
+
                     _max_draw_down = max_drawdown(account_balance_curve);
+                    _absolute_low = *std::min_element(account_balance_curve.begin(), account_balance_curve.end()); 
+
                     if(save_account_balance_curve)
                     {
-                        save_curve(account_balance_curve, "SellAtSpecificMin.csv");
+                        std::string filename;
+                        char buffer [33];
+                        sprintf(buffer,"%d",(int)_id);
+                        filename = "SellAtSpecificMin" + std::string(buffer) + ".csv";
+
+                        save_curve(account_balance_curve, filename);
                     }
+
                     assert(_account_balance > 0);
                     assert(_max_draw_down >= 0);
-                    /////////  WARNING!! Please verify this calculation...
-                    if(_max_draw_down <= 0.0001)
+
+                    // In case that the max drawdown is zero just ignore the chromosome
+                    // this is a case that will happen when there is not a single loosing
+                    // trade something that needs a very small number of trades
+                    // Note that a very low _max_draw_down will result to a high
+                    // fitness creating a bias for models creating very few
+                    // orders (since they are more possible to create a very
+                    // small amount of lossing trades..
+                    if(_max_draw_down <= 0.001)
                     {
-                            _number_of_orders = 0;      
-                            _max_draw_down = 0;
-                            _account_balance = 0;
-                            _absolute_low = 0;
-                            _winning_trades = 0;
-                            _lossing_trades = 0;
-                            _consequtive_wins = 0;
-                            _consequtive_losses = 0;
+                            initialize();
                             set_fitness(0);
                     }
                     else
                     {
-                        //set_fitness((_account_balance*1.0) / exp(_max_draw_down) );
-                        set_fitness((_account_balance*1.0) / _max_draw_down);
+                        set_fitness((_account_balance*1.0) / exp(_max_draw_down) );
+                        //set_fitness((_account_balance*1.0) / (_max_draw_down *100.0) ) ;
                     }
-
-                    
             }
             _orders.clear();
         }
 
     protected:
         virtual void initialize_optimizable_fields() = 0;
+
+        void initialize()
+        {
+            _number_of_orders = 0;
+            _max_draw_down = 0;
+            _account_balance = 0;
+            _absolute_low = 0;
+            _winning_trades = 0;
+            _lossing_trades = 0;
+            _consequtive_wins = 0;
+            _consequtive_losses = 0;
+        }
 
     private:
         std::vector<ORDER_PTR> _orders;
@@ -214,7 +212,6 @@ class Model : virtual public Object, virtual public Identifiable, public TickPro
         double _absolute_low;
         int _winning_trades;
         int _lossing_trades;
-    
         int _consequtive_wins;
         int _consequtive_losses;
 

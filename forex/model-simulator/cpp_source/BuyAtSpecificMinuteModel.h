@@ -149,6 +149,11 @@ class BuyAtSpecificMinuteModel: public Model
         {
             std::string strg;
 
+            strg += sformat("id:", "%20s");
+            strg += sformat((int)_id,"%20d"); 
+            strg += "\n";
+
+
             strg += sformat("minute to trade:", "%20s");
             strg += sformat((int)_minute_to_buy,"%20d"); 
             strg += "\n";
@@ -189,6 +194,11 @@ class BuyAtSpecificMinuteModel: public Model
             strg += sformat("losing trades:", "%20s");
             strg += sformat(get_loosing_trades_count(), "%20d");
             strg += "\n";
+
+            strg += sformat("max drawdown:", "%20s");
+            strg += sformat(get_max_drawdown()*100.0, "%20.2f");
+            strg += "\n";
+
 
             return strg;
 
