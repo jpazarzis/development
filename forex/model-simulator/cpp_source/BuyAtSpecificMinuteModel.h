@@ -60,10 +60,10 @@
         SELL AT: 1.3123
         BUY  AT: 1.3135
         -----------------
-        LOSS   : 0.0012
+        LOSS   : -0.0012
 
-        PNL = -1 * LOSS * STANDARD_CONTRACT
-            = -1 * 0.0012 * 100,000
+        PNL =  LOSS * STANDARD_CONTRACT
+            =  -0.0012 * 100,000
             = USD -120
 ****************************************************************************/ 
 
@@ -93,9 +93,9 @@ class BuyAtSpecificMinuteModel: public Model
     public:
         BuyAtSpecificMinuteModel():
                     _minute_to_buy(20,60,1),
-                    _triggering_delta(1,100,2),
-                    _stop_loss(4,100,2),
-                    _take_profit(5,100,2),  
+                    _triggering_delta(2,12,2),
+                    _stop_loss(8,100,2),
+                    _take_profit(10,100,2),  
                     _current_hour(-1),
                     _open_price(0.0),
                     _triggered_for_current_hour(false)
@@ -137,7 +137,7 @@ class BuyAtSpecificMinuteModel: public Model
 
                     if(delta_in_pips >= (double)_triggering_delta)
                     {
-                        add_order(Order::make( SELL, "NONE", (double)_stop_loss, (double)_take_profit, tick.bid));
+                        add_order(Order::make( SELL, "NONE", (double)_stop_loss, (double)_take_profit, tick.bid, tick.timestamp()));
                     }
 
                     _triggered_for_current_hour = true;
@@ -216,6 +216,7 @@ class BuyAtSpecificMinuteModel: public Model
                 strg += sformat("profittake", "%13s");
                 strg += sformat("#orders", "%10s");
                 strg += sformat("fitness", "%20s");
+                strg += sformat("PNL", "%20s");
                 strg += sformat("drawdown", "%20s");
                 strg += sformat("balance", "%20s");
                 strg += sformat("abs_low", "%20s");
@@ -234,6 +235,7 @@ class BuyAtSpecificMinuteModel: public Model
                 strg += sformat((double)_take_profit, "%13.5f");
                 strg += sformat(orders_count(),"%10d"); 
                 strg += sformat(get_fitness(), "%20.5f"); 
+                strg += sformat(get_pnl(), "%20.5f"); 
                 strg += sformat(get_max_drawdown() , "%20.5f"); 
                 strg += sformat(get_account_balance(), "%20.5f");
                 strg += sformat(get_absolute_low(), "%20.5f");

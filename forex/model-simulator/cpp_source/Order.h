@@ -72,7 +72,8 @@ class Order: public TickProcessor, virtual Identifiable
                 const std::string& instrument, 
                 double stop_loss, 
                 double take_profit,
-                double enter_price) ;
+                double enter_price,
+                const std::string& timestamp) ;
 
     public:
 
@@ -82,7 +83,8 @@ class Order: public TickProcessor, virtual Identifiable
                             const std::string& instrument, 
                             double stop_loss, 
                             double take_profit, 
-                            double enter_price);
+                            double enter_price,
+                            const std::string& timestamp);
 
 
         Order(const Order&);

@@ -34,8 +34,8 @@ int main()
 { 
     cout << timestamp() << endl;
     srand ( time(NULL) );
-    //backtest();
-    //return 0;
+    backtest();
+    return 0;
 
     try
     {
@@ -46,7 +46,7 @@ int main()
             {
                 cout << "generation: " << ++i << " " << cout << timestamp() <<endl;
                 backtest_models(ga);
-                if (ga.evolve())
+                if (ga.evolve(true))
                     break;
                 cout << "Winner so far" << endl;
                 cout << ga[0]->get_full_description() << endl;
@@ -85,11 +85,12 @@ void backtest()
 //   37     14.92000      4.41000     60.94000
 
     BuyAtSpecificMinuteModel model;
-    model.set_values(37,14.92000,4.41000,60.94000);
+    model.set_values(40,50.0,14.0,17.0);
     TickEngine te;
     model.start_listening(&te);
     //te.run("../../historical-ticks/EUR_USD.csv",40000000, 10000000);
-    te.run("../../historical-ticks/EUR_USD.csv",3000000);
+    //te.run("../../historical-ticks/EUR_USD.csv",40000000, 24680682);
+    te.run("../../historical-ticks/EUR_USD.csv");
     model.calc_fitness(true);
     cout << model.to_string() << endl << endl;
 

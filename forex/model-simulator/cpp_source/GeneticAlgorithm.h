@@ -30,6 +30,7 @@
 #include "std_include.h"
 #include "Statistics.h"
 #include "Optimizable.h"
+#include "BuyAtSpecificMinuteModel.h"
 
 using namespace std;
 
@@ -105,12 +106,12 @@ class GeneticAlgorithm
             }
             store_current_generation();
             sort();
-            
+            print_all(); 
             if(!rolled_back)  
             {
-                if(print_best_chromosomes)
-                    print_all();
-                log_best_chromosome();
+                //if(print_best_chromosomes)
+                //    print_all();
+                //log_best_chromosome();
                 _last_productive_generation = _generation_index;
             }    
             assign_roulette_probabilities(get_total_fitness());
@@ -128,11 +129,10 @@ class GeneticAlgorithm
 
         void print_all()
         {
-
-            //std::cout  << BuyAtSpecificMinuteModel::printing_header()<< endl; 
+            LOG  << BuyAtSpecificMinuteModel::printing_header()<< EOL; 
             int size = _population.size();
             for(register int i = 0; i < size; ++i)
-               std::cout  << _population[i]->to_string() << endl; 
+               LOG  << _population[i]->to_string() << EOL; 
         }
 
         void create_new_population()

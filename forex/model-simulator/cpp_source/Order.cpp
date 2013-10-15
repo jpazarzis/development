@@ -56,7 +56,8 @@ Order::Order(   OrderType order_type,
                 const std::string& instrument, 
                 double stop_loss, 
                 double take_profit,
-                double enter_price) : 
+                double enter_price,
+                const std::string& timestamp) : 
 
             _order_type(order_type),
             _instrument(instrument),
@@ -74,6 +75,8 @@ Order::Order(   OrderType order_type,
     else if(order_type == SELL)
     {
         _sell_price = enter_price;
+        LOG << timestamp << " SELL " << enter_price << EOL;
+
     }
 }
 
@@ -139,6 +142,7 @@ void Order::process(const Tick& tick)
 
             _buy_price = current_price;
             _order_status = CLOSED;
+            LOG << tick.timestamp() << " BUY " << _buy_price << EOL;
             assert(_buy_price > _sell_price);
         }
         else if(current_price < _sell_price && delta >= _take_profit)
@@ -148,6 +152,7 @@ void Order::process(const Tick& tick)
 
             _buy_price = current_price;
             _order_status = CLOSED;
+            LOG << tick.timestamp() << " BUY " << _buy_price << EOL;
             assert(_buy_price < _sell_price);
         }
     }
@@ -163,9 +168,10 @@ ORDER_PTR Order::make(  OrderType order_type,
                      const std::string& instrument,  
                      double stop_loss, 
                      double take_profit, 
-                     double enter_price)
+                     double enter_price,
+                    const std::string& timestamp)
 {
-        Order* p_order = new Order(order_type,instrument, stop_loss, take_profit, enter_price);
+        Order* p_order = new Order(order_type,instrument, stop_loss, take_profit, enter_price,timestamp);
         _order_pool._pool.push_back(p_order);
         return p_order;
 }

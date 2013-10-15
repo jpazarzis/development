@@ -24,6 +24,18 @@ struct Tick
 {
     int day, month, year, hour, minute, second;
     double bid, ask;
+
+    std::string  timestamp() const
+    {
+        char buffer[1024];
+
+        sprintf(buffer, 
+                " %02d.%02d.%02d %02d:%02d:%02d ", 
+                year+2000, month, day, hour, minute, second);
+
+        return buffer;
+        
+    }
     
     std::string  to_string() const
     {
