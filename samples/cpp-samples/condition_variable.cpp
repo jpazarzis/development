@@ -5,45 +5,38 @@
 #include <condition_variable>
 using namespace std;
 
-deque<int> q;
 mutex mu;
+deque<int> d;
 condition_variable cond;
 
-void function_1() {  
-    int count = 10;
-    while(count>0){
-        unique_lock<mutex> locker(mu);
-        q.push_front(count);
+
+void producer() {
+    unique_lock<mutex> locker(mu, defer_lock); 
+    for(int i = 0; i < 9; ++i) {
+        locker.lock();
+        d.push_front(i);
         locker.unlock();
         cond.notify_one();
-        this_thread::sleep_for(chrono::seconds(1));
-        --count;
     }
-    cout <<"done"<< endl;
 }
 
-void function_2(){
-    int data = 0;
-    while(data !=1)
-    {
-        unique_lock<mutex> locker(mu);
-        cond.wait(locker,[](){return !q.empty();});
-        //cond.wait(locker);
-        data = q.back();
-        q.pop_back();
-        cout << data << endl;
+void consumer() {
+    int v = -1;
+    unique_lock<mutex> locker(mu, defer_lock); 
+    while(v!=8){
+        locker.lock();
+        cond.wait(locker, [](){return !d.empty();});
+        v = d.back();
+        d.pop_back();
+        cout << v << endl;
         locker.unlock();
-        
     }
 }
 
-int main()
-{
-    
-    thread t1(function_1);
-    thread t2(function_2);
-    
+int main(){
+    thread t1(producer);
+    thread t2(consumer);
     t1.join();
     t2.join();
-    return 0;
 }
+
