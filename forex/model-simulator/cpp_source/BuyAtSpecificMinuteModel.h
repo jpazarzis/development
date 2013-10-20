@@ -80,6 +80,8 @@ class BuyAtSpecificMinuteModel: public Model
     int _current_hour;
     double _open_price;
     bool _triggered_for_current_hour;
+    double _high_for_the_hour;
+    double _low_for_the_hour;
 
     protected:
         virtual void initialize_optimizable_fields()
@@ -127,17 +129,29 @@ class BuyAtSpecificMinuteModel: public Model
                 _current_hour = tick.hour;
                 _open_price = tick.bid;
                 _triggered_for_current_hour = false;
+                _high_for_the_hour = -99999;
+                _low_for_the_hour = 99999;
             }
             else
             {
+                    if(tick.bid > _high_for_the_hour)
+                        _high_for_the_hour = tick.bid;
+
+                    if(tick.bid < _low_for_the_hour)
+                        _low_for_the_hour = tick.bid;
+
+
+
                     if(_triggered_for_current_hour || tick.minute != (int)_minute_to_buy)
                         return;
 
-                    const double delta_in_pips = (tick.bid - _open_price) * 10000;
+                    //const double delta_in_pips = (tick.bid - _open_price) * 10000;
+                    const double delta_in_pips = (_high_for_the_hour - tick.bid) * 10000;
 
                     if(delta_in_pips >= (double)_triggering_delta)
                     {
                         add_order(Order::make( SELL, "NONE", (double)_stop_loss, (double)_take_profit, tick.bid, tick.timestamp()));
+                        LOG << tick.timestamp() << " " << tick.bid << " " << tick.ask << EOL;
                     }
 
                     _triggered_for_current_hour = true;

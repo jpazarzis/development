@@ -45,14 +45,11 @@ enum ORDER_RESULT
     WIN, LOSS, REMAINS_OPEN
 };
 
+enum { DEFUALT_TIME_FRAME = 15};
+
 class Order: public TickProcessor, virtual Identifiable
 {
     protected:
-
-        Order(  const std::string& instrument, 
-                double stop_loss, 
-                double take_profit, 
-                double price);
 
         std::string _instrument;
         const double _stop_loss;
@@ -61,6 +58,7 @@ class Order: public TickProcessor, virtual Identifiable
         double _sell_price;
         OrderStatus _order_status;
         OrderType _order_type;
+        const int _timeframe; // How many minutes to keep the order open
 
         static OrderPool _order_pool;
 
@@ -73,7 +71,8 @@ class Order: public TickProcessor, virtual Identifiable
                 double stop_loss, 
                 double take_profit,
                 double enter_price,
-                const std::string& timestamp) ;
+                const std::string& timestamp,
+                int timeframe);
 
     public:
 
@@ -84,7 +83,8 @@ class Order: public TickProcessor, virtual Identifiable
                             double stop_loss, 
                             double take_profit, 
                             double enter_price,
-                            const std::string& timestamp);
+                            const std::string& timestamp,
+                            int timeframe = DEFUALT_TIME_FRAME );
 
 
         Order(const Order&);

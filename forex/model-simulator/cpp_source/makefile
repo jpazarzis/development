@@ -1,7 +1,7 @@
 CXX=g++
 #FLAGS=-g -D DEBUG -DDISABLE_LOGGING
-FLAGS=-g -D DEBUG -std=c++0x -pthread  
-#FLAGS=-Ofast
+#FLAGS=-g -D DEBUG -std=c++0x -pthread  
+FLAGS=-Ofast
 
 model_optimizer:model_optimizer.cpp BuyAtSpecificMinuteModel.h Optimizable.h GeneticAlgorithm.h Statistics.h std_include.h TickEngine.h TickProcessor.h Object.h Order.o Identifiable.o CloneableDouble.o  Logger.o Utilities.o Model.h FitnessCalculators.h
 	$(CXX) $(FLAGS) -o model_optimizer model_optimizer.cpp CloneableDouble.o Logger.o Order.o Identifiable.o Utilities.o
