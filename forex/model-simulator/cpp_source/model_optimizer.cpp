@@ -10,6 +10,7 @@
 #include "Identifiable.h"
 #include <fstream>
 #include "GeneticAlgorithm.h"
+#include "xmldocument.h"
 
 using namespace std;
 
@@ -21,8 +22,8 @@ void backtest_models(GeneticAlgorithm<BuyAtSpecificMinuteModel>& ga)
     TickEngine te;
     for (int i = 0; i< ga.size(); ++i)
         ga[i]->start_listening(&te);
-    //te.run("../../historical-ticks/EUR_USD.csv", 23146308);
-    te.run("../../historical-ticks/ticks_from_metatrader.csv");
+    te.run("../../historical-ticks/EUR_USD.csv", 3000000);
+    //te.run("../../historical-ticks/ticks_from_metatrader.csv");
     for (int i = 0; i < ga.size(); ++i)
     {
         ga[i]->calc_fitness();
@@ -32,7 +33,18 @@ void backtest_models(GeneticAlgorithm<BuyAtSpecificMinuteModel>& ga)
 }
 
 int main()
-{ 
+{
+
+    /*
+    XmlDocument configuration("optimizer_config.xml");
+    auto optimizer = configuration["optimizer"];
+    auto function = optimizer->operator[]("function");
+    cout << "function  : " << function->value() << endl;
+    //cout << "tick file : " << configuration["optimizer"]["tick_file"].value();
+    return -1;
+    */
+
+
     cout << timestamp() << endl;
     srand ( time(NULL) );
     backtest();
@@ -40,7 +52,7 @@ int main()
 
     try
     {
-            GeneticAlgorithm<BuyAtSpecificMinuteModel> ga(50);
+            GeneticAlgorithm<BuyAtSpecificMinuteModel> ga(200);
 
             int i = 0;
             for(;;)
@@ -86,7 +98,13 @@ void backtest()
 //   37     14.92000      4.41000     60.94000
 
     BuyAtSpecificMinuteModel model;
-    model.set_values(40,15.0,14.0,22.0);
+    model.set_values(50,9.9,62.1,16.3);
+    //model.set_values(38.0,10.5,25.21,11.68);
+    //model.set_values(41,11.33,66.19,12.71);
+   // model.set_values(47, 11.01, 68.75, 15.49);
+    //model.set_values(49, 9.48, 66.65, 10.6);
+
+    
     TickEngine te;
     model.start_listening(&te);
     //te.run("../../historical-ticks/EUR_USD.csv",40000000, 10000000);
@@ -112,7 +130,10 @@ void backtest()
     //te.run("../../historical-ticks/ticks_from_metatrader.csv");
     //
    // te.run("../../historical-ticks/EUR_USD.csv", 400000000, 23146308);
-    te.run("../../historical-ticks/ticks_from_metatrader.csv");
+   //     te.run("../../historical-ticks/ticks_from_metatrader.csv", 10000000, 5000000);
+//    te.run("../../historical-ticks/EUR_USD.csv", 10000000, 5000000);
+//
+    te.run("../../historical-ticks/EUR_USD.csv", 12000000,3000000);
     
 
 
