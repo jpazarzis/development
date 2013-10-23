@@ -35,14 +35,17 @@ void backtest_models(GeneticAlgorithm<BuyAtSpecificMinuteModel>& ga)
 int main()
 {
 
-    /*
-    XmlDocument configuration("optimizer_config.xml");
-    auto optimizer = configuration["optimizer"];
-    auto function = optimizer->operator[]("function");
-    cout << "function  : " << function->value() << endl;
-    //cout << "tick file : " << configuration["optimizer"]["tick_file"].value();
-    return -1;
-    */
+     /************************************************
+     XmlDocument configuration("optimizer_config.xml");
+     auto& config = configuration["optimizer"];
+     auto& function = config["function"];
+     auto& filename = config["tick_file"];
+     string func = function.value();
+     string f = filename.value();
+     cout << func << endl;
+     cout << f<< endl;
+     return -1;
+     */
 
 
     cout << timestamp() << endl;

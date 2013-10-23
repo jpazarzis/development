@@ -63,6 +63,7 @@ int main()
 class XmlNode;
 
 using XML_NODE_PTR = XmlNode*;
+using XML_NODE_REF = XmlNode&;
 using XML_NODE_PTR_VECTOR = std::vector<XML_NODE_PTR>;
 using XML_NODE_PTR_ITER = std::vector<XML_NODE_PTR>::iterator;
 using XML_NODE_PTR_MAP = std::map<std::string, XML_NODE_PTR>;
@@ -74,7 +75,7 @@ public:
     virtual XML_NODE_PTR operator[](int index) = 0;
 
     // use the [name] operator to access a child knowing its name
-    virtual XML_NODE_PTR operator[](const std::string& name) = 0;
+    virtual XML_NODE_REF operator[](const std::string& name) = 0;
 
     // returns the name of the node
     virtual std::string name() const = 0; 
@@ -149,9 +150,11 @@ class XmlChildNode: public XmlNode
             return index >= 0 && index < _children.size() ? _children[index] : NULL;
         }
 
-        virtual XML_NODE_PTR operator[](const std::string& key) 
+        virtual XML_NODE_REF operator[](const std::string& key) 
         {
-            return _map.find( key ) != _map.end() ? _map[key] : NULL;
+            if(_map.find( key ) != _map.end())
+                return *_map[key];
+            throw "key does not exist";
         }
 
         virtual std::string name() const { return _name; }
@@ -226,10 +229,13 @@ class XmlDocument : public XmlNode
             return NULL != _p_root ? _p_root->operator[](index) : NULL;
         }
 
-        virtual XML_NODE_PTR operator[](const std::string& key) 
+        virtual XML_NODE_REF operator[](const std::string& key) 
         {
-            return NULL != _p_root ? _p_root->operator[](key) : NULL;
+            if(NULL != _p_root)
+                return _p_root->operator[](key);
+            throw "document not ready";
         }
+
 
         virtual std::string name() const 
         {
