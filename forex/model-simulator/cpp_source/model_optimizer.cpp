@@ -5,19 +5,21 @@
 #include <iostream>
 #include <time.h>
 #include "Order.h"
-#include "BuyAtSpecificMinuteModel.h"
+#include "SellBasedInDelta.h"
 #include "Logger.h"
 #include "Identifiable.h"
 #include <fstream>
 #include "GeneticAlgorithm.h"
 #include "xmldocument.h"
 
+
+
 using namespace std;
 
 void forward_test(XmlNode& config);
 
 
-void optimize_models(GeneticAlgorithm<BuyAtSpecificMinuteModel>& ga, 
+void optimize_models(GeneticAlgorithm<SellBasedInDelta>& ga, 
                     const std::string& tick_file,
                     int number_of_ticks)
 {
@@ -42,7 +44,7 @@ void run_optimizer(XmlNode& config)
             const int colony_size = config["colony_size"].value_to_int();
             const int number_of_ticks = config["number_of_ticks"].value_to_int();
 
-            GeneticAlgorithm<BuyAtSpecificMinuteModel> ga(colony_size);
+            GeneticAlgorithm<SellBasedInDelta> ga(colony_size);
             int i = 0;
             for(;;)
             {
@@ -117,7 +119,7 @@ void forward_test(XmlNode& config)
     double stop_loss = config["stop_loss"].value_to_double();
     double take_profit = config["take_profit"].value_to_double();
 
-    BuyAtSpecificMinuteModel model;
+    SellBasedInDelta model;
     model.set_values(minute_to_trade,delta,stop_loss,take_profit);
     //model.set_values(38.0,10.5,25.21,11.68);
     //model.set_values(41,11.33,66.19,12.71);
@@ -133,13 +135,13 @@ void forward_test(XmlNode& config)
 }
 
 /*
-void dump_generation(int generation, BuyAtSpecificMinuteModel* models)
+void dump_generation(int generation, SellBasedInDelta* models)
 {
     char filename[1024];
     sprintf(filename, "generation_%i", generation);
     std::ofstream  f;
     f.open (filename);
-    f << BuyAtSpecificMinuteModel::csv_header() << endl;
+    f << SellBasedInDelta::csv_header() << endl;
     for (int i = 0; i <NUMBER_OF_MODELS; ++i)
     {
         f << models[i].to_csv() << endl;
