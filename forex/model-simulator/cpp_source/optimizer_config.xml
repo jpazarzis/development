@@ -1,0 +1,8 @@
+<configuration>
+    <optimizer>
+        <function>backtest</function>
+        <tick_file>/home/john/projects/forex/historical-ticks/EUR_USD.csv</tick_file>
+        <max-number-of-ticks>12000000</max-number-of-ticks>
+        <ignore-ticks-up-to>3000000</ignore-ticks-up-to>
+    </optimizer>
+</configuration>
