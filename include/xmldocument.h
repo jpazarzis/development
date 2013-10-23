@@ -41,6 +41,17 @@ int main()
     return 0;
 }
 *********************************************************************************/
+//
+// Note
+//
+// To compile with g++ 4.7 you need the following flags that can be added in the
+// make file:
+//
+// FLAGS=-g -D DEBUG -std=c++0x -pthread  
+// INCLUDE=-I$(DEVELOPMENT_ROOT)/include
+// VPATH = $(DEVELOPMENT_ROOT)/include
+
+
 
 #ifndef XML_PARSER_INCLUDED
 #define XML_PARSER_INCLUDED
@@ -59,15 +70,34 @@ using XML_NODE_PTR_MAP = std::map<std::string, XML_NODE_PTR>;
 class XmlNode
 {
 public:
+    // use the [i] operator to access a child by its index
     virtual XML_NODE_PTR operator[](int index) = 0;
-    virtual XML_NODE_PTR operator[](const std::string& name) = 0; 
+
+    // use the [name] operator to access a child knowing its name
+    virtual XML_NODE_PTR operator[](const std::string& name) = 0;
+
+    // returns the name of the node
     virtual std::string name() const = 0; 
+
+    // returns the value of the node
     virtual std::string value() const = 0; 
+
+    // recursively constructs and returns a string representation of the node
     virtual std::string to_string() const = 0;
+
+    // specifies the depth of the indentation to use for the string conversion 
     virtual void set_identation(int identation) = 0;
+
+    // get the depth of the indentation to use for the string conversion
     virtual int get_identation() const = 0;
+
+    // returns an iterator to the first child of the node 
     virtual XML_NODE_PTR_ITER begin() = 0;
+
+    // returns an end iterator of the children of the node
     virtual XML_NODE_PTR_ITER end() = 0;
+
+    // returns the total number of the children of the node
     virtual int count_children() const = 0;
 };
 
