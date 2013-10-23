@@ -85,6 +85,10 @@ public:
     // returns the value of the node
     virtual std::string value() const = 0; 
 
+    virtual double value_to_double() const = 0; 
+
+    virtual int value_to_int() const = 0; 
+
     // recursively constructs and returns a string representation of the node
     virtual std::string to_string() const = 0;
 
@@ -167,6 +171,10 @@ class XmlChildNode: public XmlNode
         virtual std::string name() const { return _name; }
 
         virtual std::string value() const { return _value; }
+
+        virtual double value_to_double() const { return std::stod(_value); }
+
+        virtual int value_to_int() const { return std::stoi(_value); }
 
         virtual std::string to_string() const 
         { 
@@ -259,6 +267,18 @@ class XmlDocument : public XmlNode
         {
             return NULL != _p_root ? _p_root->value() : "";
         }
+
+
+        virtual double value_to_double() const 
+        { 
+            return NULL != _p_root ? _p_root->value_to_double() : 0.0;
+        }
+
+        virtual int value_to_int() const 
+        { 
+            return NULL != _p_root ? _p_root->value_to_int() : 0.0;
+        }
+
 
         virtual std::string to_string() const 
         {
