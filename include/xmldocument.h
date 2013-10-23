@@ -77,6 +77,8 @@ public:
     // use the [name] operator to access a child knowing its name
     virtual XML_NODE_REF operator[](const std::string& name) = 0;
 
+    virtual bool contains(const std::string& key) const = 0;
+
     // returns the name of the node
     virtual std::string name() const = 0; 
 
@@ -150,9 +152,14 @@ class XmlChildNode: public XmlNode
             return index >= 0 && index < _children.size() ? _children[index] : NULL;
         }
 
+        virtual bool contains(const std::string& key) const 
+        {
+            return _map.find( key ) != _map.end();
+        }
+
         virtual XML_NODE_REF operator[](const std::string& key) 
         {
-            if(_map.find( key ) != _map.end())
+            if(contains(key))
                 return *_map[key];
             throw "key does not exist";
         }
@@ -236,6 +243,12 @@ class XmlDocument : public XmlNode
             throw "document not ready";
         }
 
+        virtual bool contains(const std::string& key) const 
+        {
+            if(NULL != _p_root)
+                return _p_root->contains(key);
+            throw "document not ready";
+        }
 
         virtual std::string name() const 
         {
