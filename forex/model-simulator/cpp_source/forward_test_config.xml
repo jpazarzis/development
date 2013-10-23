@@ -1,5 +1,5 @@
 <configuration>
-    <optimizer>
+    <forward_test>
         <function>forward_test</function>
         <tick_file>/home/john/projects/forex/historical-ticks/EUR_USD.csv</tick_file>
         <max_number_of_ticks>12000000</max_number_of_ticks>
@@ -8,5 +8,5 @@
         <delta>9.9</delta>
         <stop_loss>62.1</stop_loss>
         <take_profit>16.3</take_profit>
-    </optimizer>
+    </forward_test>
 </configuration>

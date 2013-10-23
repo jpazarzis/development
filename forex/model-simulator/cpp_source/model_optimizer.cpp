@@ -17,13 +17,14 @@ using namespace std;
 void forward_test(XmlNode& config);
 
 
-void backtest_models(GeneticAlgorithm<BuyAtSpecificMinuteModel>& ga)
+void optimize_models(GeneticAlgorithm<BuyAtSpecificMinuteModel>& ga, 
+                    const std::string& tick_file,
+                    int number_of_ticks)
 {
     TickEngine te;
     for (int i = 0; i< ga.size(); ++i)
         ga[i]->start_listening(&te);
-    te.run("../../historical-ticks/EUR_USD.csv", 3000000);
-    //te.run("../../historical-ticks/ticks_from_metatrader.csv");
+    te.run(tick_file, number_of_ticks);
     for (int i = 0; i < ga.size(); ++i)
     {
         ga[i]->calc_fitness();
@@ -32,43 +33,61 @@ void backtest_models(GeneticAlgorithm<BuyAtSpecificMinuteModel>& ga)
     Order::clear_order_pool();
 }
 
-int main()
+
+void run_optimizer(XmlNode& config)
 {
-     cout << timestamp() << endl;
-     srand ( time(NULL) );
-
-     XmlDocument configuration("optimizer_config.xml");
-     auto& config = configuration["optimizer"];
-     std::string function = config["function"].value();
-
-     if(function == "forward_test")
-     {
-           forward_test(config);
-           return 0;
-     }
-
     try
     {
-            GeneticAlgorithm<BuyAtSpecificMinuteModel> ga(200);
+            const std::string tick_file =  config["tick_file"].value();
+            const int colony_size = config["colony_size"].value_to_int();
+            const int number_of_ticks = config["number_of_ticks"].value_to_int();
 
+            GeneticAlgorithm<BuyAtSpecificMinuteModel> ga(colony_size);
             int i = 0;
             for(;;)
             {
                 cout << "generation: " << ++i << " " << cout << timestamp() <<endl;
-                backtest_models(ga);
+                optimize_models(ga,tick_file,number_of_ticks);
                 if (ga.evolve(true))
                     break;
                 cout << "Winner so far" << endl;
                 cout << ga[0]->get_full_description() << endl;
-
             }
-
             cout << "done" << endl;
     }
     catch (const char* psz)
     {
         std::cout << psz << std::endl;
     }
+}
+
+int main(int argc, char *argv[])
+{
+
+    if( argc < 2)
+    {
+        cout << "correct use: " << argv[0] << "[configuration.xml]" << endl;
+        return -1;
+    }
+    
+     cout << timestamp() << endl;
+     srand ( time(NULL) );
+
+     XmlDocument configuration(argv[1]);
+
+     if(configuration.contains("forward_test"))
+     {
+         forward_test(configuration["forward_test"]);
+     }
+     else  if(configuration.contains("optimize"))
+     {
+         run_optimizer(configuration["optimize"]);
+     }
+     else
+     {
+        cout << "nothing to do.." << endl;
+     }
+
     cout << timestamp() << endl;
 
     return 0;
