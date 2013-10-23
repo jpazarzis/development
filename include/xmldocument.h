@@ -1,3 +1,47 @@
+// xmldocument.h
+//
+// Author        : John Pazarzis
+// Creation date : Tue 22 Oct 2013 10:13:36 PM EDT
+//
+// Summary
+//      A simple and lightweight Xml parser expressed in as an object oriented
+//      tree of nodes of type XmlNode.
+//
+//      What is interesting is that both attributes and child keys are treated
+//      in the same way, so after the creation of the tree we cannot really tell
+//      if a specific node was created by an attribute or a nested key.
+//
+//      This class can be useful in cases where we need to read small and simple xml 
+//      documents, as for example any configuration file.
+//
+//      The guts of the implementation are based in an open source code called
+//      that is contained in the basicxmlnode.h file.
+//
+
+/******* The following is a very simple example of the use of this class.******
+ *
+#include "xmldocument.h"
+#include <iostream>
+using namespace std;
+
+int main()
+{
+    XmlDocument doc("bookstore.xml");
+    cout << doc.to_string() << endl;
+    cout << " ==" << endl;
+    for(auto p : doc)
+    {
+        cout << p->name() << ": "<< p->value()<< endl;
+        for (auto p1 : *p)
+        {
+            cout << p1->name() << ": "<< p1->value()<< endl;
+        }
+    }
+    cout << " ==" << endl;
+    return 0;
+}
+*********************************************************************************/
+
 #ifndef XML_PARSER_INCLUDED
 #define XML_PARSER_INCLUDED
 
