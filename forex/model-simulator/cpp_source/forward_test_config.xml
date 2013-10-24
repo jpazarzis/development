@@ -2,11 +2,11 @@
     <forward_test>
         <function>forward_test</function>
         <tick_file>/home/john/projects/forex/historical-ticks/EUR_USD.csv</tick_file>
-        <max_number_of_ticks>12000000</max_number_of_ticks>
-        <start_after>3000000</start_after>
-        <minute_to_trade>50</minute_to_trade>
-        <delta>9.9</delta>
-        <stop_loss>62.1</stop_loss>
-        <take_profit>16.3</take_profit>
+        <max_number_of_ticks>10000000</max_number_of_ticks>
+        <start_after>5000000</start_after>
+        <minute_to_trade>32</minute_to_trade>
+        <delta>10.43</delta>
+        <stop_loss>36.21</stop_loss>
+        <take_profit>37.2</take_profit>
     </forward_test>
 </configuration>

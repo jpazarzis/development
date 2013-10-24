@@ -92,7 +92,6 @@ class SellBasedInDelta: public Model
                     if(delta_in_pips >= (double)_triggering_delta)
                     {
                         add_order(Order::make( SELL, "NONE", (double)_stop_loss, (double)_take_profit, tick.bid, tick.timestamp()));
-                        LOG << tick.timestamp() << " " << tick.bid << " " << tick.ask << EOL;
                     }
 
                     _triggered_for_current_hour = true;
@@ -151,8 +150,10 @@ class SellBasedInDelta: public Model
             strg += "\n";
 
             strg += sformat("max drawdown:", "%20s");
-            strg += sformat(get_max_drawdown()*100.0, "%20.2f");
+            strg += sformat(get_max_drawdown(), "%20.5f");
             strg += "\n";
+
+
 
 
             return strg;
@@ -186,6 +187,7 @@ class SellBasedInDelta: public Model
                 strg += sformat((double)_stop_loss, "%13.5f"); 
                 strg += sformat((double)_take_profit, "%13.5f");
                 strg += sformat(orders_count(),"%10d"); 
+                strg += " fitness: ";
                 strg += sformat(get_fitness(), "%20.5f"); 
                 strg += sformat(get_pnl(), "%20.5f"); 
                 strg += sformat(get_max_drawdown() , "%20.5f"); 

@@ -52,8 +52,14 @@ void run_optimizer(XmlNode& config)
                 optimize_models(ga,tick_file,number_of_ticks);
                 if (ga.evolve(true))
                     break;
-                cout << "Winner so far" << endl;
-                cout << ga[0]->get_full_description() << endl;
+
+                if(!ga.was_rolled_back())
+                {
+                    cout << "Winner so far" << endl;
+                    cout << ga[0]->get_full_description() << endl;
+                }
+                
+                
             }
             cout << "done" << endl;
     }

@@ -84,6 +84,12 @@ class GeneticAlgorithm
             return _population.size();
         }
 
+
+        bool was_rolled_back() const
+        {
+            return _was_rolled_back;
+        }
+
         // the most interesting method. Based in the fitness that was provided
         // by the client code it is using roulete selection to create the new
         // generation who's fitness will next be calculated by the client
@@ -91,7 +97,7 @@ class GeneticAlgorithm
         {
             print_header_if_needed();
             ++_generation_index;
-            bool rolled_back = false;
+            _was_rolled_back = false;
             if(current_average_fitness_is_less_than_previous())
             {  
                 if(is_stucked())
@@ -100,15 +106,21 @@ class GeneticAlgorithm
                 }
                 else
                 {
+                    cout << "rolling back..." << endl;
                     roll_back_to_previous_generation();
-                    rolled_back = true;
+                    _was_rolled_back = true;
                 }
             }
-            store_current_generation();
-            sort();
-            print_all(); 
-            if(!rolled_back)  
+            else
             {
+                store_current_generation();
+            }
+            
+            sort();
+            
+            if(!_was_rolled_back)  
+            {
+                print_all();
                 //if(print_best_chromosomes)
                 //    print_all();
                 //log_best_chromosome();
@@ -116,6 +128,7 @@ class GeneticAlgorithm
             }    
             assign_roulette_probabilities(get_total_fitness());
             create_new_population();
+            
             return false;
         }
 
@@ -129,7 +142,8 @@ class GeneticAlgorithm
 
         void print_all()
         {
-            LOG  << BuyAtSpecificMinuteModel::printing_header()<< EOL; 
+            //LOG  << BuyAtSpecificMinuteModel::printing_header()<< EOL; 
+            LOG << EOL << "GENERATION: " << _generation_index << EOL;
             int size = _population.size();
             for(register int i = 0; i < size; ++i)
                LOG  << _population[i]->to_string() << EOL; 
@@ -295,6 +309,7 @@ class GeneticAlgorithm
         std::vector<std::string> _previous_chromosomes;
         std::vector<double> _previous_fitness;
         double _previous_mean;
+        bool _was_rolled_back;
 
         // Keep the generation ids that caused an improvement in fitness will be
         // later used to stop the evolution process..

@@ -7,7 +7,7 @@ INCLUDE=-I$(DEVELOPMENT_ROOT)/include
 VPATH = $(DEVELOPMENT_ROOT)/include
 
 
-model_optimizer:model_optimizer.cpp BuyAtSpecificMinuteModel.h Optimizable.h GeneticAlgorithm.h Statistics.h std_include.h TickEngine.h TickProcessor.h Object.h Order.o Identifiable.o CloneableDouble.o  Logger.o Utilities.o Model.h FitnessCalculators.h xmldocument.h
+model_optimizer:model_optimizer.cpp SellBasedInDelta.h Optimizable.h GeneticAlgorithm.h Statistics.h std_include.h TickEngine.h TickProcessor.h Object.h Order.o Identifiable.o CloneableDouble.o  Logger.o Utilities.o Model.h FitnessCalculators.h xmldocument.h
 	$(CXX) $(FLAGS)  $(INCLUDE) -o model_optimizer model_optimizer.cpp CloneableDouble.o Logger.o Order.o Identifiable.o Utilities.o
 
 ga_sample1:ga_sample1.cpp CloneableDouble.o Optimizable.h GeneticAlgorithm.h Statistics.h std_include.h Object.h Logger.o Utilities.o

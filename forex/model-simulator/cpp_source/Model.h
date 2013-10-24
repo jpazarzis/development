@@ -18,7 +18,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define ACCOUNT_STARTING_POINT 100000
+//#define ACCOUNT_STARTING_POINT 100000
+#define ACCOUNT_STARTING_POINT 50000
 #define MIN_NUMBER_OF_ORDERS_TO_USE_FOR_OPTIMAZATION 20
 
 class Model : virtual public Object, virtual public Identifiable, public TickProcessor, public Optimizable
@@ -167,6 +168,9 @@ class Model : virtual public Object, virtual public Identifiable, public TickPro
                     assert(_account_balance > 0);
                     assert(_max_draw_down >= 0);
 
+                    
+                    double effective_balance = _account_balance + 3.0 * get_pnl();
+
                     // In case that the max drawdown is zero just ignore the chromosome
                     // this is a case that will happen when there is not a single loosing
                     // trade something that needs a very small number of trades
@@ -174,14 +178,18 @@ class Model : virtual public Object, virtual public Identifiable, public TickPro
                     // fitness creating a bias for models creating very few
                     // orders (since they are more possible to create a very
                     // small amount of lossing trades..
-                    if(_max_draw_down <= 0.001)
+                    if(_max_draw_down <= 0.001 || effective_balance <= 0)
                     {
                             initialize();
                             set_fitness(0);
                     }
                     else
                     {
-                        set_fitness((_account_balance*1.0) / exp(_max_draw_down) );
+                        
+                        set_fitness(effective_balance*1.0);
+                        //set_fitness((effective_balance*1.0) / _max_draw_down );
+                        //set_fitness((_account_balance*1.0) / _max_draw_down );
+                        //set_fitness((_account_balance*1.0) / exp(_max_draw_down) );
                         //set_fitness((_account_balance*1.0) / (_max_draw_down *100.0) ) ;
                     }
             }
