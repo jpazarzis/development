@@ -1,42 +1,58 @@
 #include <iostream>
-#include <deque>
-#include <thread>         // std::thread
-#include <mutex>          // std::mutex
-#include <condition_variable>
+#include <memory>
+#include <vector>
 using namespace std;
+class A
+{
+    public:
+        A() {
+            std::cout << "making A " << std::endl;
+        }
 
-mutex mu;
-deque<int> d;
-condition_variable cond;
+        ~A(){
+            std::cout << "destructing A" << std::endl;
+        }
+
+        void speak() {
+            std::cout << "hello" << std::endl;
+        }
+
+};
 
 
-void producer() {
-    unique_lock<mutex> locker(mu, defer_lock); 
-    for(int i = 0; i < 9; ++i) {
-        locker.lock();
-        d.push_front(i);
-        locker.unlock();
-        cond.notify_one();
-    }
+void f(const std::unique_ptr<A>& p)
+{
+    std::unique_ptr<A> junk = std::forward(p);
+    p->speak();
 }
 
-void consumer() {
-    int v = -1;
-    unique_lock<mutex> locker(mu, defer_lock); 
-    while(v!=8){
-        locker.lock();
-        cond.wait(locker, [](){return !d.empty();});
-        v = d.back();
-        d.pop_back();
-        cout << v << endl;
-        locker.unlock();
-    }
+/*
+std::unique_ptr<A> g(const std::unique_ptr<A>& p)
+{   
+    auto junk = std::move(p);
+    return std::move(p);
 }
+*/
+
+
 
 int main(){
-    thread t1(producer);
-    thread t2(consumer);
-    t1.join();
-    t2.join();
+      using A_PTR = std::unique_ptr<A> ;
+      vector<A_PTR > v;
+      
+      A_PTR junk (new A());
+
+      A_PTR junk2 = move(junk);
+
+
+
+      v.push_back(move(junk));
+      v.push_back(A_PTR(new A()));
+      v.push_back(A_PTR(new A()));
+
+      for(auto& p: v)
+        f(p);
+        
+       return 0;
 }
 
