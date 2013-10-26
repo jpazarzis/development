@@ -168,14 +168,16 @@ void Order::process(const Tick& tick)
         }
     }
 
+    
     const ptime current_time(date(tick.year,tick.month,tick.day), hours(tick.hour)+minutes(tick.minute)+seconds(tick.second));
 
     if(current_time >= _expiration_time && _order_status != CLOSED)
     {
-        cout << "order was expired, created at: " << _creation_time << " current time: " << _expiration_time << " " << tick.hour << " "<< tick.minute << " " << tick.second << endl;
+        //cout << "order was expired, created at: " << _creation_time << " current time: " << _expiration_time << " " << tick.hour << " "<< tick.minute << " " << tick.second << endl;
         _was_expired = true;
         _order_status = CLOSED;
     }
+   
         
     if(_order_status == CLOSED)
     {
