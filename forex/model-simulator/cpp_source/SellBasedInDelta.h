@@ -91,7 +91,7 @@ class SellBasedInDelta: public Model
 
                     if(delta_in_pips >= (double)_triggering_delta)
                     {
-                        add_order(Order::make( SELL, "NONE", (double)_stop_loss, (double)_take_profit, tick.bid, tick.timestamp()));
+                        add_order(Order::make( SELL, "NONE", (double)_stop_loss, (double)_take_profit, tick.bid, tick));
                     }
 
                     _triggered_for_current_hour = true;
@@ -148,6 +148,12 @@ class SellBasedInDelta: public Model
             strg += sformat("losing trades:", "%20s");
             strg += sformat(get_loosing_trades_count(), "%20d");
             strg += "\n";
+
+            strg += sformat("expired trades:", "%20s");
+
+            strg += sformat(get_expired_trades_count(), "%20d");
+            strg += "\n";
+            
 
             strg += sformat("max drawdown:", "%20s");
             strg += sformat(get_max_drawdown(), "%20.5f");

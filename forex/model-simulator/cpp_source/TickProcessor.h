@@ -14,11 +14,8 @@
 //      which needs to be implemented for any observer of the TickEngine
 //      to receive callbaks on new ticks
 ////////////////////////////////////////////////////////////////////////
-
-
-#include <string>
-#include <stdio.h>
-
+//
+#include<string>
 
 struct Tick
 {
@@ -31,7 +28,7 @@ struct Tick
 
         sprintf(buffer, 
                 " %02d.%02d.%02d %02d:%02d:%02d ", 
-                year+2000, month, day, hour, minute, second);
+                year, month, day, hour, minute, second);
 
         return buffer;
         
@@ -48,8 +45,8 @@ struct Tick
 
         return buffer;
     }   
-    
 };
+
 
 class TickProcessor
 {
@@ -68,6 +65,10 @@ class TickProcessor
 
         virtual void unmark_stop_feed() { _marked_to_stop_feed = false; }
 };
+
+
+
+
         
 #endif
 

@@ -13,6 +13,7 @@
 using namespace std;
 
 #define UNINITIALIZED_PRICE -9999999.9
+#define DEFAULT_EXPIRATION_MINUTES 35
 
 class OrderPool
 {
@@ -39,6 +40,17 @@ class OrderPool
 
 OrderPool Order::_order_pool;
 
+int Order::_expiration_minutes = DEFAULT_EXPIRATION_MINUTES;
+
+int Order::get_expiration_minutes()
+{
+    return _expiration_minutes;
+}
+
+int Order::set_expiration_minutes(int expiration_minutes)
+{
+    _expiration_minutes = expiration_minutes;
+}
 
 void Order::clear_order_pool()
 {
@@ -57,8 +69,8 @@ Order::Order(   OrderType order_type,
                 double stop_loss, 
                 double take_profit,
                 double enter_price,
-                const std::string& timestamp,
-                int timeframe) : 
+                const Tick& tick
+                ): 
 
             _order_type(order_type),
             _instrument(instrument),
@@ -67,8 +79,9 @@ Order::Order(   OrderType order_type,
             _order_status(OPEN),
             _buy_price(UNINITIALIZED_PRICE),
             _sell_price(UNINITIALIZED_PRICE),
-            _timeframe(timeframe)
-            
+            _creation_time(date(tick.year,tick.month,tick.day), hours(tick.hour)+minutes(tick.minute)+seconds(tick.second)),
+            _expiration_time(date(tick.year,tick.month,tick.day), hours(tick.hour)+minutes(tick.minute)+seconds(tick.second)+minutes(_expiration_minutes)),
+            _was_expired(false)
 {
     if(order_type == BUY)
     {
@@ -154,6 +167,15 @@ void Order::process(const Tick& tick)
             assert(_buy_price < _sell_price);
         }
     }
+
+    const ptime current_time(date(tick.year,tick.month,tick.day), hours(tick.hour)+minutes(tick.minute)+seconds(tick.second));
+
+    if(current_time >= _expiration_time && _order_status != CLOSED)
+    {
+        cout << "order was expired, created at: " << _creation_time << " current time: " << _expiration_time << " " << tick.hour << " "<< tick.minute << " " << tick.second << endl;
+        _was_expired = true;
+        _order_status = CLOSED;
+    }
         
     if(_order_status == CLOSED)
     {
@@ -167,10 +189,10 @@ ORDER_PTR Order::make(  OrderType order_type,
                      double stop_loss, 
                      double take_profit, 
                      double enter_price,
-                     const std::string& timestamp,
-                     int timeframe)
+                     const Tick& tick
+                     )
 {
-        Order* p_order = new Order(order_type,instrument, stop_loss, take_profit, enter_price,timestamp, timeframe);
+        Order* p_order = new Order(order_type,instrument, stop_loss, take_profit, enter_price,tick);
         _order_pool._pool.push_back(p_order);
         return p_order;
 }
@@ -183,8 +205,19 @@ double Order::get_take_profit() const { return _take_profit; }
 
 OrderStatus Order::get_order_status() const { return _order_status; }
 
+
+bool Order::was_expired() const
+{
+    return _was_expired;
+}
+
 double Order::get_pnl() const
 {
+    if(_was_expired)
+    {
+        return 0.0;
+    }
+
     if( _order_status == CLOSED)
     {
         double pnl = (_sell_price - _buy_price) * 100000.0;

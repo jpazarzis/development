@@ -159,7 +159,7 @@ class TickEngine
             
             tick.day =  atoi(psz);
             tick.month = atoi((char*)&psz[3]);
-            tick.year = atoi((char*)&psz[6]);
+            tick.year = atoi((char*)&psz[6]) + 2000;
             tick.hour = atoi((char*)&psz[9]);
             tick.minute = atoi((char*)&psz[12]);
             tick.second = atoi((char*)&psz[15]);

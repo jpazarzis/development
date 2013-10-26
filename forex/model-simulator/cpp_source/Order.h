@@ -22,6 +22,10 @@
 #include "TickProcessor.h"
 #include "std_include.h"
 
+#include "boost/date_time/gregorian/gregorian.hpp"
+#include "boost/date_time/posix_time/posix_time.hpp"
+
+
 enum OrderType
 {
     BUY, SELL
@@ -36,6 +40,7 @@ class OrderPool;
 
 class Order;
 
+
 typedef Order& ORDER_REF ;
 typedef Order* ORDER_PTR ;
 
@@ -46,6 +51,9 @@ enum ORDER_RESULT
 };
 
 enum { DEFUALT_TIME_FRAME = 15};
+
+using namespace boost::posix_time; 
+using namespace boost::gregorian;
 
 class Order: public TickProcessor, virtual Identifiable
 {
@@ -58,9 +66,13 @@ class Order: public TickProcessor, virtual Identifiable
         double _sell_price;
         OrderStatus _order_status;
         OrderType _order_type;
-        const int _timeframe; // How many minutes to keep the order open
+        const ptime _creation_time;
+        const ptime _expiration_time;
+        bool _was_expired;
 
         static OrderPool _order_pool;
+
+        static int _expiration_minutes;
 
         bool reaching_stop_loss(const Tick& tick) const;
     
@@ -71,8 +83,8 @@ class Order: public TickProcessor, virtual Identifiable
                 double stop_loss, 
                 double take_profit,
                 double enter_price,
-                const std::string& timestamp,
-                int timeframe);
+                const Tick& tick
+                );
 
     public:
 
@@ -83,14 +95,12 @@ class Order: public TickProcessor, virtual Identifiable
                             double stop_loss, 
                             double take_profit, 
                             double enter_price,
-                            const std::string& timestamp,
-                            int timeframe = DEFUALT_TIME_FRAME );
+                            const Tick& tick);
 
 
         Order(const Order&);
 
         Order& operator=(const Order&);
-
 
         static void clear_order_pool();
 
@@ -111,10 +121,16 @@ class Order: public TickProcessor, virtual Identifiable
         OrderType get_order_type() const;
 
         double get_pnl() const;
+
+        bool was_expired() const;
     
         ORDER_RESULT get_win_or_loss() const;
 
         std::string to_string() const;
+
+        static int get_expiration_minutes();
+
+        static int set_expiration_minutes(int expiration_minutes);
 
 };
 

@@ -32,6 +32,7 @@ class Model : virtual public Object, virtual public Identifiable, public TickPro
             _max_draw_down(0),
             _account_balance(0),
             _absolute_low(0),
+            _expired_trades(0),
             _winning_trades(0),
             _lossing_trades(0),
             _consequtive_wins(0),
@@ -80,6 +81,12 @@ class Model : virtual public Object, virtual public Identifiable, public TickPro
         int get_loosing_trades_count() const
         {
             return _lossing_trades;
+        }
+
+
+        int get_expired_trades_count() const
+        {
+            return _expired_trades;
         }
 
         double get_pnl() const
@@ -131,7 +138,12 @@ class Model : virtual public Object, virtual public Identifiable, public TickPro
                     for(int i = 0; i < _number_of_orders; ++i)
                     {
                         const double trade_pnl = _orders[i]->get_pnl();
-                        if(trade_pnl > 0)
+
+                        if(_orders[i]->was_expired())
+                        {
+                            ++_expired_trades;
+                        }
+                        else if(trade_pnl > 0)
                             ++_winning_trades;
                         else if(trade_pnl < 0)
                              ++_lossing_trades;
@@ -209,6 +221,7 @@ class Model : virtual public Object, virtual public Identifiable, public TickPro
             _lossing_trades = 0;
             _consequtive_wins = 0;
             _consequtive_losses = 0;
+            _expired_trades = 0;
         }
 
     private:
@@ -218,6 +231,7 @@ class Model : virtual public Object, virtual public Identifiable, public TickPro
         double _max_draw_down;
         double _account_balance;
         double _absolute_low;
+        int _expired_trades;
         int _winning_trades;
         int _lossing_trades;
         int _consequtive_wins;
