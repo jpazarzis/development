@@ -25,6 +25,11 @@ void TickPool::load(const std::string& filename, CONST_DATE_REF from_date, CONST
 {
     using namespace std;
 
+    if(!to_date.is_not_a_date() && !from_date.is_not_a_date())
+    {
+        assert(to_date > from_date);
+    }
+
     FILE* f = fopen (filename.c_str(), "r");
     if (f == NULL) 
     {
