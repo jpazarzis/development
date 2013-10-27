@@ -13,7 +13,8 @@
 
 ////////////////////////////////////////////////////////////////////////
 
-
+#include "std_include.h"
+#include "Tick.h"
 #include <sys/types.h>
 #include <string.h>
 #include <dirent.h>
@@ -29,20 +30,6 @@
 #include <functional>
 #include "TickProcessor.h"
 #include "Logger.h"
-
-
-
-#define white_space(c) ((c) == ' ' || (c) == '\t')
-#define valid_digit(c) ((c) >= '0' && (c) <= '9')
-
-#define BUFFER_LENGTH 3500
-#define LINE_LENGTH 34
-#define BUFFER_SIZE 100
-#define CLEAR_BUFFER(buffer) for (int i = 0; i < BUFFER_LENGTH; ++i) buffer[i] = '\0';
-
-
-
-
 
 class TickEngine
 {
@@ -91,7 +78,7 @@ class TickEngine
         }   
 
 
-        void run(const std::string& filename, long max_number_of_ticks = -1, long start_after = 0)
+        void run(const std::string& filename, CONST_DATE_REF from_date, CONST_DATE_REF to_date)
         {
             using namespace std;
             update_pending_processors();
@@ -119,11 +106,22 @@ class TickEngine
                     if(psz[i] == '\n') 
                         psz[i] = '\0';  
                 }
+        
+
+                bool exceeded_to_day = false;
+                
                 for(register int i = 0; i < bytes_read; ++i)
                 {
                     parse_tick((char*) &psz[i*LINE_LENGTH], tick);
                     tick_count += 1;
-                    if(tick_count >=  start_after)  
+
+                    if( !to_date.is_not_a_date() &&  tick.timestamp().date() > to_date)
+                    {
+                        exceeded_to_day = true;
+                        break;
+                    }
+
+                    if( from_date.is_not_a_date() ||  tick.timestamp().date() >=  from_date)  
                     {
                             if(tick_count % 1000000 == 0)
                                cout << "ticks so far: " << tick_count << endl;
@@ -136,7 +134,8 @@ class TickEngine
                     }
                 }
                 CLEAR_BUFFER(psz)
-                if (tick_count >= max_number_of_ticks && max_number_of_ticks > 0)
+
+                if (exceeded_to_day)
                 {
                     break;
                 }
@@ -157,14 +156,16 @@ class TickEngine
             psz[17] = '\0';
             psz[25] = '\0';
             
-            tick.day =  atoi(psz);
-            tick.month = atoi((char*)&psz[3]);
-            tick.year = atoi((char*)&psz[6]) + 2000;
-            tick.hour = atoi((char*)&psz[9]);
-            tick.minute = atoi((char*)&psz[12]);
-            tick.second = atoi((char*)&psz[15]);
-            tick.bid = fast_atof((char*)&psz[18]);
-            tick.ask = fast_atof((char*)&psz[26]);
+            const int day =  atoi(psz);
+            const int month = atoi((char*)&psz[3]);
+            const int year = atoi((char*)&psz[6]) + 2000;
+            const int hour = atoi((char*)&psz[9]);
+            const int minute = atoi((char*)&psz[12]);
+            const int second = atoi((char*)&psz[15]);
+            const double bid = fast_atof((char*)&psz[18]);
+            const double ask = fast_atof((char*)&psz[26]);
+
+            tick.assign_values(day,month,year,hour,minute,second,bid,ask);
 
         }
 

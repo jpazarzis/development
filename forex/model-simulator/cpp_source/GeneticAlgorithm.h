@@ -145,8 +145,10 @@ class GeneticAlgorithm
             //LOG  << BuyAtSpecificMinuteModel::printing_header()<< EOL; 
             LOG << EOL << "GENERATION: " << _generation_index << EOL;
             int size = _population.size();
-            for(register int i = 0; i < size; ++i)
-               LOG  << _population[i]->to_string() << EOL; 
+            LOG << _population[0]->to_string() << EOL; 
+
+            //for(register int i = 0; i < size; ++i)
+            //   LOG  << _population[i]->to_string() << EOL; 
         }
 
         void create_new_population()

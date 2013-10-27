@@ -2,6 +2,7 @@
     <optimize>
         <tick_file>/home/john/projects/forex/historical-ticks/EUR_USD.csv</tick_file>
         <colony_size>80</colony_size>
-        <number_of_ticks>5000000</number_of_ticks>
+        <from_date>20120101</from_date>
+        <to_date>20120331</to_date>
     </optimize>
 </configuration>

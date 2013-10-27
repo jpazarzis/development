@@ -33,6 +33,8 @@ class Model : virtual public Object, virtual public Identifiable, public TickPro
             _account_balance(0),
             _absolute_low(0),
             _expired_trades(0),
+            _winning_expired_trades(0),
+            _losing_expired_trades(0),
             _winning_trades(0),
             _lossing_trades(0),
             _consequtive_wins(0),
@@ -83,10 +85,19 @@ class Model : virtual public Object, virtual public Identifiable, public TickPro
             return _lossing_trades;
         }
 
-
         int get_expired_trades_count() const
         {
             return _expired_trades;
+        }
+
+        int get_winning_expired_trades_count() const
+        {
+            return _winning_expired_trades;
+        }
+
+        int get_losing_expired_trades_count() const
+        {
+            return _losing_expired_trades;
         }
 
         double get_pnl() const
@@ -142,6 +153,10 @@ class Model : virtual public Object, virtual public Identifiable, public TickPro
                         if(_orders[i]->was_expired())
                         {
                             ++_expired_trades;
+                            if(trade_pnl > 0)
+                                ++_winning_expired_trades;
+                            else if(trade_pnl < 0)
+                             ++_losing_expired_trades;
                         }
                         else if(trade_pnl > 0)
                             ++_winning_trades;
@@ -222,6 +237,8 @@ class Model : virtual public Object, virtual public Identifiable, public TickPro
             _consequtive_wins = 0;
             _consequtive_losses = 0;
             _expired_trades = 0;
+            _winning_expired_trades = 0;
+            _losing_expired_trades = 0;
         }
 
     private:
@@ -232,6 +249,8 @@ class Model : virtual public Object, virtual public Identifiable, public TickPro
         double _account_balance;
         double _absolute_low;
         int _expired_trades;
+        int _winning_expired_trades = 0;
+        int _losing_expired_trades = 0;
         int _winning_trades;
         int _lossing_trades;
         int _consequtive_wins;

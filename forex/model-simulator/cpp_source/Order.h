@@ -59,43 +59,37 @@ class Order: public TickProcessor, virtual Identifiable
 {
     protected:
 
-        std::string _instrument;
         const double _stop_loss;
         const double _take_profit;
         double _buy_price;
         double _sell_price;
         OrderStatus _order_status;
         OrderType _order_type;
-        const ptime _creation_time;
-        const ptime _expiration_time;
+        const DATE_TIME _creation_time;
+        const DATE_TIME _expiration_time;
         bool _was_expired;
 
         static OrderPool _order_pool;
-
-        static int _expiration_minutes;
 
         bool reaching_stop_loss(const Tick& tick) const;
     
         bool reaching_take_profit(const Tick& tick) const;
 
         Order(  OrderType order_type, 
-                const std::string& instrument, 
                 double stop_loss, 
                 double take_profit,
-                double enter_price,
-                const Tick& tick
-                );
+                const Tick& tick,
+                int expiration_minutes);
 
     public:
 
         virtual ~Order(); 
 
         static ORDER_PTR make( OrderType order_type, 
-                            const std::string& instrument, 
                             double stop_loss, 
                             double take_profit, 
-                            double enter_price,
-                            const Tick& tick);
+                            const Tick& tick,
+                            int expiration_minutes);
 
 
         Order(const Order&);
@@ -107,8 +101,6 @@ class Order: public TickProcessor, virtual Identifiable
         static int orders_count() ;
 
         virtual void process(const Tick& tick);
-
-        std::string get_instrument() const;
 
         double get_stop_loss() const;
 
@@ -127,11 +119,6 @@ class Order: public TickProcessor, virtual Identifiable
         ORDER_RESULT get_win_or_loss() const;
 
         std::string to_string() const;
-
-        static int get_expiration_minutes();
-
-        static int set_expiration_minutes(int expiration_minutes);
-
 };
 
 #endif

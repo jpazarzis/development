@@ -15,43 +15,11 @@
 //      to receive callbaks on new ticks
 ////////////////////////////////////////////////////////////////////////
 //
-#include<string>
-
-struct Tick
-{
-    int day, month, year, hour, minute, second;
-    double bid, ask;
-
-    std::string  timestamp() const
-    {
-        char buffer[1024];
-
-        sprintf(buffer, 
-                " %02d.%02d.%02d %02d:%02d:%02d ", 
-                year, month, day, hour, minute, second);
-
-        return buffer;
-        
-    }
-    
-    std::string  to_string() const
-    {
-        using namespace std;
-        char buffer[1024];
-
-        sprintf(buffer, 
-                " %d/%d/%d %d:%d:%d bid: %10.6f ask: %10.6f", 
-                day, month, year, hour, minute, second,bid, ask);
-
-        return buffer;
-    }   
-};
-
+#include "Tick.h"
 
 class TickProcessor
 {
         bool _marked_to_stop_feed;
-
     public:
         TickProcessor() : _marked_to_stop_feed(false) {}
         
@@ -65,10 +33,5 @@ class TickProcessor
 
         virtual void unmark_stop_feed() { _marked_to_stop_feed = false; }
 };
-
-
-
-
-        
 #endif
 

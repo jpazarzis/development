@@ -23,6 +23,7 @@ class SellBasedInDelta: public Model
     CloneableDouble _triggering_delta; // in pips
     CloneableDouble _stop_loss;        // in pips
     CloneableDouble _take_profit;      // in pips
+    CloneableDouble _expriration_minutes;      // in pips
 
     int _current_hour;
     double _open_price;
@@ -36,14 +37,18 @@ class SellBasedInDelta: public Model
                 add_optimizable_field(&_triggering_delta);
                 add_optimizable_field(&_stop_loss);
                 add_optimizable_field(&_take_profit);
+                add_optimizable_field(&_expriration_minutes);
+
+                
          }
 
     public:
         SellBasedInDelta():
                     _minute_to_buy(20,60,1),
                     _triggering_delta(2,12,2),
-                    _stop_loss(8,100,2),
-                    _take_profit(10,100,2),  
+                    _stop_loss(8,22,2),
+                    _take_profit(10,22,2),  
+                    _expriration_minutes(15,360,1),
                     _current_hour(-1),
                     _open_price(0.0),
                     _triggered_for_current_hour(false)
@@ -52,12 +57,13 @@ class SellBasedInDelta: public Model
         }
 
 
-        void set_values(double minute, double delta, double sl, double pt)
+        void set_values(double minute, double delta, double sl, double pt, double expriration_minutes)
         {
             _minute_to_buy.read_from_double(minute);
             _triggering_delta.read_from_double(delta);
             _stop_loss.read_from_double(sl);
             _take_profit.read_from_double(pt);
+            _expriration_minutes.read_from_double(expriration_minutes);
         }
 
 
@@ -68,22 +74,21 @@ class SellBasedInDelta: public Model
         virtual void process(const Tick& tick)
         {
             using namespace std;
-            
-            if(tick.hour != _current_hour)
-            {
 
-                _current_hour = tick.hour;
-                _open_price = tick.bid;
+            if((int)tick.timestamp().time_of_day().hours() != _current_hour)
+            {
+                _current_hour = (int)tick.timestamp().time_of_day().hours();
+                _open_price = tick.bid();
                 _triggered_for_current_hour = false;
-                _high_for_the_hour = tick.bid;
+                _high_for_the_hour = tick.bid();
             }
             else
             {
-                    if(tick.bid > _high_for_the_hour)
-                        _high_for_the_hour = tick.bid;
+                    if(tick.bid() > _high_for_the_hour)
+                        _high_for_the_hour = tick.bid();
 
 
-                    if(_triggered_for_current_hour || tick.minute != (int)_minute_to_buy)
+                    if(_triggered_for_current_hour || (int) tick.timestamp().time_of_day().minutes() != (int)_minute_to_buy)
                         return;
 
                     //const double delta_in_pips = (tick.bid - _open_price) * 10000;
@@ -91,7 +96,7 @@ class SellBasedInDelta: public Model
 
                     if(delta_in_pips >= (double)_triggering_delta)
                     {
-                        add_order(Order::make( SELL, "NONE", (double)_stop_loss, (double)_take_profit, tick.bid, tick));
+                        add_order(Order::make( SELL, (double)_stop_loss, (double)_take_profit, tick, (int) ((double)_expriration_minutes)));
                     }
 
                     _triggered_for_current_hour = true;
@@ -111,6 +116,11 @@ class SellBasedInDelta: public Model
             strg += sformat("minute to trade:", "%20s");
             strg += sformat((int)_minute_to_buy,"%20d"); 
             strg += "\n";
+
+            strg += sformat("expriration minutes:", "%20s");
+            strg += sformat((double)_expriration_minutes, "%20.5f"); 
+            strg += "\n";
+
 
             strg += sformat("delta:", "%20s");
             strg += sformat((double)_triggering_delta, "%20.5f"); 
@@ -136,7 +146,6 @@ class SellBasedInDelta: public Model
             strg += sformat(get_pnl(), "%20.2f");
             strg += "\n";
 
-
             strg += sformat("low:", "%20s");
             strg += sformat(get_absolute_low(), "%20.2f");
             strg += "\n";
@@ -149,18 +158,21 @@ class SellBasedInDelta: public Model
             strg += sformat(get_loosing_trades_count(), "%20d");
             strg += "\n";
 
-            strg += sformat("expired trades:", "%20s");
-
+            strg += sformat("expired trades total:", "%20s");
             strg += sformat(get_expired_trades_count(), "%20d");
             strg += "\n";
-            
+
+            strg += sformat("winning expired count:", "%20s");
+            strg += sformat(get_winning_expired_trades_count(), "%20d");
+            strg += "\n";
+
+            strg += sformat("losing expired count:", "%20s");
+            strg += sformat(get_losing_expired_trades_count(), "%20d");
+            strg += "\n";
 
             strg += sformat("max drawdown:", "%20s");
             strg += sformat(get_max_drawdown(), "%20.5f");
             strg += "\n";
-
-
-
 
             return strg;
         }

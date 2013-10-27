@@ -40,18 +40,6 @@ class OrderPool
 
 OrderPool Order::_order_pool;
 
-int Order::_expiration_minutes = DEFAULT_EXPIRATION_MINUTES;
-
-int Order::get_expiration_minutes()
-{
-    return _expiration_minutes;
-}
-
-int Order::set_expiration_minutes(int expiration_minutes)
-{
-    _expiration_minutes = expiration_minutes;
-}
-
 void Order::clear_order_pool()
 {
     _order_pool.clear_order_pool();
@@ -65,31 +53,29 @@ int Order::orders_count()
 
 
 Order::Order(   OrderType order_type,  
-                const std::string& instrument, 
                 double stop_loss, 
                 double take_profit,
-                double enter_price,
-                const Tick& tick
+                const Tick& tick,
+                int expiration_minutes
                 ): 
 
             _order_type(order_type),
-            _instrument(instrument),
             _stop_loss(stop_loss), 
             _take_profit(take_profit), 
             _order_status(OPEN),
             _buy_price(UNINITIALIZED_PRICE),
             _sell_price(UNINITIALIZED_PRICE),
-            _creation_time(date(tick.year,tick.month,tick.day), hours(tick.hour)+minutes(tick.minute)+seconds(tick.second)),
-            _expiration_time(date(tick.year,tick.month,tick.day), hours(tick.hour)+minutes(tick.minute)+seconds(tick.second)+minutes(_expiration_minutes)),
+            _creation_time(tick.timestamp()),
+            _expiration_time( DATE_TIME(tick.timestamp()) + boost::posix_time::minutes(expiration_minutes)),
             _was_expired(false)
 {
     if(order_type == BUY)
     {
-        _buy_price = enter_price;
+        _buy_price = tick.ask();
     }
     else if(order_type == SELL)
     {
-        _sell_price = enter_price;
+        _sell_price = tick.bid();
     }
 }
 
@@ -141,11 +127,11 @@ void Order::process(const Tick& tick)
         /// I need to buy so I can close the order. Let's see if we reached
         //either the stop loss or the take profit
         
-        const double current_price = tick.ask;
+        const double current_price = tick.ask();
 
         if(current_price == 0.0)
         {
-            std::cout << "Whats going on ? " <<   tick.day << " " << tick.month << " " << tick. year << " " << tick.hour <<" " << tick.minute << " " << tick. second << endl;
+            std::cout << "Whats going on ? " <<   tick.timestamp() << endl;
         }
 
         const double delta = fabs((_sell_price -  current_price)* 10000);
@@ -166,18 +152,14 @@ void Order::process(const Tick& tick)
             _order_status = CLOSED;
             assert(_buy_price < _sell_price);
         }
+        else if(tick.timestamp() >= _expiration_time)
+        {
+                //cout << "order was expired, created at: " << _creation_time << " current time: " << _expiration_time << " " << tick.hour << " "<< tick.minute << " " << tick.second << endl;
+                _was_expired = true;
+                _buy_price = current_price;
+                _order_status = CLOSED;
+        }
     }
-
-    
-    const ptime current_time(date(tick.year,tick.month,tick.day), hours(tick.hour)+minutes(tick.minute)+seconds(tick.second));
-
-    if(current_time >= _expiration_time && _order_status != CLOSED)
-    {
-        //cout << "order was expired, created at: " << _creation_time << " current time: " << _expiration_time << " " << tick.hour << " "<< tick.minute << " " << tick.second << endl;
-        _was_expired = true;
-        _order_status = CLOSED;
-    }
-   
         
     if(_order_status == CLOSED)
     {
@@ -187,19 +169,16 @@ void Order::process(const Tick& tick)
 
 
 ORDER_PTR Order::make(  OrderType order_type,
-                     const std::string& instrument,  
                      double stop_loss, 
                      double take_profit, 
-                     double enter_price,
-                     const Tick& tick
-                     )
+                     const Tick& tick,
+                     int expiration_minutes)
 {
-        Order* p_order = new Order(order_type,instrument, stop_loss, take_profit, enter_price,tick);
+        Order* p_order = new Order(order_type, stop_loss, take_profit, tick,expiration_minutes);
         _order_pool._pool.push_back(p_order);
         return p_order;
 }
 
-std::string Order::get_instrument() const { return _instrument; }
 
 double Order::get_stop_loss() const { return _stop_loss; }
 
@@ -215,10 +194,12 @@ bool Order::was_expired() const
 
 double Order::get_pnl() const
 {
+    /*
     if(_was_expired)
     {
         return 0.0;
     }
+    */
 
     if( _order_status == CLOSED)
     {
