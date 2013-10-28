@@ -39,8 +39,6 @@ void TickPool::load(const std::string& filename, CONST_DATE_REF from_date, CONST
 
     char psz[BUFFER_LENGTH]; 
     CLEAR_BUFFER(psz)    
-    int day, month, year, hour, minute, second;
-    double bid, ask;
     int bytes_read;
     _size = 0;
     bool within_desired_period = from_date.is_not_a_date();
@@ -83,6 +81,7 @@ void TickPool::load(const std::string& filename, CONST_DATE_REF from_date, CONST
                 break;
             }
         }
+
         CLEAR_BUFFER(psz)
 
         if (exceeded_to_day)
