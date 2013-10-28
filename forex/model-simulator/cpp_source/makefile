@@ -1,7 +1,7 @@
 CXX=g++ 
 #FLAGS=-g -D DEBUG -DDISABLE_LOGGING
-FLAGS=-g -D DEBUG -ggdb3 -std=c++0x -pthread  
-#FLAGS=-Ofast -ggdb3 -std=c++0x -pthread  
+#FLAGS=-g -D DEBUG -ggdb3 -std=c++0x -pthread  
+FLAGS=-Ofast -ggdb3 -std=c++0x -pthread  
 
 INCLUDE=-I$(DEVELOPMENT_ROOT)/include
 VPATH = $(DEVELOPMENT_ROOT)/include

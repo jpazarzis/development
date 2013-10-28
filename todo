@@ -1,8 +1,35 @@
+
+Sun Oct 27 20:19:47 EDT 2013
+
+~ Created a TickPool class which will replace the existing TickEngine. 
+
+~ Created a Tick class removing the old one by adding a boost timestamp so now
+we no longer hold year-month-day as separate data. I also changed the Order and
+the Model classes to accommodate this change.
+
+@@ Modify the Model and Order process tick to use the TickPool instead of been
+called back by the TickEngine.
+
+
+Sat Oct 26 09:40:09 EDT 2013
+~ Added support for expiration date in an order base using boost date.
+
+Wed Oct 23 19:44:37 EDT 2013
+
+~ It seems to me that the genetic algorithm has a bug. As it creates
+generations at some point it seems that is no longer selecting the chromosome
+with the top fitness. This has to be fixed asap...
+Status: Fixed.  The bug was caused by the rollback logic in the genetic
+algorithm
+
+
 Mon Oct 21 10:31:21 EDT 2013
 
-@@ Develop and XML class to wrap xerces 
+~ Develop and XML class to wrap xerces : Never completed. Found xerces to be
+complicated to use and pretty heavy. Instead I created a simple hand crafted
+solution
 
-@@ Based in this class add configuration capabilities to the modelers
+~ Based in this class add configuration capabilities to the modelers
 
 @@ Add multi threading capabilities to the optimizer so it can run faster
 
