@@ -7,6 +7,10 @@ INCLUDE=-I$(DEVELOPMENT_ROOT)/include -I/usr/include
 VPATH = $(DEVELOPMENT_ROOT)/include
 #LIBS = -L/usr/lib -lboost_date_time-mt
 
+pool_sample:pool_sample.cpp Pool.h
+	$(CXX) $(FLAGS) $(INCLUDE) -o pool_sample pool_sample.cpp
+
+
 test_time:test_time.cpp 
 	$(CXX) $(FLAGS) -o test_time test_time.cpp  
 
