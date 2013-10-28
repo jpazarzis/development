@@ -1,0 +1,9 @@
+*
+!.gitignore
+!*.c
+!*.cpp
+!*.h
+!makefile
+!*.py
+
+
