@@ -1,5 +1,9 @@
 <configuration>
     <!--
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+TRAINING DATA
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
       id:               10041
     minute to trade:                  21
 expriration minutes:           180.70000
@@ -16,8 +20,29 @@ expired trades total:                  67
 winning expired count:                  31
 losing expired count:                  36
        max drawdown:             0.07065
-         
-         -->
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+BACKTESTING ON UNSEED DATA
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Testing period: from 2012-Apr-01 to 2012-Jun-30
+                 id:               10001
+    minute to trade:                  21
+expriration minutes:           180.00000
+              delta:            10.44000
+          stop loss:            20.55000
+        profit take:            18.69000
+   number of orders:                 286
+      final balance:            54427.00
+          final pnl:             4427.00
+                low:            49944.00
+     winning trades:                 135
+      losing trades:                  99
+expired trades total:                  52
+winning expired count:                  21
+losing expired count:                  31
+       max drawdown:             0.04811
+     --> 
 
     <forward_test>
         <function>forward_test</function>
@@ -30,4 +55,121 @@ losing expired count:                  36
         <from_date>20120401</from_date>
         <to_date>20120630</to_date>
     </forward_test>
+   
+
+<!--
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+TRAINING DATA
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+             id:               10044
+    minute to trade:                  21
+expriration minutes:           210.50000
+              delta:            10.49000
+          stop loss:            21.92000
+        profit take:            14.25000
+   number of orders:                 343
+      final balance:            51946.00
+          final pnl:             1946.00
+                low:            48946.00
+     winning trades:                 189
+      losing trades:                 107
+expired trades total:                  47
+winning expired count:                  18
+losing expired count:                  29
+       max drawdown:             0.04003
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+BACKTESTING ON UNSEED DATA
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Testing period: from 2012-Apr-01 to 2012-Jun-30
+                 id:               10001
+    minute to trade:                  21
+expriration minutes:           210.00000
+              delta:            10.49000
+          stop loss:            21.92000
+        profit take:            14.25000
+   number of orders:                 286
+      final balance:            54755.00
+          final pnl:             4755.00
+                low:            49158.00
+     winning trades:                 165
+      losing trades:                  81
+expired trades total:                  40
+winning expired count:                  16
+losing expired count:                  24
+       max drawdown:             0.02688
+       
+
+    <forward_test>
+        <function>forward_test</function>
+        <tick_file>/home/john/projects/forex/historical-ticks/EUR_USD.csv</tick_file>
+        <minute_to_trade>21</minute_to_trade>
+        <expriration_minutes>210</expriration_minutes>
+        <delta>10.49</delta>
+        <stop_loss>21.92</stop_loss>
+        <take_profit>14.25</take_profit>
+        <from_date>20120401</from_date>
+        <to_date>20120630</to_date>
+    </forward_test>
+
+-->
+
+<!--
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+TRAINING DATA
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                 id:               10178
+    minute to trade:                  21
+expriration minutes:           209.60000
+              delta:            10.25000
+          stop loss:            21.62000
+        profit take:            19.94000
+   number of orders:                 350
+      final balance:            51976.00
+          final pnl:             1976.00
+                low:            48903.00
+     winning trades:                 153
+      losing trades:                 127
+expired trades total:                  70
+winning expired count:                  31
+losing expired count:                  39
+       max drawdown:             0.06450
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+BACKTESTING ON UNSEED DATA
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Testing period: from 2012-Apr-01 to 2012-Jun-30
+
+                 id:               10001
+    minute to trade:                  21
+expriration minutes:           209.50000
+              delta:            10.25000
+          stop loss:            21.62000
+        profit take:            19.94000
+   number of orders:                 290
+      final balance:            56534.00
+          final pnl:             6534.00
+                low:            49982.00
+     winning trades:                 137
+      losing trades:                  94
+expired trades total:                  59
+winning expired count:                  31
+losing expired count:                  27
+       max drawdown:             0.03942
+
+    <forward_test>
+        <function>forward_test</function>
+        <tick_file>/home/john/projects/forex/historical-ticks/EUR_USD.csv</tick_file>
+        <minute_to_trade>21</minute_to_trade>
+        <expriration_minutes>209.6</expriration_minutes>
+        <delta>10.25</delta>
+        <stop_loss>21.62</stop_loss>
+        <take_profit>19.94</take_profit>
+        <from_date>20120401</from_date>
+        <to_date>20120630</to_date>
+    </forward_test>
+-->
+    
 </configuration>

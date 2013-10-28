@@ -59,14 +59,14 @@ class Order: public TickProcessor, virtual Identifiable
 {
     protected:
 
-        const double _stop_loss;
-        const double _take_profit;
+        double _stop_loss;
+        double _take_profit;
         double _buy_price;
         double _sell_price;
         OrderStatus _order_status;
         OrderType _order_type;
-        const DATE_TIME _creation_time;
-        const DATE_TIME _expiration_time;
+        DATE_TIME _creation_time;
+        DATE_TIME _expiration_time;
         bool _was_expired;
 
         static OrderPool _order_pool;
@@ -75,15 +75,22 @@ class Order: public TickProcessor, virtual Identifiable
     
         bool reaching_take_profit(const Tick& tick) const;
 
-        Order(  OrderType order_type, 
-                double stop_loss, 
-                double take_profit,
-                const Tick& tick,
-                int expiration_minutes);
+        void process_tick(const Tick& tick, bool is_the_last_tick) ;
+
+        Order();
+
+        void populate(OrderType order_type, 
+                            double stop_loss, 
+                            double take_profit, 
+                            const Tick& tick,
+                            int expiration_minutes);
 
     public:
 
         virtual ~Order(); 
+
+
+    
 
         static ORDER_PTR make( OrderType order_type, 
                             double stop_loss, 
@@ -101,6 +108,8 @@ class Order: public TickProcessor, virtual Identifiable
         static int orders_count() ;
 
         virtual void process(const Tick& tick);
+
+        void process_until_closing(int current_tick_index);
 
         double get_stop_loss() const;
 

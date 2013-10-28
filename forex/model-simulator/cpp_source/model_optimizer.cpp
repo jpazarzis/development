@@ -17,23 +17,7 @@
 using namespace std;
 
 void forward_test(XmlNode& config);
-
-
-void optimize_models(GeneticAlgorithm<SellBasedInDelta>& ga, 
-                    const std::string& tick_file,
-                    CONST_DATE_REF from_date, CONST_DATE_REF to_date)
-{
-    TickEngine te;
-    for (int i = 0; i< ga.size(); ++i)
-        ga[i]->start_listening(&te);
-    te.run(tick_file, from_date, to_date);
-    for (int i = 0; i < ga.size(); ++i)
-    {
-        ga[i]->calc_fitness();
-        ga[i]->stop_listening();
-    }
-    Order::clear_order_pool();
-}
+void forward_test2(XmlNode& config);
 
 
 void run_optimizer(XmlNode& config)
@@ -52,19 +36,34 @@ void run_optimizer(XmlNode& config)
             if(!from_date.is_not_a_date() && !to_date.is_not_a_date())
                 assert(from_date < to_date);
 
+            TickPool& tp = TickPool::singleton();    
+
+            cout << timestamp() <<endl;
+            cout << "loading ticks..." << endl;
+            tp.load(tick_file, from_date, to_date);
+            cout << timestamp() <<endl;
+            cout << tp.size() << endl;
+
+
             GeneticAlgorithm<SellBasedInDelta> ga(colony_size);
             int i = 0;
             for(;;)
             {
                 cout << "generation: " << ++i << " " << cout << timestamp() <<endl;
-                optimize_models(ga,tick_file, from_date, to_date);
+
+                for (int i = 0; i < ga.size(); ++i)
+                {
+                    ga[i]->calculate_fitness();
+                }
+
+                
                 if (ga.evolve(true))
                     break;
 
                 if(!ga.was_rolled_back())
                 {
                     cout << "Winner so far" << endl;
-                    cout << ga[0]->get_full_description() << endl;
+                    cout << ga[0]->get_full_description2() << endl;
                 }
                 
                 
@@ -82,28 +81,6 @@ void run_optimizer(XmlNode& config)
 int main(int argc, char *argv[])
 {
 
-    TickPool& tp = TickPool::singleton();    
-
-    cout << timestamp() <<endl;
-    tp.load("/home/john/projects/forex/historical-ticks/EUR_USD.csv", date(), date());
-    cout << timestamp() <<endl;
-    cout << tp.size() << endl;
-
-    for(int i = 0; i < 100; ++i)
-    {
-        const Tick& t = tp[i];
-        cout << t.timestamp() << " " << t.bid() << " " << t.ask() << endl;
-    }
-        
-
-    
-
-
-//    load(const std::string& filename, CONST_DATE_REF from_date, CONST_DATE_REF to_date)
-
-
-    return 0;
-
     if( argc < 2)
     {
         cout << "correct use: " << argv[0] << "[configuration.xml]" << endl;
@@ -117,7 +94,7 @@ int main(int argc, char *argv[])
 
      if(configuration.contains("forward_test"))
      {
-         forward_test(configuration["forward_test"]);
+         forward_test2(configuration["forward_test"]);
      }
      else  if(configuration.contains("optimize"))
      {
@@ -144,9 +121,6 @@ void forward_test(XmlNode& config)
     double take_profit = config["take_profit"].value_to_double();
     double expriration_minutes = config["expriration_minutes"].value_to_double();
 
-
-    
-
     assert(config.contains("from_date"));
     auto from_date = make_date(config["from_date"].value());
 
@@ -156,8 +130,7 @@ void forward_test(XmlNode& config)
     if(!from_date.is_not_a_date() && !to_date.is_not_a_date())
         assert(from_date < to_date);
 
-    
-
+   
     SellBasedInDelta model;
     model.set_values(minute_to_trade,delta,stop_loss,take_profit,expriration_minutes);
     //model.set_values(38.0,10.5,25.21,11.68);
@@ -171,6 +144,41 @@ void forward_test(XmlNode& config)
     cout << "Testing period: from " << from_date << " to " << to_date<< endl;
     cout << model.get_full_description() << endl;
     Order::clear_order_pool();
+}
+
+
+void forward_test2(XmlNode& config)
+{    
+    std::string filename = config["tick_file"].value();
+    double minute_to_trade = config["minute_to_trade"].value_to_double();
+    double delta = config["delta"].value_to_double();
+    double stop_loss = config["stop_loss"].value_to_double();
+    double take_profit = config["take_profit"].value_to_double();
+    double expriration_minutes = config["expriration_minutes"].value_to_double();
+
+    assert(config.contains("from_date"));
+    auto from_date = make_date(config["from_date"].value());
+
+    assert(config.contains("to_date"));
+    auto to_date = make_date(config["to_date"].value());
+
+    if(!from_date.is_not_a_date() && !to_date.is_not_a_date())
+        assert(from_date < to_date);
+
+
+    TickPool& tp = TickPool::singleton();    
+
+    cout << timestamp() <<endl;
+    cout << "loading ticks..." << endl;
+    tp.load(filename, from_date, to_date);
+    cout << timestamp() <<endl;
+    cout << tp.size() << endl;
+
+    SellBasedInDelta model;
+    model.set_values(minute_to_trade,delta,stop_loss,take_profit,expriration_minutes);
+    model.calculate_fitness();
+    cout << "Testing period: from " << from_date << " to " << to_date<< endl;
+    cout << model.get_full_description2() << endl;
 }
 
 /*
