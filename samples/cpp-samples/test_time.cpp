@@ -12,6 +12,16 @@ int main() {
 
     ptime t = ptime(date(2013,12,1), hours(5)+minutes(4)+seconds(2));
 
+
+    cout << t << endl;
+
+    t = ptime(ptime(t) + boost::posix_time::minutes(10));
+    cout << t << endl;
+    cout << t.date() << endl;
+
+
+    /*
+
     cout <<  t.date().year()  << endl;
     cout <<  t.date().month()  << endl;
     cout <<  t.date().day()  << endl;
@@ -19,7 +29,9 @@ int main() {
     cout <<  "minutes: "<<  t.time_of_day().minutes()  << endl;
     cout <<  "seconds: "<<  t.time_of_day().seconds()  << endl;
 
-    ptime t0 = ptime(date(2013,12,1), hours(8)+minutes(4)+seconds(2));
+    ptime t0 = ptime(date(2013,12,1), hours(5)+minutes(4)+seconds(2)+seconds(72));
+
+
 
     time_duration tod = t0 - t;
 
@@ -44,7 +56,7 @@ int main() {
     {
         cout << "smaller" << endl;   
     }
-
+*/
  
 
 }

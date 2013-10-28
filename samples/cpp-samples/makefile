@@ -10,6 +10,10 @@ VPATH = $(DEVELOPMENT_ROOT)/include
 test_time:test_time.cpp 
 	$(CXX) $(FLAGS) -o test_time test_time.cpp  
 
+test_construction_boost_date:test_construction_boost_date.cpp toolkit.h
+	$(CXX) $(FLAGS) $(INCLUDE) -o test_construction_boost_date test_construction_boost_date.cpp  
+
+
 test1: test1.cpp
 	$(CXX) $(FLAGS) -o test1 test1.cpp
 
