@@ -84,10 +84,15 @@ class SellBasedInDelta: public Model
             for(register int i = 0; i < number_of_ticks; ++i)
                 process_tick(tp[i], orders, i );
 
-            auto fs = FitnessStatistics::make(orders);
+            FitnessStatistics fs = FitnessStatistics::make(orders);
             _fitness_statistics = fs;
             set_fitness(fs.fitness());
-            Order::clear_order_pool();
+
+            for(auto order_ptr: orders)
+            {
+                Order::release(order_ptr);
+            }
+            
         }
 
         void process_tick(const Tick& tick, std::vector<Order*>& orders, int current_tick_index)
@@ -111,6 +116,7 @@ class SellBasedInDelta: public Model
                     if(delta_in_pips >= (double)_triggering_delta)
                     {
                         Order* pOrder = Order::make( SELL, (double)_stop_loss, (double)_take_profit, tick, (int) ((double)_expriration_minutes));
+                        assert(NULL != pOrder);
                         orders.push_back(pOrder);
                         pOrder->process_until_closing(current_tick_index);
                     }

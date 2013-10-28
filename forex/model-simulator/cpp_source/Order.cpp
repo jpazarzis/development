@@ -8,14 +8,11 @@
 #include "Logger.h"
 #include "TickPool.h"
 #include <math.h>
-
-
-
+#include "Pool.h"
 using namespace std;
 
 #define UNINITIALIZED_PRICE -9999999.9
 #define DEFAULT_EXPIRATION_MINUTES 35
-
 
 class OrderPool
 {
@@ -46,7 +43,6 @@ void Order::clear_order_pool()
 {
     _order_pool.clear_order_pool();
 }
-
 
 int Order::orders_count() 
 {
@@ -238,16 +234,25 @@ void Order::populate(OrderType order_type,
 }
 
 
+
+
+Pool<Order,400000> block_of_orders;
+
+
 ORDER_PTR Order::make(  OrderType order_type,
                      double stop_loss, 
                      double take_profit, 
                      const Tick& tick,
                      int expiration_minutes)
 {
-        Order* p_order = new Order();
+        Order* p_order = block_of_orders.get();
         p_order->populate(order_type, stop_loss, take_profit, tick,expiration_minutes);
-        _order_pool._pool.push_back(p_order);
         return p_order;
+}
+
+void Order::release(ORDER_PTR pOrder)
+{
+    block_of_orders.put_back(pOrder);
 }
 
 

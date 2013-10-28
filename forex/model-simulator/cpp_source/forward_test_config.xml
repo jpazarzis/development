@@ -42,7 +42,7 @@ expired trades total:                  52
 winning expired count:                  21
 losing expired count:                  31
        max drawdown:             0.04811
-     --> 
+     
 
     <forward_test>
         <function>forward_test</function>
@@ -56,6 +56,7 @@ losing expired count:                  31
         <to_date>20120630</to_date>
     </forward_test>
    
+--> 
 
 <!--
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -171,5 +172,62 @@ losing expired count:                  27
         <to_date>20120630</to_date>
     </forward_test>
 -->
+
+<!--
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+TRAINING DATA
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Winner so far
+                 id:              410109
+    minute to trade:                  21
+expriration minutes:           213.50000
+              delta:            10.47000
+          stop loss:            28.00000
+        profit take:            18.20000
+   number of orders:                 343
+      final balance:            51966.00
+          final pnl:             1966.00
+                low:            47881.00
+     winning trades:                 170
+      losing trades:                  96
+expired trades total:                  77
+winning expired count:                  30
+losing expired count:                  47
+       max drawdown:             0.08638
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+BACKTESTING ON UNSEED DATA
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Testing period: from 2012-Apr-01 to 2012-Jun-30
+                 id:              410001
+    minute to trade:                  21
+expriration minutes:           213.50000
+              delta:            10.47000
+          stop loss:            28.00000
+        profit take:            18.19000
+   number of orders:                 286
+      final balance:            57128.00
+          final pnl:             7128.00
+                low:            49837.00
+     winning trades:                 150
+      losing trades:                  65
+expired trades total:                  71
+winning expired count:                  28
+losing expired count:                  42
+       max drawdown:             0.04199
+       -->
+    <forward_test>
+        <function>forward_test</function>
+        <tick_file>/home/john/projects/forex/historical-ticks/EUR_USD.csv</tick_file>
+        <minute_to_trade>21</minute_to_trade>
+        <expriration_minutes>213.5</expriration_minutes>
+        <delta>10.47</delta>
+        <stop_loss>28.0</stop_loss>
+        <take_profit>18.2</take_profit>
+        <from_date>20120401</from_date>
+        <to_date>20120630</to_date>
+    </forward_test>
     
 </configuration>

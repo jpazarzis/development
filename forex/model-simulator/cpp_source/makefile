@@ -19,8 +19,8 @@ CloneableDouble.o:CloneableDouble.cpp CloneableDouble.h std_include.h Logger.h O
 Logger.o: Logger.h Logger.cpp
 	$(CXX) $(FLAGS) -c Logger.cpp
 
-Order.o: Order.cpp Order.h TickEngine.h TickProcessor.h Identifiable.h Object.h TickPool.h
-	$(CXX) $(FLAGS) -c Order.cpp TickPool.o
+Order.o: Order.cpp Order.h TickEngine.h TickProcessor.h Identifiable.h Object.h TickPool.h Pool.h
+	$(CXX) $(FLAGS) $(INCLUDE) -c Order.cpp TickPool.o
 
 Identifiable.o: Identifiable.h Identifiable.cpp
 	$(CXX) $(FLAGS) -c Identifiable.cpp

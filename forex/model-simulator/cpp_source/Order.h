@@ -77,7 +77,6 @@ class Order: public TickProcessor, virtual Identifiable
 
         void process_tick(const Tick& tick, bool is_the_last_tick) ;
 
-        Order();
 
         void populate(OrderType order_type, 
                             double stop_loss, 
@@ -86,6 +85,8 @@ class Order: public TickProcessor, virtual Identifiable
                             int expiration_minutes);
 
     public:
+
+        Order();
 
         virtual ~Order(); 
 
@@ -97,6 +98,8 @@ class Order: public TickProcessor, virtual Identifiable
                             double take_profit, 
                             const Tick& tick,
                             int expiration_minutes);
+
+        static void release(ORDER_PTR pOrder);
 
 
         Order(const Order&);
