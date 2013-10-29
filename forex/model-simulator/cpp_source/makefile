@@ -32,8 +32,9 @@ toolkit.o: toolkit.h $(SRC_PATH)toolkit.cpp
 TickPool.o: TickPool.cpp TickPool.h std_include.h Tick.h toolkit.h
 	$(CXX) $(FLAGS) $(INCLUDE) -c TickPool.cpp
 
-test1: test.cpp Statistics.h
-	$(CXX) $(FLAGS) $(INCLUDE) -o test1 test.cpp
 
-
+clean:
+	rm *.o
+	rm model_optimizer
+	rm ga_sample1
     
