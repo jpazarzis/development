@@ -1,11 +1,24 @@
-
 // ParallelProcessor.h
 //
 // Author        : John Pazarzis
 // Creation date : Tue 29 Oct 2013 01:46:26 AM EDT
 //
 // Summary
-//      Summary goes here
+//
+//      Allows parallel execution of a function implemented as a class member.
+//      Used when we have a container of objects and we want to call the same
+//      function to all of them asynchronously (meaning each run does not depend
+//      to the others.
+//
+//      We provide the specific type as a template parameter and the function to
+//      call and the number of threads to create in the constructor.
+//
+//      We call the add method to add the objects to call. 
+//
+//      We start the parallel processing by calling go. This will block the
+//      calling thread until all the processing is completed.
+//
+//      A complete example of it use can be found under [root]/samples/cpp-samples
 //
 // Notes
 //

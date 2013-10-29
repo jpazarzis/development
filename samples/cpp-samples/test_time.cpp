@@ -3,16 +3,15 @@
 #include "boost/date_time/posix_time/posix_time.hpp"
 
 using namespace std;
- 
-int main() {
+
+int main()
+{
     using namespace boost::posix_time; /* put that in functions where you work with time (namespace) */
     using namespace boost::gregorian;
- 
+
     ptime now = microsec_clock::local_time(); // current *LOCAL TIMEZONE* time/date
 
     ptime t = ptime(date(2013,12,1), hours(5)+minutes(4)+seconds(2));
-
-
     cout << t << endl;
 
     t = ptime(ptime(t) + boost::posix_time::minutes(10));
@@ -40,9 +39,9 @@ int main() {
         << tod.seconds()
         << std::endl;
 
-   time_duration td1(hours(10));
+    time_duration td1(hours(10));
 
-   cout << td1.hours() << ':'
+    cout << td1.hours() << ':'
         << td1.minutes() << ':'
         << td1.seconds()
         << std::endl;
@@ -54,9 +53,9 @@ int main() {
     }
     else
     {
-        cout << "smaller" << endl;   
+        cout << "smaller" << endl;
     }
-*/
- 
+    */
+
 
 }

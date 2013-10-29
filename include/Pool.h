@@ -4,8 +4,16 @@
 // Creation date : Mon 28 Oct 2013 05:27:41 PM EDT
 //
 // Summary
+//
 //      Used to create a pool of reusable objects stored in a 
-//      static array.
+//      static array to avoid calling new and delete. Useful when we can
+//      approximate the maximum number of objects we might need.
+//
+//      Call get to get the next available object which is returned as a pointer
+//      and when done with its use call put_back to return it to the pool
+//
+//      A full example can be seen here:
+//      [root]/samples/cpp-samples/pool_sample.cpp
 //
 
 #ifndef POOL_INCLUDED
