@@ -51,25 +51,18 @@ void run_optimizer(XmlNode& config)
             for(;;)
             {
                 cout << "generation: " << ++i << " " << cout << timestamp() <<endl;
-
-                /*********
+                /********* Old single threaded code ******************
                 for (int i = 0; i < ga.size(); ++i)
                 {
                     ga[i]->calculate_fitness();
                 }
                 */
-                
-               
-               ParallelProcessor<SellBasedInDelta> pp(&SellBasedInDelta::calculate_fitness,4);
-               for (int i = 0; i < ga.size(); ++i)
-               {
+                ParallelProcessor<SellBasedInDelta> pp(&SellBasedInDelta::calculate_fitness,4);
+                for (int i = 0; i < ga.size(); ++i)
+                {
                     pp.add(ga[i]);
-               }
-               pp.go();
-                
-
-
-
+                }
+                pp.go();
                 
                 if (ga.evolve(true))
                     break;
@@ -79,7 +72,6 @@ void run_optimizer(XmlNode& config)
                     cout << "Winner so far" << endl;
                     cout << ga[0]->get_full_description2() << endl;
                 }
-                
                 
             }
             cout << "done" << endl;
