@@ -22,7 +22,6 @@ void forward_test2(XmlNode& config);
 
 #define NUMBER_OF_THREADS 4 
 
-
 void run_optimizer(XmlNode& config)
 {
     try
@@ -46,7 +45,6 @@ void run_optimizer(XmlNode& config)
             tp.load(tick_file, from_date, to_date);
             cout << timestamp() <<endl;
             cout << tp.size() << endl;
-
 
             GeneticAlgorithm<SellBasedInDelta> ga(colony_size);
             int i = 0;
@@ -82,8 +80,6 @@ void run_optimizer(XmlNode& config)
     }
 }
 
-
-
 int main(int argc, char *argv[])
 {
 
@@ -116,8 +112,6 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-
-
 void forward_test(XmlNode& config)
 {    
     std::string filename = config["tick_file"].value();
@@ -135,7 +129,6 @@ void forward_test(XmlNode& config)
 
     if(!from_date.is_not_a_date() && !to_date.is_not_a_date())
         assert(from_date < to_date);
-
    
     SellBasedInDelta model;
     model.set_values(minute_to_trade,delta,stop_loss,take_profit,expriration_minutes);
@@ -151,7 +144,6 @@ void forward_test(XmlNode& config)
     cout << model.get_full_description() << endl;
     Order::clear_order_pool();
 }
-
 
 void forward_test2(XmlNode& config)
 {    
@@ -186,23 +178,6 @@ void forward_test2(XmlNode& config)
     cout << "Testing period: from " << from_date << " to " << to_date<< endl;
     cout << model.get_full_description2() << endl;
 }
-
-/*
-void dump_generation(int generation, SellBasedInDelta* models)
-{
-    char filename[1024];
-    sprintf(filename, "generation_%i", generation);
-    std::ofstream  f;
-    f.open (filename);
-    f << SellBasedInDelta::csv_header() << endl;
-    for (int i = 0; i <NUMBER_OF_MODELS; ++i)
-    {
-        f << models[i].to_csv() << endl;
-    }   
-}
-*/
-
-
 
 
 
