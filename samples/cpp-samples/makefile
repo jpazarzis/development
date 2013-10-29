@@ -10,6 +10,10 @@ VPATH = $(DEVELOPMENT_ROOT)/include
 pool_sample:pool_sample.cpp Pool.h
 	$(CXX) $(FLAGS) $(INCLUDE) -o pool_sample pool_sample.cpp
 
+multi_threaded_pool_consumer:multi_threaded_pool_consumer.cpp Pool.h
+	$(CXX) $(FLAGS) $(INCLUDE) -o multi_threaded_pool_consumer multi_threaded_pool_consumer.cpp
+
+
 
 test_time:test_time.cpp 
 	$(CXX) $(FLAGS) -o test_time test_time.cpp  
