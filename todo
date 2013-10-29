@@ -1,4 +1,11 @@
 
+Tue Oct 29 10:22:38 EDT 2013
+~ Completed the multi threaded version of the optimizer that can now calculate
+the fitness of a model asynchronously.
+
+~ Added a utility class class called Pool to facilitate object creation without
+having to use new and delete
+
 Sun Oct 27 20:19:47 EDT 2013
 
 ~ Created a TickPool class which will replace the existing TickEngine. 

@@ -28,9 +28,8 @@
 #define GENETICALGORITHM_INCLUDED
 
 #include "std_include.h"
-#include "Statistics.h"
 #include "Optimizable.h"
-#include "BuyAtSpecificMinuteModel.h"
+//#include "BuyAtSpecificMinuteModel.h"
 
 using namespace std;
 

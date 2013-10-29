@@ -14,7 +14,6 @@
 #include "Order.h"
 #include "Optimizable.h"
 #include "FitnessCalculators.h"
-#include "Utilities.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -184,12 +183,7 @@ class Model : virtual public Object, virtual public Identifiable, public TickPro
 
                     if(save_account_balance_curve)
                     {
-                        std::string filename;
-                        char buffer [33];
-                        sprintf(buffer,"%d",(int)_id);
-                        filename = "SellAtSpecificMin" + std::string(buffer) + ".csv";
 
-                        save_curve(account_balance_curve, filename);
                     }
 
                     assert(_account_balance > 0);

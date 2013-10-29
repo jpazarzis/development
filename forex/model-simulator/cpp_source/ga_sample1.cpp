@@ -11,7 +11,7 @@
 
 #include "std_include.h"
 #include "GeneticAlgorithm.h"
-#include "Statistics.h"
+
 using namespace std;
 
 #define SAMPLE_DATA_SIZE 5

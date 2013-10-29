@@ -6,6 +6,9 @@
 #include <functional> 
 #include <cctype>
 #include <locale>
+#include <string>
+#include <vector>
+#include <numeric>
 
 #include "boost/date_time/gregorian/gregorian.hpp"
 
@@ -45,29 +48,49 @@ inline std::string trim(const std::string &s) {
     return trim(strg);
 }
 
-boost::gregorian::date make_date(std::string date_str){
-    using namespace boost::gregorian;
-    try {
-            trim(date_str);
-            int year = 0, month = 0, day = 0;
-            if(date_str.length() == 8){ // YYYYMMDD format
-                year = atoi(date_str.substr(0,4).c_str());
-                month = atoi(date_str.substr(4,2).c_str());
-                day = atoi(date_str.substr(6,2).c_str());
-            }
-            else if(date_str.length() == 10){ // MM/DD/YYYY format
-                year = atoi(date_str.substr(6).c_str());
-                day = atoi(date_str.substr(3,5).c_str());
-                month = atoi(date_str.substr(0,2).c_str());
-            }
+boost::gregorian::date make_date(std::string date_str);
 
-            return date(year,month,day);
+std::string sformat(long value, const std::string& format = "%10d");
+std::string sformat(int value, const std::string& format = "%10d");;
+std::string sformat(double value, const std::string& format = "%10.4d");
+std::string sformat(const std::string& strg, const std::string& format = "%10s");
+std::string timestamp();
 
-     }
-     catch(...) {
-        return date();
-     }
+
+template <typename T> double mean(const std::vector<T>& v)
+{
+    return std::accumulate(v.begin(), v.end(), 0.0) / (v.size() * 1.0);
 }
 
+template <typename T> double variance(const std::vector<T>& v)
+{
+    const double m = mean(v);
+    const int size = v.size();
+    double temp = 0;
+    for(int i = 0; i < size; i++)
+        temp += pow(v[i] - m,2 );
+   return temp / (size-1);
+}
+
+template <typename T> double stdev(const std::vector<T>& v)
+{
+    return sqrt(variance(v));
+}
+
+template <typename T> T median(std::vector<T> v)
+{
+    const int size = v.size();
+    sort(v.begin(), v.end());
+    if (size  % 2 == 0)
+    {
+          return (v[size / 2 - 1] + v[size / 2]) / 2;
+    }
+    else 
+    {
+          return v[size / 2];
+    }
+}
+
+double max_drawdown(const std::vector<double>& v);
 
 #endif

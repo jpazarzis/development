@@ -5,34 +5,35 @@ FLAGS=-Ofast -ggdb3 -std=c++0x -pthread
 
 INCLUDE=-I$(DEVELOPMENT_ROOT)/include
 VPATH = $(DEVELOPMENT_ROOT)/include
+SRC_PATH=$(DEVELOPMENT_ROOT)/src/
 
 
-model_optimizer:model_optimizer.cpp SellBasedInDelta.h Optimizable.h GeneticAlgorithm.h Statistics.h std_include.h TickEngine.h TickProcessor.h Object.h Order.o Identifiable.o CloneableDouble.o  Logger.o Utilities.o Model.h FitnessCalculators.h xmldocument.h toolkit.h FitnessStatistics.h ParallelProcessor.h TickPool.o 
-	$(CXX) $(FLAGS)  $(INCLUDE) -o model_optimizer model_optimizer.cpp CloneableDouble.o Logger.o Order.o Identifiable.o Utilities.o TickPool.o
+model_optimizer:model_optimizer.cpp SellBasedInDelta.h Optimizable.h GeneticAlgorithm.h  std_include.h TickEngine.h TickProcessor.h Object.h Order.o Identifiable.o CloneableDouble.o  Logger.o toolkit.o Model.h FitnessCalculators.h xmldocument.h toolkit.o FitnessStatistics.h ParallelProcessor.h TickPool.o 
+	$(CXX) $(FLAGS)  $(INCLUDE) -o model_optimizer model_optimizer.cpp CloneableDouble.o Logger.o Order.o Identifiable.o toolkit.o TickPool.o
 
-ga_sample1:ga_sample1.cpp CloneableDouble.o Optimizable.h GeneticAlgorithm.h Statistics.h std_include.h Object.h Logger.o Utilities.o
-	$(CXX) $(FLAGS) -o ga_sample1 ga_sample1.cpp CloneableDouble.o Logger.o Utilities.o
+ga_sample1:ga_sample1.cpp Optimizable.h GeneticAlgorithm.h std_include.h Object.h Logger.o toolkit.o CloneableDouble.o 
+	$(CXX) $(FLAGS) $(INCLUDE) -o ga_sample1 ga_sample1.cpp CloneableDouble.o Logger.o toolkit.o
 
-CloneableDouble.o:CloneableDouble.cpp CloneableDouble.h std_include.h Logger.h Object.h
-	$(CXX) $(FLAGS) -c CloneableDouble.cpp
+CloneableDouble.o:$(SRC_PATH)CloneableDouble.cpp CloneableDouble.h std_include.h Logger.h Object.h toolkit.o
+	$(CXX) $(FLAGS) $(INCLUDE) -c $(SRC_PATH)CloneableDouble.cpp toolkit.o
 
-Logger.o: Logger.h Logger.cpp
-	$(CXX) $(FLAGS) -c Logger.cpp
+Logger.o: Logger.h $(SRC_PATH)Logger.cpp
+	$(CXX) $(FLAGS) $(INCLUDE) -c $(SRC_PATH)Logger.cpp
 
-Order.o: Order.cpp Order.h TickEngine.h TickProcessor.h Identifiable.h Object.h TickPool.h Pool.h
-	$(CXX) $(FLAGS) $(INCLUDE) -c Order.cpp TickPool.o
+Order.o: Order.cpp Order.h TickEngine.h TickProcessor.h Identifiable.h Object.h TickPool.o Pool.h toolkit.h
+	$(CXX) $(FLAGS) $(INCLUDE) -c Order.cpp  
 
-Identifiable.o: Identifiable.h Identifiable.cpp
-	$(CXX) $(FLAGS) -c Identifiable.cpp
+Identifiable.o: Identifiable.h $(SRC_PATH)Identifiable.cpp
+	$(CXX) $(FLAGS) $(INCLUDE) -c $(SRC_PATH)Identifiable.cpp
 
-Utilities.o: Utilities.h Utilities.cpp
-	$(CXX) $(FLAGS) -c Utilities.cpp
+toolkit.o: toolkit.h $(SRC_PATH)toolkit.cpp
+	$(CXX) $(FLAGS) $(INCLUDE) -c $(SRC_PATH)toolkit.cpp
 
-TickPool.o: TickPool.cpp TickPool.h std_include.h Tick.h
-	$(CXX) $(FLAGS) -c TickPool.cpp
+TickPool.o: TickPool.cpp TickPool.h std_include.h Tick.h toolkit.h
+	$(CXX) $(FLAGS) $(INCLUDE) -c TickPool.cpp
 
 test1: test.cpp Statistics.h
-	$(CXX) $(FLAGS) -o test1 test.cpp
+	$(CXX) $(FLAGS) $(INCLUDE) -o test1 test.cpp
 
 
     

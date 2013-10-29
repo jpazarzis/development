@@ -11,7 +11,6 @@
 #define FITNESSSTATISTICS_INCLUDED
 
 #include "Order.h"
-#include "Statistics.h"
 #include <vector>
 #include "std_include.h"
 #include <assert.h>
