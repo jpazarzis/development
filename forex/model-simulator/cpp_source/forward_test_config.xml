@@ -42,7 +42,7 @@ expired trades total:                  52
 winning expired count:                  21
 losing expired count:                  31
        max drawdown:             0.04811
-     
+-->      
 
     <forward_test>
         <function>forward_test</function>
@@ -56,7 +56,7 @@ losing expired count:                  31
         <to_date>20120630</to_date>
     </forward_test>
    
---> 
+
 
 <!--
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -217,7 +217,7 @@ expired trades total:                  71
 winning expired count:                  28
 losing expired count:                  42
        max drawdown:             0.04199
-       -->
+
     <forward_test>
         <function>forward_test</function>
         <tick_file>/home/john/projects/forex/historical-ticks/EUR_USD.csv</tick_file>
@@ -229,5 +229,5 @@ losing expired count:                  42
         <from_date>20120401</from_date>
         <to_date>20120630</to_date>
     </forward_test>
-    
+       -->    
 </configuration>
