@@ -7,12 +7,8 @@ INCLUDE=-I$(DEVELOPMENT_ROOT)/include
 VPATH = $(DEVELOPMENT_ROOT)/include
 SRC_PATH=$(DEVELOPMENT_ROOT)/src/
 
-
 model_optimizer:model_optimizer.cpp SellBasedInDelta.h Optimizable.h GeneticAlgorithm.h  std_include.h TickEngine.h TickProcessor.h Object.h Order.o Identifiable.o CloneableDouble.o  Logger.o toolkit.o Model.h FitnessCalculators.h xmldocument.h toolkit.o FitnessStatistics.h ParallelProcessor.h TickPool.o 
 	$(CXX) $(FLAGS)  $(INCLUDE) -o model_optimizer model_optimizer.cpp CloneableDouble.o Logger.o Order.o Identifiable.o toolkit.o TickPool.o
-
-ga_sample1:ga_sample1.cpp Optimizable.h GeneticAlgorithm.h std_include.h Object.h Logger.o toolkit.o CloneableDouble.o 
-	$(CXX) $(FLAGS) $(INCLUDE) -o ga_sample1 ga_sample1.cpp CloneableDouble.o Logger.o toolkit.o
 
 CloneableDouble.o:$(SRC_PATH)CloneableDouble.cpp CloneableDouble.h std_include.h Logger.h Object.h toolkit.o
 	$(CXX) $(FLAGS) $(INCLUDE) -c $(SRC_PATH)CloneableDouble.cpp toolkit.o

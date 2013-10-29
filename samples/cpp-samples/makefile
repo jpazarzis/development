@@ -7,6 +7,23 @@ INCLUDE=-I$(DEVELOPMENT_ROOT)/include -I/usr/include
 VPATH = $(DEVELOPMENT_ROOT)/include
 #LIBS = -L/usr/lib -lboost_date_time-mt
 
+FLAGS=-Ofast -ggdb3 -std=c++0x -pthread  
+SRC_PATH=$(DEVELOPMENT_ROOT)/src/
+
+
+ga_sample1:ga_sample1.cpp Optimizable.h GeneticAlgorithm.h std_include.h Object.h Logger.o toolkit.o CloneableDouble.o 
+	$(CXX) $(FLAGS) $(INCLUDE) -o ga_sample1 ga_sample1.cpp CloneableDouble.o Logger.o toolkit.o
+
+CloneableDouble.o:$(SRC_PATH)CloneableDouble.cpp CloneableDouble.h std_include.h Logger.h Object.h toolkit.o
+	$(CXX) $(FLAGS) $(INCLUDE) -c $(SRC_PATH)CloneableDouble.cpp toolkit.o
+
+Logger.o: Logger.h $(SRC_PATH)Logger.cpp
+	$(CXX) $(FLAGS) $(INCLUDE) -c $(SRC_PATH)Logger.cpp
+
+toolkit.o: toolkit.h $(SRC_PATH)toolkit.cpp
+	$(CXX) $(FLAGS) $(INCLUDE) -c $(SRC_PATH)toolkit.cpp
+
+
 pool_sample:pool_sample.cpp Pool.h
 	$(CXX) $(FLAGS) $(INCLUDE) -o pool_sample pool_sample.cpp
 
@@ -35,11 +52,3 @@ xmlsample: xmlsample.cpp xmldocument.h toolkit.h
 
 DateTime.o:DateTime.cpp DateTime.h
 	$(CXX) $(FLAGS) $(INCLUDE) -c $<
-
-clean:
-	rm xmlsample
-	rm test_time
-
-
-
-    
