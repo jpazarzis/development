@@ -12,6 +12,7 @@
 #include "GeneticAlgorithm.h"
 #include "xmldocument.h"
 #include "TickPool.h"
+#include "ParallelProcessor.h"
 #include <sys/resource.h>
 
 using namespace std;
@@ -51,10 +52,23 @@ void run_optimizer(XmlNode& config)
             {
                 cout << "generation: " << ++i << " " << cout << timestamp() <<endl;
 
+                /*********
                 for (int i = 0; i < ga.size(); ++i)
                 {
                     ga[i]->calculate_fitness();
                 }
+                */
+                
+               
+               ParallelProcessor<SellBasedInDelta> pp(&SellBasedInDelta::calculate_fitness,4);
+               for (int i = 0; i < ga.size(); ++i)
+               {
+                    pp.add(ga[i]);
+               }
+               pp.go();
+                
+
+
 
                 
                 if (ga.evolve(true))
