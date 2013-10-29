@@ -13,6 +13,11 @@ pool_sample:pool_sample.cpp Pool.h
 multi_threaded_pool_consumer:multi_threaded_pool_consumer.cpp Pool.h
 	$(CXX) $(FLAGS) $(INCLUDE) -o multi_threaded_pool_consumer multi_threaded_pool_consumer.cpp
 
+parallel_processor:parallel_processor.cpp Pool.h ParallelProcessor.h
+	$(CXX) $(FLAGS) $(INCLUDE) -o parallel_processor parallel_processor.cpp
+
+funtional_use:funtional_use.cpp 
+	$(CXX) $(FLAGS) $(INCLUDE) -o funtional_use funtional_use.cpp
 
 
 test_time:test_time.cpp 
