@@ -20,6 +20,8 @@ using namespace std;
 void forward_test(XmlNode& config);
 void forward_test2(XmlNode& config);
 
+#define NUMBER_OF_THREADS 4 
+
 
 void run_optimizer(XmlNode& config)
 {
@@ -57,11 +59,9 @@ void run_optimizer(XmlNode& config)
                     ga[i]->calculate_fitness();
                 }
                 */
-                ParallelProcessor<SellBasedInDelta> pp(&SellBasedInDelta::calculate_fitness,4);
+                ParallelProcessor<SellBasedInDelta> pp(&SellBasedInDelta::calculate_fitness,NUMBER_OF_THREADS);
                 for (int i = 0; i < ga.size(); ++i)
-                {
                     pp.add(ga[i]);
-                }
                 pp.go();
                 
                 if (ga.evolve(true))
