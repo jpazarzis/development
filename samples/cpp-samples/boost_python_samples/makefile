@@ -21,6 +21,9 @@ BOOST_LIB = /usr/lib
 
 TARGET = World
 
+multithread_python_calling:multithread_python_calling.cpp
+	g++ $(FLAGS) $(INCLUDE) -o   multithread_python_calling multithread_python_calling.cpp -I/usr/include/python2.7 -L/usr/lib/python2.7 -lpython2.7
+
 calling_process_tick:calling_process_tick.cpp
 	g++ $(FLAGS) $(INCLUDE) -o   calling_process_tick calling_process_tick.cpp -I/usr/include/python2.7 -L/usr/lib/python2.7 -lpython2.7
 
