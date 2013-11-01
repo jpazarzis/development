@@ -158,8 +158,8 @@ class PythonModule
             if ( !PyCallable_Check( _process_tick_function ) ) {
                 throw "expected a callable object!";
             }
-            //_count_optimizable_parameters = count_number_of_parameters() - NUMBER_OF_STANDARD_PARAMETERS;
-            _count_optimizable_parameters = 3;
+            _count_optimizable_parameters = count_number_of_parameters() - NUMBER_OF_STANDARD_PARAMETERS;
+            
             
         }
 
