@@ -33,6 +33,10 @@ using namespace std;
 // user defined as a vector of doubles. Note that all user defined parameters
 // are treated as of double type.
 //
+// It is very important that your client code calls Py_Initialize() and Py_Finalize()
+// in the begining and the end of the program othwerwise the Python-C API will throw 
+// exceptions!
+//
 // The return value
 // ================
 //

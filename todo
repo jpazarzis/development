@@ -14,7 +14,7 @@ Sun Oct 27 20:19:47 EDT 2013
 we no longer hold year-month-day as separate data. I also changed the Order and
 the Model classes to accommodate this change.
 
-@@ Modify the Model and Order process tick to use the TickPool instead of been
+~ Modify the Model and Order process tick to use the TickPool instead of been
 called back by the TickEngine.
 
 
@@ -38,6 +38,6 @@ solution
 
 ~ Based in this class add configuration capabilities to the modelers
 
-@@ Add multi threading capabilities to the optimizer so it can run faster
+~ Add multi threading capabilities to the optimizer so it can run faster
 
 
