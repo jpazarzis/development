@@ -114,7 +114,7 @@ class PythonModelSignalCaller
                 variables.push_back(Py_BuildValue("d", d));
             }
 
-            args = PyTuple_New(8 + optimizable_parameters.size());
+            args = PyTuple_New(NUMBER_OF_STANDARD_PARAMETERS + optimizable_parameters.size());
 
             for(int i = 0; i < variables.size(); ++i)
             {
