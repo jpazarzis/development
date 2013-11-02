@@ -1,7 +1,7 @@
 #include "TickPool.h"
 #include "assert.h"
 
-double fast_atof (const char *p);
+double fast_atof(const char *p);
 
 TickPool TickPool::_the_singleton;
 
@@ -17,7 +17,7 @@ int TickPool::size() const
 
 const Tick& TickPool::operator[](int index) const
 {
-    assert(index>= 0 && index <_size);
+    assert(index >= 0 && index < _size);
     return _pool[index];
 }
 
@@ -30,32 +30,35 @@ void TickPool::load(const std::string& filename, CONST_DATE_REF from_date, CONST
         assert(to_date > from_date);
     }
 
-    FILE* f = fopen (filename.c_str(), "r");
-    if (f == NULL) 
+    FILE* f = fopen(filename.c_str(), "r");
+
+    if(f == NULL)
     {
         LOG << "failed to open file: " << filename << EOL;
         throw("Error opening file");
     }
 
-    char psz[BUFFER_LENGTH]; 
-    CLEAR_BUFFER(psz)    
+    char psz[BUFFER_LENGTH];
+    CLEAR_BUFFER(psz)
     int bytes_read;
     _size = 0;
     bool within_desired_period = from_date.is_not_a_date();
 
-    while ( (bytes_read =fread ( psz, LINE_LENGTH, BUFFER_SIZE, f)) > 0) 
+    while((bytes_read = fread(psz, LINE_LENGTH, BUFFER_SIZE, f)) > 0)
     {
         for(register int i = 0; i < bytes_read; ++i)
         {
-            if(psz[i] == '\n') 
-                psz[i] = '\0';  
+            if(psz[i] == '\n')
+            {
+                psz[i] = '\0';
+            }
         }
 
         bool exceeded_to_day = false;
-        
+
         for(register int i = 0; i < bytes_read; ++i)
         {
-            parse_tick((char*) &psz[i*LINE_LENGTH]);
+            parse_tick((char*) &psz[i * LINE_LENGTH]);
             Tick& current_tick = _pool[_size];
 
             if(!within_desired_period && current_tick.timestamp().date() >=  from_date)
@@ -84,18 +87,18 @@ void TickPool::load(const std::string& filename, CONST_DATE_REF from_date, CONST
 
         CLEAR_BUFFER(psz)
 
-        if (exceeded_to_day)
+        if(exceeded_to_day)
         {
             break;
         }
-    }      
-    fclose (f);
+    }
+
+    fclose(f);
 }
 
 void TickPool::parse_tick(char* psz)
 {
     assert(_size < MAX_SIZE_OF_TICK_POOL);
-
     using namespace std;
     psz[2] = '\0';
     psz[5] = '\0';
@@ -104,7 +107,6 @@ void TickPool::parse_tick(char* psz)
     psz[14] = '\0';
     psz[17] = '\0';
     psz[25] = '\0';
-    
     const int day =  atoi(psz);
     const int month = atoi((char*)&psz[3]);
     const int year = atoi((char*)&psz[6]) + 2000;
@@ -113,37 +115,43 @@ void TickPool::parse_tick(char* psz)
     const int second = atoi((char*)&psz[15]);
     const double bid = fast_atof((char*)&psz[18]);
     const double ask = fast_atof((char*)&psz[26]);
-    _pool[_size].assign_values(day,month,year,hour,minute,second,bid,ask);
+    _pool[_size].assign_values(day, month, year, hour, minute, second, bid, ask);
 }
 
 
-double fast_atof (const char *p)
+double fast_atof(const char *p)
 {
     int frac;
     double sign, value, scale;
-    while (white_space(*p) ) 
+
+    while(white_space(*p))
     {
         p += 1;
     }
+
     sign = 1.0;
-    if (*p == '-') 
+
+    if(*p == '-')
     {
         sign = -1.0;
         p += 1;
-    } 
-    else if (*p == '+') 
+    }
+    else if(*p == '+')
     {
         p += 1;
     }
-    for (value = 0.0; valid_digit(*p); p += 1) 
+
+    for(value = 0.0; valid_digit(*p); p += 1)
     {
         value = value * 10.0 + (*p - '0');
     }
-    if (*p == '.') 
+
+    if(*p == '.')
     {
         double pow10 = 10.0;
         p += 1;
-        while (valid_digit(*p)) 
+
+        while(valid_digit(*p))
         {
             value += (*p - '0') / pow10;
             pow10 *= 10.0;
@@ -153,24 +161,50 @@ double fast_atof (const char *p)
 
     frac = 0;
     scale = 1.0;
-    if ((*p == 'e') || (*p == 'E')) {
+
+    if((*p == 'e') || (*p == 'E'))
+    {
         unsigned int expon;
         p += 1;
-        if (*p == '-') {
+
+        if(*p == '-')
+        {
             frac = 1;
             p += 1;
-
-        } else if (*p == '+') {
+        }
+        else if(*p == '+')
+        {
             p += 1;
         }
 
-        for (expon = 0; valid_digit(*p); p += 1) {
+        for(expon = 0; valid_digit(*p); p += 1)
+        {
             expon = expon * 10 + (*p - '0');
         }
-        if (expon > 308) expon = 308;
-        while (expon >= 50) { scale *= 1E50; expon -= 50; }
-        while (expon >=  8) { scale *= 1E8;  expon -=  8; }
-        while (expon >   0) { scale *= 10.0; expon -=  1; }
+
+        if(expon > 308)
+        {
+            expon = 308;
+        }
+
+        while(expon >= 50)
+        {
+            scale *= 1E50;
+            expon -= 50;
+        }
+
+        while(expon >=  8)
+        {
+            scale *= 1E8;
+            expon -=  8;
+        }
+
+        while(expon >   0)
+        {
+            scale *= 10.0;
+            expon -=  1;
+        }
     }
+
     return sign * (frac ? (value / scale) : (value * scale));
 }

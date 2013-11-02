@@ -4,13 +4,13 @@
 
 /////////////////////////////////////////////////////
 // Order.h
-// 
+//
 // Author: John Pazarzis
 //
 // Date  : Sep. 28 2013
 //
-// Summary: 
-//    The Order type is used by the model to create and monitor orders 
+// Summary:
+//    The Order type is used by the model to create and monitor orders
 //
 // Notes:
 //
@@ -52,7 +52,7 @@ enum ORDER_RESULT
 
 enum { DEFUALT_TIME_FRAME = 15};
 
-using namespace boost::posix_time; 
+using namespace boost::posix_time;
 using namespace boost::gregorian;
 
 class Order: public TickProcessor, virtual Identifiable
@@ -72,32 +72,32 @@ class Order: public TickProcessor, virtual Identifiable
         static OrderPool _order_pool;
 
         bool reaching_stop_loss(const Tick& tick) const;
-    
+
         bool reaching_take_profit(const Tick& tick) const;
 
         void process_tick(const Tick& tick, bool is_the_last_tick) ;
 
 
-        void populate(OrderType order_type, 
-                            double stop_loss, 
-                            double take_profit, 
-                            const Tick& tick,
-                            int expiration_minutes);
+        void populate(OrderType order_type,
+                      double stop_loss,
+                      double take_profit,
+                      const Tick& tick,
+                      int expiration_minutes);
 
     public:
 
         Order();
 
-        virtual ~Order(); 
+        virtual ~Order();
 
 
-    
 
-        static ORDER_PTR make( OrderType order_type, 
-                            double stop_loss, 
-                            double take_profit, 
-                            const Tick& tick,
-                            int expiration_minutes);
+
+        static ORDER_PTR make(OrderType order_type,
+                              double stop_loss,
+                              double take_profit,
+                              const Tick& tick,
+                              int expiration_minutes);
 
         static void release(ORDER_PTR pOrder);
 
@@ -127,7 +127,7 @@ class Order: public TickProcessor, virtual Identifiable
         double get_pnl() const;
 
         bool was_expired() const;
-    
+
         ORDER_RESULT get_win_or_loss() const;
 
         std::string to_string() const;
