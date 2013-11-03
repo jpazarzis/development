@@ -2,15 +2,15 @@
 #ifndef TOOLKIT_INCLUDED
 #define TOOLKIT_INCLUDED
 
-#include <algorithm> 
+
 #include <functional> 
 #include <cctype>
 #include <locale>
 #include <string>
 #include <vector>
 #include <numeric>
-
 #include "boost/date_time/gregorian/gregorian.hpp"
+#include <algorithm> 
 
 
 // trim from start

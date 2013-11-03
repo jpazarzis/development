@@ -71,6 +71,7 @@
 #include <iostream>
 #include <vector>
 #include "ParallelProcessor.h"
+
 using namespace std;
 
 class PythonSignalCaller
@@ -81,6 +82,7 @@ class PythonSignalCaller
 
         PyObject * import_name(const char * modname, const char * symbol)
         {
+            cout << modname << endl; 
             PyObject * u_name, *module;
             u_name = PyUnicode_FromString(modname);
             module = PyImport_Import(u_name);
@@ -188,10 +190,24 @@ class PythonSignalCaller
     public:
         enum { NUMBER_OF_STANDARD_PARAMETERS = 8 };
 
+        PythonSignalCaller():
+            _module_name(""), _count_optimizable_parameters(-1)
+        {
+            
+        }
+
+
         PythonSignalCaller(const std::string& name):
             _module_name(name), _count_optimizable_parameters(-1)
 
         {
+            set_module(name);
+        }
+
+        void set_module(const std::string& name)
+        {
+            _module_name = name;
+        
             _process_tick_function = import_name(_module_name.c_str(), "process_tick");
 
             if(!PyCallable_Check(_process_tick_function))
@@ -200,6 +216,7 @@ class PythonSignalCaller
             }
 
             _count_optimizable_parameters = count_number_of_parameters() - NUMBER_OF_STANDARD_PARAMETERS;
+
         }
 
         int count_optimizable_parameters() const

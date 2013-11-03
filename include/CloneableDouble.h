@@ -23,6 +23,10 @@ class CloneableDouble : virtual public Object
 {
     public:
 
+
+        CloneableDouble();
+        
+
         // This constructor provides the min and max values to be used for the random
         // creation and the number of decimal to use. 
         //
@@ -67,17 +71,15 @@ class CloneableDouble : virtual public Object
         // be sufficient only for the delta (500).
         int max_length() const;
 
-        // Implemented only for debugging purposes
         CloneableDouble(const CloneableDouble& other);        
 
-        // Not implemented, prohibits assignments
         CloneableDouble& operator=(const CloneableDouble& other);       
 
     private:
-        const double _min;
-        const double _max;
-        const int _decimals;
-        const int _max_length;
+        double _min;
+        double _max;
+        int _decimals;
+        int _max_length;
         ULONG _long_value;
 };
 

@@ -175,6 +175,11 @@ class Optimizable : virtual public Object
 
     protected:
 
+        void clear_opimizable_fields()
+        {
+            _fields.clear();
+        }
+
         void add_optimizable_field(CloneableDouble* optimizable)
         {
             assert(optimizable != NULL);

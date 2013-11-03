@@ -1,11 +1,26 @@
 CXX=g++ 
 #FLAGS=-g -D DEBUG -DDISABLE_LOGGING
 #FLAGS=-g -D DEBUG -ggdb3 -std=c++0x -pthread  
-FLAGS=-Ofast -ggdb3 -std=c++0x -pthread  
+FLAGS=-Ofast -ggdb3 -std=c++0x -pthread  -w
 
-INCLUDE=-I$(DEVELOPMENT_ROOT)/include
+INCLUDE=-I$(DEVELOPMENT_ROOT)/include -I/usr/include/python2.7
+
 VPATH = $(DEVELOPMENT_ROOT)/include
+
 SRC_PATH=$(DEVELOPMENT_ROOT)/src/
+
+OBJ=CloneableDouble.o Logger.o Order.o Identifiable.o toolkit.o TickPool.o
+
+PYTHON_LIB=-L/usr/lib/python2.7 -lpython2.7
+
+HEADERS=SellBasedInDelta.h Optimizable.h GeneticAlgorithm.h  std_include.h \
+        TickEngine.h TickProcessor.h Object.h Model.h FitnessCalculators.h \
+        xmldocument.h FitnessStatistics.h ParallelProcessor.h PythonSignalCaller.h 
+
+
+python_optimizer:python_optimizer.cpp $(HEADERS) $(OBJ)
+	$(CXX) $(FLAGS)  $(INCLUDE) -o python_optimizer python_optimizer.cpp $(OBJ) $(PYTHON_LIB)
+
 
 model_optimizer:model_optimizer.cpp SellBasedInDelta.h Optimizable.h GeneticAlgorithm.h  std_include.h TickEngine.h TickProcessor.h Object.h Order.o Identifiable.o CloneableDouble.o  Logger.o toolkit.o Model.h FitnessCalculators.h xmldocument.h toolkit.o FitnessStatistics.h ParallelProcessor.h TickPool.o 
 	$(CXX) $(FLAGS)  $(INCLUDE) -o model_optimizer model_optimizer.cpp CloneableDouble.o Logger.o Order.o Identifiable.o toolkit.o TickPool.o

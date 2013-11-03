@@ -7,6 +7,22 @@ using namespace std;
 
 #define CHROMOSOME_LENGTH sizeof(ULONG) * 8
 
+
+CloneableDouble::CloneableDouble():
+    _min(1), 
+    _max(10), 
+    _decimals(2), 
+    _max_length(long_to_bits((_max - _min )* pow(10, _decimals)).length())
+{
+    assert(_min >= 0);
+    assert(_min < _max);
+    assert(_decimals >= 0);
+    assert(_max_length >= MIN_ACCEPTABLE_CHROMOSOME_LENGTH);
+
+    double d_value = (_max - _min) * ( (double)rand() / (double)RAND_MAX );
+    _long_value= d_value * pow(10, _decimals);
+}
+
 CloneableDouble::CloneableDouble(double min, double max, int decimals):
     _min(min), 
     _max(max), 
@@ -21,6 +37,8 @@ CloneableDouble::CloneableDouble(double min, double max, int decimals):
     double d_value = (_max - _min) * ( (double)rand() / (double)RAND_MAX );
     _long_value= d_value * pow(10, _decimals);
 }
+
+
 
 int CloneableDouble::max_length() const
 {
@@ -78,6 +96,20 @@ CloneableDouble::CloneableDouble(const CloneableDouble& other):
      _max_length(other._max_length),
      _long_value(other._long_value)
 {
+}
+
+CloneableDouble& CloneableDouble::operator=(const CloneableDouble& other)
+{
+    if(this != &other)
+    {
+        _min = other._min;
+        _max = other._max;
+        _decimals = other._decimals;
+        _max_length = other._max_length;
+        _long_value = other._long_value;
+    }
+
+    return *this;
 }
 
 std::string CloneableDouble::to_string() const 
