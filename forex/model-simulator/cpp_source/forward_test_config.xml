@@ -52,8 +52,8 @@ losing expired count:                  31
         <delta>10.45</delta>
         <stop_loss>20.55</stop_loss>
         <take_profit>18.7</take_profit>
-        <from_date>20110101</from_date>
-        <to_date>20110103</to_date>
+        <from_date>20120401</from_date>
+        <to_date>20120630</to_date>
     </forward_test>
    
 

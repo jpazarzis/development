@@ -1,8 +1,8 @@
 <configuration>
     <optimize>
         <tick_file>/home/john/projects/forex/historical-ticks/EUR_USD.csv</tick_file>
-        <colony_size>180</colony_size>
+        <colony_size>50</colony_size>
         <from_date>20120101</from_date>
-        <to_date>20120331</to_date>
+        <to_date>20120231</to_date>
     </optimize>
 </configuration>

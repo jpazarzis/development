@@ -13,6 +13,11 @@
 //      C++. The difference here is that just the signal is decided in Python.
 //
 // Notes
+//     Mon Nov  4 12:22:02 EST 2013 
+//     The optimizer based in this class if very slow in comparison to the same
+//     code implemented as C++ code, so although I keep the code, I still do no
+//     use it for simulations.
+//      
 //     
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -155,6 +160,16 @@ class PythonDrivenModel : public Model
             strg += sformat("profit take:", "%20s");
             strg += sformat((double)_take_profit, "%20.5f");
             strg += "\n";
+            strg += "-----------------------\n";
+            strg += "USER DEFINED PARAMETERS\n";
+
+            for(auto op:_optimizable_parameters)
+            {
+                strg += sformat((double)op, "%20.5f");
+                strg += "\n";
+            }
+            strg += "-----------------------\n";
+
             strg += _fitness_statistics.get_full_description();
             return strg;
         }

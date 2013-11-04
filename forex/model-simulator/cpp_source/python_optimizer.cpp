@@ -60,7 +60,7 @@ void run_optimizer(XmlNode& config)
 
         for(int i = 0; i < ga.size(); ++i)
         {
-                ga[i]->set_python_module("module_name_goes_here");
+                ga[i]->set_python_module("test_model");
         }
 
 
@@ -70,19 +70,23 @@ void run_optimizer(XmlNode& config)
 
             for(int i = 0; i < ga.size(); ++i)
             {
+                cout << "calculating fitness: " << i << " " << timestamp() << endl;
                 ga[i]->calculate_fitness();
             }
 
+            cout << "here1" << endl;
             if(ga.evolve(true))
             {
                 break;
             }
+            cout << "here2" << endl;
 
             if(!ga.was_rolled_back())
             {
                 cout << "Winner so far" << endl;
                 cout << ga[0]->get_full_description() << endl;
             }
+            cout << "here3" << endl;
         }
 
         cout << "done" << endl;
