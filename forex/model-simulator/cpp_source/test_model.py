@@ -21,7 +21,7 @@ triggered_for_current_hour = False
 
 high_for_the_hour = None
 
-enable_logging = False
+enable_logging = True
 
 open_price = 0.0
 
@@ -50,11 +50,6 @@ open_price = 0.0
 def process_tick(year,month,day, hour, minute,second, bid, ask, minute_to_buy, triggering_delta): 
     global current_hour, triggered_for_current_hour, high_for_the_hour , open_price
 
-
-    if enable_logging:
-        print year,month,day, hour, minute,second, bid, ask, minute_to_buy,\
-        triggering_delta, high_for_the_hour, current_hour
-
     if current_hour != hour:
         # we have entered a new hour, lets update the needed data
         # that's all we need for now....
@@ -75,6 +70,9 @@ def process_tick(year,month,day, hour, minute,second, bid, ask, minute_to_buy, t
     if  triggered_for_current_hour or minute != minute_to_buy:
         return 0
 
+    
+    
+
     delta_in_pips = (high_for_the_hour - open_price) * 10000
 
     if delta_in_pips < triggering_delta:
@@ -84,6 +82,10 @@ def process_tick(year,month,day, hour, minute,second, bid, ask, minute_to_buy, t
     # than the trigger, so we should send a SELL signal to our caller
 
     triggered_for_current_hour = True
+
+    #print 'minute_to_buy:', minute_to_buy,'triggering_delta:',triggering_delta
+    #print 'delta:',delta_in_pips
+
 
     return -1
 

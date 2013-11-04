@@ -123,10 +123,13 @@ class PythonDrivenModel : public Model
             const int number_of_ticks = tp.size();
             std::vector<Order*> orders;
 
+
             for(register int i = 0; i < number_of_ticks; ++i)
             {
                 process_tick(tp[i], orders, i);
             }
+
+
 
             _fitness_statistics = FitnessStatistics::make(orders);
             set_fitness(_fitness_statistics.fitness());
@@ -139,7 +142,21 @@ class PythonDrivenModel : public Model
 
         std::string get_full_description() const
         {
-            return "Not implemeted";
+            std::string strg;
+            strg += sformat("id:", "%20s");
+            strg += sformat((int)_id, "%20d");
+            strg += "\n";
+            strg += sformat("expriration minutes:", "%20s");
+            strg += sformat((double)_expriration_minutes, "%20.5f");
+            strg += "\n";
+            strg += sformat("stop loss:", "%20s");
+            strg += sformat((double)_stop_loss, "%20.5f");
+            strg += "\n";
+            strg += sformat("profit take:", "%20s");
+            strg += sformat((double)_take_profit, "%20.5f");
+            strg += "\n";
+            strg += _fitness_statistics.get_full_description();
+            return strg;
         }
 
         
@@ -168,7 +185,7 @@ class PythonDrivenModel : public Model
     // the parameters of the Python function and their type always will be
     // double.
     void process_tick(const Tick& tick, std::vector<Order*>& orders, int current_tick_index)
-        {
+    {
             const int year = tick.timestamp().date().year();
             const int month = tick.timestamp().date().month();
             const int day  = tick.timestamp().date().day();
@@ -182,7 +199,6 @@ class PythonDrivenModel : public Model
                 op.push_back((double)p);
             }
 
-
             const int signal = _signal_caller.get_signal( 
                                           year,
                                           month,
@@ -194,8 +210,10 @@ class PythonDrivenModel : public Model
                                           tick.ask(), 
                                           op);
 
+
             assert(signal == SELL_SIGNAL || signal == DO_NOTHING_SIGNAL || signal == BUY_SIGNAL);
 
+            
 
             if(signal == DO_NOTHING_SIGNAL)
             {

@@ -1,7 +1,7 @@
 CXX=g++ 
 #FLAGS=-g -D DEBUG -DDISABLE_LOGGING
-#FLAGS=-g -D DEBUG -ggdb3 -std=c++0x -pthread  
-FLAGS=-Ofast -ggdb3 -std=c++0x -pthread  -w
+FLAGS=-g -D DEBUG -w -ggdb3 -std=c++0x -pthread  
+#FLAGS=-Ofast -ggdb3 -std=c++0x -pthread  -w
 
 INCLUDE=-I$(DEVELOPMENT_ROOT)/include -I/usr/include/python2.7
 
@@ -18,7 +18,7 @@ HEADERS=SellBasedInDelta.h Optimizable.h GeneticAlgorithm.h  std_include.h \
         xmldocument.h FitnessStatistics.h ParallelProcessor.h PythonSignalCaller.h 
 
 
-python_optimizer:python_optimizer.cpp $(HEADERS) $(OBJ)
+python_optimizer:python_optimizer.cpp $(HEADERS) PythonDrivenModel.h $(OBJ)
 	$(CXX) $(FLAGS)  $(INCLUDE) -o python_optimizer python_optimizer.cpp $(OBJ) $(PYTHON_LIB)
 
 
@@ -42,10 +42,3 @@ toolkit.o: toolkit.h $(SRC_PATH)toolkit.cpp
 
 TickPool.o: TickPool.cpp TickPool.h std_include.h Tick.h toolkit.h
 	$(CXX) $(FLAGS) $(INCLUDE) -c TickPool.cpp
-
-
-clean:
-	rm *.o
-	rm model_optimizer
-	rm ga_sample1
-    
