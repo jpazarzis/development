@@ -40,6 +40,14 @@ def final_balance_over_maxdd():
 # name of the new function to the ff list so it will be processed when the
 # program will be executed....
 
+# The following is a sample output:
+#
+# Testing the behavior of fitness functions
+#
+# brutal_fitness_function 54427.0
+# final_balance_over_maxdd 17277091.7035
+
+
 
 if __name__ == '__main__':
     ff = [brutal_fitness_function, final_balance_over_maxdd] 
