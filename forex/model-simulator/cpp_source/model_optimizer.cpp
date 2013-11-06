@@ -112,6 +112,7 @@ void forward_test2(XmlNode& config)
     cout << tp.size() << endl;
     SellBasedInDelta model;
     model.set_values(minute_to_trade, delta, stop_loss, take_profit, expriration_minutes);
+    model.export_balance_curve("running_balance.csv");
     model.calculate_fitness();
     cout << "Testing period: from " << from_date << " to " << to_date << endl;
     cout << model.get_full_description2() << endl;

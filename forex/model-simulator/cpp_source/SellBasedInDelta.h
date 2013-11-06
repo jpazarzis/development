@@ -18,6 +18,7 @@
 #include "CloneableDouble.h"
 #include "TickPool.h"
 #include "FitnessStatistics.h"
+#include <iostream>
 
 class SellBasedInDelta: public Model
 {
@@ -69,6 +70,42 @@ class SellBasedInDelta: public Model
 
         virtual ~SellBasedInDelta()
         {
+        }
+
+        // Exports the balance curve to a flat file so it can later be used
+        // for testing and research
+        void export_balance_curve(const std::string& filename)
+        {
+            using namespace std;
+
+            TickPool& tp = TickPool::singleton();
+            const int number_of_ticks = tp.size();
+            std::vector<Order*> orders;
+
+            for(register int i = 0; i < number_of_ticks; ++i)
+            {
+                process_tick(tp[i], orders, i);
+            }
+
+            
+            ofstream balance_file;
+            balance_file.open(filename.c_str());
+            double accountbalance = 50000;
+            balance_file << accountbalance << endl;
+            for(auto order_ptr : orders)
+            {
+                accountbalance += order_ptr->get_pnl();
+                balance_file << accountbalance << endl;
+                if(accountbalance <= 0)
+                    break;
+            }
+
+            balance_file.close();
+
+            for(auto order_ptr : orders)
+            {
+                Order::release(order_ptr);
+            }
         }
 
         void calculate_fitness()
