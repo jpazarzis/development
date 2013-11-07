@@ -11,39 +11,34 @@
 #define AGGREGATE_INCLUDED
 
 #include "ComparableValue.h"
+#include "AggregateFunction.h"
+#include "ScalarArray.h"
+
 #include <memory>
 #include <vector>
 
-using AGGREGATE_FUNCTION = std::function<VALUE(const std::vector<VALUE>& )>;
-
 class Aggregate: public ComparableValue {
-    std::vector<VALUE> _values;
-    AGGREGATE_FUNCTION _function;
+    const ScalarArray* _p_array;
+    mutable AggregateFunction _function;
     protected:
 
-        Aggregate(CONST_STRING_REF name, AGGREGATE_FUNCTION function):
-            ComparableValue(name), _function(function)
+        Aggregate(CONST_STRING_REF name, AggregateFunction function, ScalarArray* p_array):
+            ComparableValue(name), _function(function), _p_array(p_array)
         {
         }
+
     public:
-        static std::unique_ptr<Aggregate> make(CONST_STRING_REF name, AGGREGATE_FUNCTION function)
+
+
+        Aggregate(AggregateFunction function, ScalarArray* p_array):
+            ComparableValue(function.name()), _function(function), _p_array(p_array)
         {
-            return std::unique_ptr<Aggregate>(new Aggregate(name,function));
         }
 
-        void clear()
-        {
-            _values.clear();
-        }
-
-        void push_back(VALUE value)
-        {
-            _values.push_back(value);
-        }
 
         VALUE value() const
         {
-            return 0;
+            return _function.call_it(_p_array);
         }
 };
 

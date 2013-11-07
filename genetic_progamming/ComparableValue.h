@@ -30,7 +30,7 @@ class ComparableValue {
         {
         }
 
-        STRING get_name() const
+        STRING name() const
         {
             return _name;
         }

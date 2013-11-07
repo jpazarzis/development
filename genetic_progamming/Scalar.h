@@ -14,22 +14,22 @@
 
 class Scalar: public ComparableValue {
         VALUE _value;
-    protected:
+
+    public:
 
         Scalar(CONST_STRING_REF name):
             ComparableValue(name)
         {
         }
-    public:
-
-        static std::unique_ptr<Scalar> make(CONST_STRING_REF name)
-        {
-            return std::unique_ptr<Scalar>(new Scalar(name));
-        }
 
         VALUE value() const
         {
             return _value;
+        }
+
+        void set(VALUE value)
+        {
+            _value = value;
         }
 
         void operator=(VALUE value)
