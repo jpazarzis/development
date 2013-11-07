@@ -1,0 +1,93 @@
+
+Data Types:
+
+    Comparable: double
+
+    Boolean
+
+    integer : used for indexing 
+
+    Vector: array of doubles
+
+    The environment starts up with a concrete set of data.
+    For example:
+
+        Prices[] : array of the prices as double
+        current_hour: double
+        current_minute: double
+        current_second: double
+        minute_to_trade : double
+
+
+Build in functions:
+    length(V) : returns the length of a vector
+
+    get_at(V,index): returns the element in the position index
+
+Primitive Functions:
+
+    F(v) : double
+
+    v: should always be of type vector
+
+    return value is always a double
+
+    example:
+        moving_average(V, c)
+
+Comparison Operator:
+    
+    > < >= <= == !=
+
+    Example:
+        A > B -> BOOLEAN
+
+Associative Operator:
+
+    AND OR NOT
+
+Expression:
+    Comparable (Comparison Operator) Comparable 
+================================================================
+
+COMPARISON: [ > < >= <= == != ]
+ASSOCIATION: [AND OR NOT]
+
+BOOLEAN := COMPARISON EXPR1 EXPR2
+
+expression ::= BOOLEAN
+               BOOLEAN ASSOCIATION expression
+
+
+===========================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+    
