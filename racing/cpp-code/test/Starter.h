@@ -3,8 +3,7 @@
 #define STARTER_INCLUDED
 #include <stdio.h>
 
-class Starter
-{
+class Starter {
     public:
 
         Starter();

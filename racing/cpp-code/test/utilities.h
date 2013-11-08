@@ -5,7 +5,7 @@
 #include <vector>
 #include <string>
 
-int getdir (const std::string& dir, std::vector<std::string> &files);
+int getdir(const std::string& dir, std::vector<std::string> &files);
 
 void parse_pp(char* psz, int* index);
 
