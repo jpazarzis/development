@@ -18,6 +18,15 @@ HEADERS=SellBasedInDelta.h Optimizable.h GeneticAlgorithm.h  std_include.h \
         xmldocument.h FitnessStatistics.h ParallelProcessor.h PythonSignalCaller.h 
 
 
+TEST_FREE_MARGIN_DEPENDENCIES=test_free_margin.cpp Optimizable.h GeneticAlgorithm.h  std_include.h \
+                         TickProcessor.h CloneableDouble.o  \
+                         Logger.o toolkit.o Model.h FitnessCalculators.h xmldocument.h toolkit.o FitnessStatistics.h \
+                         FreeMarginModel.h  Position.o ParallelProcessor.h TickPool.o 
+
+test_free_margin:$(TEST_FREE_MARGIN_DEPENDENCIES)
+	$(CXX) $(FLAGS)  $(INCLUDE) -o test_free_margin test_free_margin.cpp CloneableDouble.o Logger.o toolkit.o TickPool.o Position.o
+
+
 python_optimizer:python_optimizer.cpp $(HEADERS) PythonDrivenModel.h $(OBJ)
 	$(CXX) $(FLAGS)  $(INCLUDE) -o python_optimizer python_optimizer.cpp $(OBJ) $(PYTHON_LIB)
 
@@ -42,3 +51,7 @@ toolkit.o: toolkit.h $(SRC_PATH)toolkit.cpp
 
 TickPool.o: TickPool.cpp TickPool.h std_include.h Tick.h toolkit.h
 	$(CXX) $(FLAGS) $(INCLUDE) -c TickPool.cpp
+
+Position.o: Position.cpp Position.h TickPool.h
+	$(CXX) $(FLAGS) $(INCLUDE) -c Position.cpp
+

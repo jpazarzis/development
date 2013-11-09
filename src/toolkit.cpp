@@ -39,7 +39,39 @@ std::string timestamp()
     return ctime(&rawtime);
 }
 
+std::string format_time(const boost::posix_time::ptime& date_time)
+{
+   if(date_time.date().is_not_a_date()){
+        return "invalid";
+    }
 
+    char buffer[32];
+    sprintf(buffer, "%02i:%02i:%02i",
+        (int)date_time.time_of_day().hours(),
+        (int)date_time.time_of_day().minutes(),
+        (int)date_time.time_of_day().seconds()
+        );
+    return buffer;
+}
+
+std::string format_datetime(const boost::posix_time::ptime& date_time)
+{
+    if(date_time.date().is_not_a_date()){
+        return "invalid";
+    }
+    
+
+    char buffer[32];
+    sprintf(buffer, "%02i/%02i/%02i %02i:%02i:%02i",
+        (int)date_time.date().month(),
+        (int)date_time.date().day(),
+        (int)date_time.date().year()-2000,
+        (int)date_time.time_of_day().hours(),
+        (int)date_time.time_of_day().minutes(),
+        (int)date_time.time_of_day().seconds()
+        );
+    return buffer;
+}
 
 
 boost::gregorian::date make_date(std::string date_str){

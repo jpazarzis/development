@@ -15,7 +15,7 @@ int TickPool::size() const
     return _size;
 }
 
-const Tick& TickPool::operator[](int index) const
+Tick& TickPool::operator[](int index) 
 {
     assert(index >= 0 && index < _size);
     return _pool[index];

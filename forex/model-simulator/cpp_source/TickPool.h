@@ -28,6 +28,6 @@ class TickPool final
         TickPool& operator = (const TickPool& other) = delete;
         void load(const std::string& filename, CONST_DATE_REF from_date, CONST_DATE_REF to_date);
         int size() const;
-        const Tick& operator[](int index) const;
+        Tick& operator[](int index) ;
 };
 #endif // TICKPOOL_INCLUDED

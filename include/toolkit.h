@@ -10,6 +10,7 @@
 #include <vector>
 #include <numeric>
 #include "boost/date_time/gregorian/gregorian.hpp"
+#include "boost/date_time/posix_time/posix_time.hpp"
 #include <algorithm> 
 
 
@@ -49,6 +50,10 @@ inline std::string trim(const std::string &s) {
 }
 
 boost::gregorian::date make_date(std::string date_str);
+
+std::string format_datetime(const boost::posix_time::ptime& date_time);
+
+std::string format_time(const boost::posix_time::ptime& date_time);
 
 std::string sformat(long value, const std::string& format = "%10d");
 std::string sformat(int value, const std::string& format = "%10d");;
