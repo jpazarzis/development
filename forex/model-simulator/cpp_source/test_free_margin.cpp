@@ -1,3 +1,4 @@
+#include "TickEngine.h"
 #include "FreeMarginModel.h"
 #include "toolkit.h"
 #include "TickPool.h"
@@ -9,9 +10,9 @@ void load_ticks() {
     TickPool& tp = TickPool::singleton();
     cout << timestamp() << endl;
     cout << "loading ticks..." << endl;
-    auto from_date = make_date("");
-    auto to_date = make_date("");
-    tp.load("test_ticks.csv", from_date, to_date);
+    auto from_date = make_date("20120401");
+    auto to_date = make_date("20120630");
+    tp.load("/home/john/projects/forex/historical-ticks/EUR_USD.csv", from_date, to_date);
     cout << timestamp() << endl;
     cout << tp.size() << endl;
 }
@@ -19,8 +20,10 @@ void load_ticks() {
 int main(){
     cout << "testing" << endl;
     load_ticks();
-     FreeMarginModel fmm(100000,50,10,long_position_factory);
-     fmm.start_processising();
+     //FreeMarginExecutor fme(100000,50,10,long_position_factory);
+     //fme.start_processising();
+     FreeMarginModel fmm;
+     fmm.calculate_fitness();
 
      cout << fmm.to_string() << endl;
 }

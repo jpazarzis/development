@@ -1,7 +1,7 @@
 CXX=g++ 
 #FLAGS=-g -D DEBUG -DDISABLE_LOGGING
-FLAGS=-g -D DEBUG -w -ggdb3 -std=c++0x -pthread  
-#FLAGS=-Ofast -ggdb3 -std=c++0x -pthread  -w
+#FLAGS=-g -D DEBUG -w -ggdb3 -std=c++0x -pthread  
+FLAGS=-Ofast -ggdb3 -std=c++0x -pthread  -w
 
 INCLUDE=-I$(DEVELOPMENT_ROOT)/include -I/usr/include/python2.7
 
@@ -19,12 +19,12 @@ HEADERS=SellBasedInDelta.h Optimizable.h GeneticAlgorithm.h  std_include.h \
 
 
 TEST_FREE_MARGIN_DEPENDENCIES=test_free_margin.cpp Optimizable.h GeneticAlgorithm.h  std_include.h \
-                         TickProcessor.h CloneableDouble.o  \
+                         TickProcessor.h CloneableDouble.o Identifiable.o  \
                          Logger.o toolkit.o Model.h FitnessCalculators.h xmldocument.h toolkit.o FitnessStatistics.h \
-                         FreeMarginModel.h  Position.o ParallelProcessor.h TickPool.o 
+                         FreeMarginModel.h FreeMarginExecutor.h Position.o ParallelProcessor.h TickPool.o 
 
-test_free_margin:$(TEST_FREE_MARGIN_DEPENDENCIES)
-	$(CXX) $(FLAGS)  $(INCLUDE) -o test_free_margin test_free_margin.cpp CloneableDouble.o Logger.o toolkit.o TickPool.o Position.o
+test_free_margin:$(TEST_FREE_MARGIN_DEPENDENCIES) $(OBJ)
+	$(CXX) $(FLAGS)  $(INCLUDE) -o test_free_margin test_free_margin.cpp  Position.o $(OBJ)
 
 
 python_optimizer:python_optimizer.cpp $(HEADERS) PythonDrivenModel.h $(OBJ)

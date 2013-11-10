@@ -12,7 +12,7 @@ class LongPosition : public Position {
     public:
         LongPosition(const Tick& tick, double number_of_lots, int lot_size):
             Position(tick.timestamp(), DATE_TIME(), tick.ask(),INVALID_PRICE, number_of_lots,lot_size) {
-            printf("openin long position buying at %f lots#: %6.2f\n", tick.ask(), number_of_lots);
+            //printf("opening long position: buy at %f lots#: %6.2f\n", tick.ask(), number_of_lots);
         }
 
         virtual void close(const Tick& current_tick) {
@@ -30,9 +30,9 @@ class LongPosition : public Position {
 
         virtual std::string to_string() const {
             char buffer[1024];
-            sprintf(buffer, "%10s %10s %10.4f %10.4f %10.2f %10.0f",
-                             format_time(_opening_timestamp).c_str(),
-                             format_time(_closing_timestamp).c_str(),
+            sprintf(buffer, "%20s %20s %10.4f %10.4f %10.2f %10.0f",
+                             format_datetime(_opening_timestamp).c_str(),
+                             format_datetime(_closing_timestamp).c_str(),
                             _buy_price, 
                             _sell_price,
                             _number_of_lots, 
@@ -95,13 +95,11 @@ std::unique_ptr<Position> short_position_factory(const Tick& tick, double number
 
 
 std::string Position::header() {
+    std::string strg;
     char buffer[1024];
-    sprintf(buffer, "%10s %10s %10s %10s %10s %10s",
-                    "opened",
-                    "closed",
-                    "buy",
-                    "sell",
-                    "lots",
-                    "pnl");
-    return buffer;
+    sprintf(buffer, "%20s %20s %10s %10s %10s %10s\n", "opened", "closed", "buy", "sell", "lots", "pnl");
+    strg += buffer;
+    sprintf(buffer, "%20s %20s %10s %10s %10s %10s", "------", "------", "---", "----", "----", "---");
+    strg += buffer;
+    return strg;
 }

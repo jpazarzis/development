@@ -16,134 +16,184 @@
 #include <vector>
 #include <assert.h>
 
-class FreeMarginModel {
-        std::vector<std::unique_ptr<Position>> _open_positions;
-        std::vector<std::unique_ptr<Position>> _closed_positions;
+#include "Model.h"
+#include "CloneableDouble.h"
+#include "TickPool.h"
+#include "FitnessStatistics.h"
+#include "FreeMarginExecutor.h"
+#include <iostream>
+
+class FreeMarginModel: public Model {
+        CloneableDouble _minute_to_buy;
+        CloneableDouble _triggering_delta;
+        FitnessStatistics _fitness_statistics;
         double _balance;
-        const int _leverage;
-        const int _lot_size;
-        POSITION_FACTORY _position_factory;
-        double _reentering_pips;
-        double _reentering_level;
-        Tick* _active_tick;
-        
+        std::string _name;
+        const double _starting_balance;
+        std::vector<FreeMarginExecutorSmartPtr> _exetutors;
+        std::vector<double> _balance_curve;
+
+    protected:
+        virtual void initialize_optimizable_fields() {
+            add_optimizable_field(&_minute_to_buy);
+            add_optimizable_field(&_triggering_delta);
+        }
+
     public:
-        FreeMarginModel(double starting_balance, 
-                        int leverage, 
-                        double reentering_pips,
-                        POSITION_FACTORY position_factory) :
-            _balance(starting_balance),
-            _leverage(leverage),
-            _reentering_pips(reentering_pips),
-            _position_factory(position_factory),
-            _lot_size(100000),
-            _reentering_level(0),
-            _active_tick(NULL) {
+        FreeMarginModel():
+            _minute_to_buy(20, 60, 1),
+            _triggering_delta(2, 12, 2),
+            _name("Testing Free Marging Model"),
+            _starting_balance(100000) {
+            initialize_optimizable_fields();
+        }
+
+        void set_values(double minute, double delta) {
+            _minute_to_buy.read_from_double(minute);
+            _triggering_delta.read_from_double(delta);
         }
 
         virtual ~FreeMarginModel() {
         }
 
-        FreeMarginModel(const FreeMarginModel& other) = delete;
+        bool entered_new_hour(const Tick& tick, int current_day, int current_hour){
+            const int day = (int)tick.timestamp().date().day();
+            const int hour = (int)tick.timestamp().time_of_day().hours();
+            return day != current_day || hour != current_hour;
+        }
+        
+        void calculate_fitness() {
+            TickPool& tp = TickPool::singleton();
+            const int number_of_ticks = tp.size();
+            int current_day = -1, current_hour = -1;
+            double open_price = -1, high_for_the_hour = -1;
 
-        FreeMarginModel& operator=(const FreeMarginModel& other) = delete;
+            _exetutors.clear();
+            _balance_curve.clear();
+            _balance = _starting_balance;
+            _balance_curve.push_back(_balance);
 
-        void start_processising() {
-            printf("%12s %12s %12s %12s %12s\n","bid","ask","balance","equity","freemargin");
-            TickPool& tick_pool = TickPool::singleton();
-            assert(tick_pool.size() > 1);
-            _active_tick = &tick_pool[0];
-            assert(NULL != _active_tick);
-            _open_positions.clear();
-            open_position();
-            for(int i = 1; i < tick_pool.size(); ++i)
-            {
-                _active_tick = &tick_pool[i];
-                assert(NULL != _active_tick);
-                process_tick();
+            for(register int i = 0; i < number_of_ticks; ++i) {
+                const Tick& tick = tp[i];
+
+                if(entered_new_hour(tick, current_day,current_hour)){
+                    current_day = (int)tick.timestamp().date().day();
+                    current_hour= (int)tick.timestamp().time_of_day().hours();
+                    open_price = tick.bid();
+                    high_for_the_hour = tick.bid();
+                    continue;
+                }
+                else if(tick.bid() > high_for_the_hour){
+                    high_for_the_hour = tick.bid();
+                }
+
+                if((int) tick.timestamp().time_of_day().minutes() != (int)_minute_to_buy) {
+                    continue;
+                }
+
+                const double delta_in_pips = (high_for_the_hour - open_price) * 10000;
+
+                if(delta_in_pips >= (double)_triggering_delta) {
+                    FreeMarginExecutorSmartPtr executor(new FreeMarginExecutor(_balance, 
+                                                            50 , 10, long_position_factory));
+                    i = executor->start_processing(i);
+                    _balance = executor->balance();
+                    _exetutors.push_back(std::move(executor));
+                    _balance_curve.push_back(_balance);
+                }
+
+                if(_balance <= 0) {
+                    break;
+                }
             }
+
+            //_fitness_statistics = FitnessStatistics::make(orders);
+            //set_fitness(_fitness_statistics.fitness());
         }
 
-        double balance() const {
-            return _balance;
-        }
-
-        double margin() const{
-            double m = 0;
-            for(auto& p: _open_positions)
-                m += p->entering_cost();
-            return m;
-        }
-
-        double equity() const{
-            double e = _balance;
-            if(NULL != _active_tick)
-            {
-                for(auto& p: _open_positions)
-                    e +=  p->floating_profit(*_active_tick);
-            }
-            return e;
-        }
-
-        double free_margin() const {
-            return equity() - margin();
+        virtual void process(const Tick& tick) {
         }
 
 
-        std::string to_string() const {
-            std::string strg("FreeMarginModel\n");
-            strg += Position::header() + "\n";
-            for(auto& p: _closed_positions) {
-                strg += p->to_string() + "\n";
-            }
+
+        std::string get_full_description() const {
+            std::string strg;
+            strg += sformat("id:", "%20s");
+            strg += sformat((int)_id, "%20d");
+            strg += "\n";
+            strg += sformat("minute to trade:", "%20s");
+            strg += sformat((int)_minute_to_buy, "%20d");
+            strg += "\n";
+            strg += sformat("delta:", "%20s");
+            strg += sformat((double)_triggering_delta, "%20.5f");
+            strg += "\n";
+            strg += _fitness_statistics.get_full_description();
             return strg;
         }
 
-
-    private:
-
-        void open_position(){
-            assert(NULL != _active_tick);
-            const double number_of_lots = (free_margin() * 0.8) * _leverage / (_lot_size * _active_tick->ask());
-            _reentering_level = _active_tick->bid() + (_reentering_pips / 10000.0);
-            _open_positions.push_back(_position_factory(*_active_tick, number_of_lots, _lot_size));
-            print_info();
-
+        static std::string printing_header() {
+            std::string strg;
+            strg += sformat("id", "%5s");
+            strg += sformat("min.", "%10s");
+            strg += sformat("#orders", "%10s");
+            strg += sformat("fitness", "%20s");
+            strg += sformat("PNL", "%20s");
+            strg += sformat("drawdown", "%20s");
+            strg += sformat("balance", "%20s");
+            strg += sformat("abs_low", "%20s");
+            strg += sformat("win_count", "%20s");
+            strg += sformat("losse_count", "%20s");
+            return strg;
         }
 
-        void print_info()
-        {
-            printf("%20s %12.5f %12.5f %12.0f %12.0f %12.0f\n",format_datetime(_active_tick->timestamp()).c_str()  ,_active_tick->bid(),_active_tick->ask(),_balance,equity(),free_margin());
-        }
+        virtual std::string to_string() const {
+            char buffer[1024];
+            std::string strg;
+            strg + "=============================================================================\n";
+            strg += "Model Name:" + _name + "\n\n";
+            sprintf(buffer, "The model entered the market %i times\n", _exetutors.size());
+            strg += buffer;
+            sprintf(buffer, "Starting Balance: %10.0f\n", _starting_balance);
+            strg += buffer;
+            sprintf(buffer, "Final Balance   : %10.0f\n\n", _balance);
+            strg += buffer;
+            strg += "Balance Curve\n\n";
 
-        void close_all_open_positions(){
-            printf("closing all positions\n");
-            for(auto& p: _open_positions)
-            {
-                p->close(*_active_tick);
-                _balance += p->pnl();
+            for(int i = 0; i < _balance_curve.size(); ++i) {
+                if(i >= 5 && i % 5 == 0) {
+                    strg += "\n";
+                }
+
+                sprintf(buffer, "%10.0f", _balance_curve[i]);
+                strg += buffer;
+
+                if(i < _balance_curve.size() - 1) {
+                    strg += ",";
+                }
             }
 
-            for(auto& p: _open_positions)
-                _closed_positions.push_back(move(p));
+            strg += "\n\n";
 
-            _open_positions.clear();
-        }
+            for(auto& e : _exetutors) {
+                strg += e->to_string() + "\n";
+            }
 
-
-
-       void process_tick(){ 
-           assert(NULL != _active_tick);
-            
-           if(free_margin() <= 0.0){
-                close_all_open_positions();
-           }
-
-
-           if(_active_tick->bid() >= _reentering_level){
-                open_position();
-           }
-           print_info();
+            /*
+            strg += sformat(_id, "%5d");
+            strg += sformat((int)_minute_to_buy, "%10d");
+            strg += sformat((double)_triggering_delta, "%13.5f");
+            strg += sformat(orders_count(), "%10d");
+            strg += " fitness: ";
+            strg += sformat(get_fitness(), "%20.5f");
+            strg += sformat(get_pnl(), "%20.5f");
+            strg += sformat(get_max_drawdown() , "%20.5f");
+            strg += sformat(get_account_balance(), "%20.5f");
+            strg += sformat(get_absolute_low(), "%20.5f");
+            strg += sformat(get_winning_trades_count(), "%20d");
+            strg += sformat(get_loosing_trades_count(), "%20d");
+            */
+            strg + "\n=============================================================================\n";
+            return strg;
         }
 };
 #endif // FREEMARGINMODEL_INCLUDED
