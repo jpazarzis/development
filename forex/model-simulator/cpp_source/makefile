@@ -26,6 +26,10 @@ TEST_FREE_MARGIN_DEPENDENCIES=test_free_margin.cpp Optimizable.h GeneticAlgorith
 test_free_margin:$(TEST_FREE_MARGIN_DEPENDENCIES) $(OBJ)
 	$(CXX) $(FLAGS)  $(INCLUDE) -o test_free_margin test_free_margin.cpp  Position.o $(OBJ)
 
+bftd:bftd.cpp
+	$(CXX) $(FLAGS)  $(INCLUDE) -o bftd bftd.cpp $(OBJ)
+
+
 
 python_optimizer:python_optimizer.cpp $(HEADERS) PythonDrivenModel.h $(OBJ)
 	$(CXX) $(FLAGS)  $(INCLUDE) -o python_optimizer python_optimizer.cpp $(OBJ) $(PYTHON_LIB)
