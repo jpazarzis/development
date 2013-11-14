@@ -30,12 +30,11 @@ test_candle_sticks:test_candle_sticks.cpp CandleStick.h CandleStickCollection.h
 test_free_margin:$(TEST_FREE_MARGIN_DEPENDENCIES) $(OBJ)
 	$(CXX) $(FLAGS)  $(INCLUDE) -o test_free_margin test_free_margin.cpp  Position.o $(OBJ)
 
-bftd:bftd.cpp xmldocument.h
-	$(CXX) $(FLAGS)  $(INCLUDE) -o bftd bftd.cpp 
+bftd:bftd.cpp xmldocument.h CandleStick.h CandleStickCollection.h
+	$(CXX) $(FLAGS)  $(INCLUDE) -o bftd bftd.cpp toolkit.o -lfann -lm
 
 python_optimizer:python_optimizer.cpp $(HEADERS) PythonDrivenModel.h $(OBJ)
 	$(CXX) $(FLAGS)  $(INCLUDE) -o python_optimizer python_optimizer.cpp $(OBJ) $(PYTHON_LIB)
-
 
 model_optimizer:model_optimizer.cpp SellBasedInDelta.h Optimizable.h GeneticAlgorithm.h  std_include.h TickEngine.h TickProcessor.h Object.h Order.o Identifiable.o CloneableDouble.o  Logger.o toolkit.o Model.h FitnessCalculators.h xmldocument.h toolkit.o FitnessStatistics.h ParallelProcessor.h TickPool.o 
 	$(CXX) $(FLAGS)  $(INCLUDE) -o model_optimizer model_optimizer.cpp CloneableDouble.o Logger.o Order.o Identifiable.o toolkit.o TickPool.o
