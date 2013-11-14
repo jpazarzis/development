@@ -1,7 +1,8 @@
 CXX=g++ 
 #FLAGS=-g -D DEBUG -DDISABLE_LOGGING
-#FLAGS=-g -D DEBUG -w -ggdb3 -std=c++0x -pthread  
-FLAGS=-Ofast -ggdb3 -std=c++0x -pthread  -w
+FLAGS=-g -D DEBUG -std=c++0x -pthread  
+#FLAGS=-g -w -D DEBUG  -ggdb3 -std=c++0x -pthread  
+#FLAGS=-Ofast -ggdb3 -std=c++0x -pthread  -w
 
 INCLUDE=-I$(DEVELOPMENT_ROOT)/include -I/usr/include/python2.7
 
@@ -23,13 +24,14 @@ TEST_FREE_MARGIN_DEPENDENCIES=test_free_margin.cpp Optimizable.h GeneticAlgorith
                          Logger.o toolkit.o Model.h FitnessCalculators.h xmldocument.h toolkit.o FitnessStatistics.h \
                          FreeMarginModel.h FreeMarginExecutor.h Position.o ParallelProcessor.h TickPool.o 
 
+test_candle_sticks:test_candle_sticks.cpp CandleStick.h CandleStickCollection.h
+	$(CXX) $(FLAGS)  $(INCLUDE) -o test_candle_sticks test_candle_sticks.cpp $(OBJ)
+
 test_free_margin:$(TEST_FREE_MARGIN_DEPENDENCIES) $(OBJ)
 	$(CXX) $(FLAGS)  $(INCLUDE) -o test_free_margin test_free_margin.cpp  Position.o $(OBJ)
 
-bftd:bftd.cpp
-	$(CXX) $(FLAGS)  $(INCLUDE) -o bftd bftd.cpp $(OBJ)
-
-
+bftd:bftd.cpp xmldocument.h
+	$(CXX) $(FLAGS)  $(INCLUDE) -o bftd bftd.cpp 
 
 python_optimizer:python_optimizer.cpp $(HEADERS) PythonDrivenModel.h $(OBJ)
 	$(CXX) $(FLAGS)  $(INCLUDE) -o python_optimizer python_optimizer.cpp $(OBJ) $(PYTHON_LIB)
@@ -58,4 +60,3 @@ TickPool.o: TickPool.cpp TickPool.h std_include.h Tick.h toolkit.h
 
 Position.o: Position.cpp Position.h TickPool.h
 	$(CXX) $(FLAGS) $(INCLUDE) -c Position.cpp
-

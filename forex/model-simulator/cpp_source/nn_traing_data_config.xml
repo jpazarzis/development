@@ -1,0 +1,9 @@
+<configuration>
+    <neural_network_training_data>
+        <candle_file>/home/john/projects/forex/historical-candles/EUR_USD_hourly_candles.csv</candle_file>
+        <output_file>backtesting.data</output_file>
+        <history_size>24</history_size>
+        <future_size>24</future_size>
+        <delta>80</delta>
+    </neural_network_training_data>
+</configuration>

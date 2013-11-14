@@ -30,82 +30,66 @@
 //      1 and 0)
 //      
 ///////////////////////////////////////////////////////////////////////////////////
-
+//
+#include "CandleStickCollection.h"
+#include "xmldocument.h"
 #include <iostream>
-#include <vector>
-#include "toolkit.h"
-#include "TickPool.h"
-
 using namespace std;
 
-using TICK_VEC = vector<Tick*>;
-using CONST_TICK_VEC_REF = const TICK_VEC&;
+std::string make_training_data( const CandleStickCollection& csc, 
+                       int history_index0,
+                       int history_index1,
+                       int future_index0,
+                       int future_index1,
+                       double delta){
 
-struct CandleStick {
-    double open, high, low, close;
-};
-
-void normalize_prices(CONST_TICK_VEC_REF ticks, vector<double>& prices, CandleStick& cs){
-    prices.clear();
-    double min = ticks[0]->bid(), max = ticks[0]->bid();
-    for(auto& t: ticks){
-        const double p = t->bid();
-        if(p < min) min = p;
-        if(p > max) max = p;
-        prices.push_back(p);    
-    }
-    for(register int i =0; i < prices.size(); ++i){
-        prices[i] = (prices[i] - min) / (max-min);
-    }
-    min = prices[0], max = prices[0];
-    for(auto d: prices){
-        if(d>max) max = d;
-        if(d<min) min = d;
-    }
-    cs.open = prices[0];
-    cs.close = prices[prices.size()-1];
-    cs.high = max;
-    cs.low = min;
+    std::string strg;
+    auto d = csc.get_window(history_index0, history_index1, trivial_normalizer);
+    strg += to_string(d);
+    strg += "\n";
+    d = csc.get_window(future_index0, future_index1);
+    strg += get_target_for_high_move(d,delta*0.0001);
+    strg += "\n";
+    return strg;
 }
 
-void load_ticks() {
-    TickPool& tp = TickPool::singleton();
-    cout << timestamp() << endl;
-    cout << "loading ticks..." << endl;
-    auto from_date = make_date("20110101");
-    auto to_date = make_date("20110601");
-    tp.load("/home/john/projects/forex/historical-ticks/EUR_USD.csv", from_date, to_date);
-    cout << timestamp() << endl;
-    cout << tp.size() << endl;
-}
-
-void print_data(CONST_DATE_REF date, CONST_TICK_VEC_REF previous, CONST_TICK_VEC_REF today){
-    if(previous.size() < 30000 || today.size()< 30000 ){
-        return;
+int main(int argc, char *argv[]){
+    if(argc < 2)
+    {
+        cout << "correct use: " << argv[0] << "[configuration.xml]" << endl;
+        return -1;
     }
-    vector<double> prices;
-    CandleStick cs;
-    normalize_prices(previous, prices, cs);
-    cout << date << " " << previous.size() << " " << today.size() << " " << 
-         cs.open << " " << cs.high << " " << cs.low << " " << cs.close << endl;
-}
-
-int main(){
-    load_ticks();
-    TickPool& tp = TickPool::singleton();
-    int current_day = -1;
-    TICK_VEC previous_days_ticks, current_days_ticks;
-    DATE current_date;
-    for(int i=0; i < tp.size();++i){
-        if(current_day != tp[i].timestamp().date().day()){
-            if(previous_days_ticks.size()>0 && current_days_ticks.size()>0){
-                print_data(current_date, previous_days_ticks, current_days_ticks);
-            }
-            previous_days_ticks = current_days_ticks;
-            current_days_ticks.clear();
-            current_day = (int)tp[i].timestamp().date().day();
-            current_date = tp[i].timestamp().date();
+    XmlDocument configuration(argv[1]);
+    XmlNode& config = configuration["neural_network_training_data"];
+    const string candles_file = config["candle_file"].value();
+    const string output_file = config["output_file"].value();
+    const int history_size = config["history_size"].value_to_int();
+    const int future_size = config["future_size"].value_to_int();
+    const double delta = config["delta"].value_to_double();
+    CandleStickCollection csc(candles_file);
+    int history_index0 = 0 , history_index1 = 0, future_index0 = 0, future_index1 = 0;
+    vector<string> training_data;
+    for(;;){
+        history_index1 = history_index0 + history_size;
+        future_index0 = history_index1;
+        future_index1 =  future_index0 + future_size;
+        if(future_index1 >= csc.size()){
+            break;
         }
-        current_days_ticks.push_back(&tp[i]);
+        training_data.push_back(make_training_data(csc, 
+                                                  history_index0, 
+                                                  history_index1, 
+                                                  future_index0, 
+                                                  future_index1,
+                                                  delta));
+        history_index0 = future_index1;
     }
+    FILE *fp;
+    fp=fopen(output_file.c_str(), "w");
+    fprintf(fp,"%i %i 1\n", training_data.size(), history_size*4); 
+    for(auto& s: training_data){
+        fprintf(fp,s.c_str());
+    }
+    fclose(fp);
 }
+

@@ -1,0 +1,8 @@
+<configuration>
+    <optimize>
+        <tick_file>/home/john/projects/forex/historical-ticks/GBP_USD.csv</tick_file>
+        <colony_size>80</colony_size>
+        <from_date>20120101</from_date>
+        <to_date>20120228</to_date>
+    </optimize>
+</configuration>
