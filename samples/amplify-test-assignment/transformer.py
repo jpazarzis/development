@@ -3,6 +3,8 @@
 Author: John Pazarzis
 Thu Nov 21 21:17:45 EST 2013
 
+transformer.py
+
 This program implements a command line utility accepting student enrollment data
 in a specific format transforming it to a different one.
 
@@ -10,15 +12,57 @@ By default, this program handles CSV and XML formats while makes it easy to add
 new format with minimum changes. 
 
 Use:  
-    In the command line provide the input using the -i [filename] flag and the
-    output using the -o [filename]. Note that the extension of both input and
-    output files specifies the type of transformation. An unsupported
-    transformation will cause a warning while a valid one will execute the
-    transformation.
-ls
+    The command line should look like this:
+
+    transformer.py <input> <output>
+
+    input / output: 
+        must be either an xml file with the extention .xml 
+        or a csv file with the extention csv
+
+    at this point only xml and csv formats are supported
+
+    to add a new formating option (xyz for example) you need to implement a 
+    couple of functions:
+
+    xyz2obj(filename)
+
+    and 
+
+    xyz2csv(obj)  and or xyz2xml(obj)
+
+    following as a sample the pairs:
+
+    xml2obj - csv2obj
+
+    and 
+
+    obj2xml - obj2csv
+
+    and register them like this:
+
+    readers = {'.xml':xml2obj, '.csv': csv2obj, '.xyz': xyz2obj}
+    writers = {'.xml':obj2xml, '.csv': obj2csv, '.xyz': xyz2csv}
+
+
+Implementation Details:
+
+    The input data (in any format) are converted to an object which is 
+    format neutral. 
+
+    The xxx2obj functions are doing exactly this. They receive a filename
+    containing the data returning a Python object implementing a tree like
+    representation of the data that can now be saved in any format having a
+    corresponding transformation function (xxx2xml or xxx2csv for example)
+
+Note:
+
+    There are some discrepancies between the two provided sample files, for
+    example the csv file contains a field called student_grade that does not
+    appear in the xml while the xml contains school and grade which are not part
+    of the csv. Since it is undefined how to process them, I chose to hard code
+    their default values.
 '''
-
-
 
 import sys
 import csv
@@ -172,19 +216,10 @@ def obj2csv(obj):
             tokens.extend(get_teachers(teachers))
             tokens.extend([''] * 4)
             strg += ','.join(tokens) + '\n'
-
-        
-
     return strg
     
 
 if __name__ == '__main__':
-
-    #a = xml2obj('sample_data.xml')
-    #s = obj2csv(a)
-    #print s
-    #sys.exit(1)
-
     if len(sys.argv) != 3:
         print 'please provide in the command line the input and the output filenames'
         sys.exit(1)
