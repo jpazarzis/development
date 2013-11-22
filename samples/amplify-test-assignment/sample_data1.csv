@@ -1,3 +1,0 @@
-classroom id, classroom_name, teacher_1_id, teacher_1_last_name, teacher_1_first_name, teacher_2_id, teacher_2_last_name, teacher_2_first_name, student_id, student_last_name, student_first_name, student_grade
-101, Mrs. Jones' Math Class, 10100000001, Jones, Barbara, , , , 10100000010, Gil, Michael, 2
-101, Mrs. Jones' Math Class, 10100000001, Jones, Barbara, , , , 10100000011, Gutierrez, Kimberly, 2
