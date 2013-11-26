@@ -1,0 +1,31 @@
+The historical tick data are provided by oanda in a clear text format following
+this format:
+
+timestamp, bid, ask
+
+DD/MM/YY HH:MM:SS, bid, ask
+
+- We can have multiple records corresponding to the same timestamp (intra-second
+ticks). 
+
+- We have (some) ticks for weekends and holidays.
+
+- The are few cases where ticks appear to have mixed timestamps.
+
+
+
+- The data will be saved to a mysql table following the following format:
+
+timestamp, sequence, bid, ask
+
+(sequence represents the intra-second sequence the tick was received)
+
+- mixed ticks will be skipped
+
+- holidays and weekends will be skipped.
+
+- Each currency pair will have its own table
+
+
+
+

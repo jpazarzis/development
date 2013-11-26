@@ -1,0 +1,62 @@
+
+CREATE TABLE `EUR_USD` (
+  `date` CHAR(10) NOT NULL,
+  `hour` int(11) NOT NULL,
+  `minute` int(11) NOT NULL,
+  `second` int(11) NOT NULL,
+  `sequence` int(11) NOT NULL,
+  `bid` float NOT NULL,
+  `ask` float NOT NULL,
+  PRIMARY KEY (`date`,`hour`,`minute`,`second`,`sequence`)
+
+) ENGINE=InnoDB DEFAULT CHARSET=big5$$
+
+CREATE TABLE `EUR_USD_CANDLES` (
+  `date` CHAR(10) NOT NULL,
+  `hour` int(11) NOT NULL,
+  `open` float NOT NULL,
+  `high` float NOT NULL,
+  `low` float NOT NULL,
+  `close` float NOT NULL,
+  PRIMARY KEY (`date`,`hour`)
+) 
+
+-- to load the tick data to the table    
+LOAD DATA LOCAL INFILE '/home/john/projects/forex/data-cleaning/EUR_USD_TRANSFORMED.csv'
+INTO TABLE EUR_USD
+FIELDS TERMINATED BY "," OPTIONALLY ENCLOSED BY """";
+
+
+CREATE INDEX index_EUR_USD_date_hour ON EUR_USD (date, hour);
+
+CREATE INDEX index_EUR_USD_minute_second ON EUR_USD (minute, second);
+
+select * from EUR_USDLIMIT 20;
+
+-- update open price
+update EUR_USD_CANDLES SET open = (select bid from EUR_USD where date = EUR_USD_CANDLES.date and hour = EUR_USD_CANDLES.hour LIMIT 1);
+
+-- update close price
+update EUR_USD_CANDLES SET close = (select bid from EUR_USD where date = EUR_USD_CANDLES.date and hour = EUR_USD_CANDLES.hour Order By minute desc, second DESC, sequence desc  LIMIT 1);
+
+-- show pending transactions
+SHOW PROCESSLIST;
+
+- kill thread
+KILL 56;
+KILL 57;
+KILL 58;
+KILL 59;
+KILL 60;
+KILL 61;
+KILL 62;
+
+
+
+
+
+
+
+
+
+
