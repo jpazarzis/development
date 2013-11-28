@@ -1,27 +1,37 @@
+delimiter $$
+
+CREATE DATABASE `forex` /*!40100 DEFAULT CHARACTER SET big5 */$$
+delimiter $$
 
 CREATE TABLE `EUR_USD` (
-  `date` CHAR(10) NOT NULL,
+  `date` char(10) NOT NULL,
   `hour` int(11) NOT NULL,
   `minute` int(11) NOT NULL,
   `second` int(11) NOT NULL,
   `sequence` int(11) NOT NULL,
   `bid` float NOT NULL,
   `ask` float NOT NULL,
-  PRIMARY KEY (`date`,`hour`,`minute`,`second`,`sequence`)
-
+  PRIMARY KEY (`date`,`hour`,`minute`,`second`,`sequence`),
+  KEY `index_EUR_USD_date_hour` (`date`,`hour`)
 ) ENGINE=InnoDB DEFAULT CHARSET=big5$$
 
+delimiter $$
+
 CREATE TABLE `EUR_USD_CANDLES` (
-  `date` CHAR(10) NOT NULL,
+  `date` char(10) NOT NULL,
   `hour` int(11) NOT NULL,
   `open` float NOT NULL,
   `high` float NOT NULL,
   `low` float NOT NULL,
   `close` float NOT NULL,
   PRIMARY KEY (`date`,`hour`)
-) 
+) ENGINE=InnoDB DEFAULT CHARSET=big5$$
 
--- to load the tick data to the table    
+
+
+
+
+
 LOAD DATA LOCAL INFILE '/home/john/projects/forex/data-cleaning/EUR_USD_TRANSFORMED.csv'
 INTO TABLE EUR_USD
 FIELDS TERMINATED BY "," OPTIONALLY ENCLOSED BY """";
@@ -31,7 +41,14 @@ CREATE INDEX index_EUR_USD_date_hour ON EUR_USD (date, hour);
 
 CREATE INDEX index_EUR_USD_minute_second ON EUR_USD (minute, second);
 
-select * from EUR_USDLIMIT 20;
+select * from EUR_USD_CANDLES LIMIT 20;
+
+select date, hour, open, high, low, close from EUR_USD_CANDLES  where (date = '2012-10-11' and hour <=8) or date < '2012-10-11' order by date desc, hour desc LIMIT 24;
+
+select max(bid) as 'max_bid' from EUR_USD where date = '2012-10-11' and hour >=8 and hour <=20
+
+
+select * from EUR_USD where date = '2012-10-11' and hour >=11 LIMIT 1;
 
 -- update open price
 update EUR_USD_CANDLES SET open = (select bid from EUR_USD where date = EUR_USD_CANDLES.date and hour = EUR_USD_CANDLES.hour LIMIT 1);
@@ -50,6 +67,7 @@ KILL 59;
 KILL 60;
 KILL 61;
 KILL 62;
+
 
 
 
