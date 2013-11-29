@@ -1,3 +1,19 @@
+
+Fri Nov 29 09:49:44 EST 2013
+
+update_all.sh
+--------------
+
+To update all the available ticks run the update_all.sh which will call the
+reformat_ticks.py for each currency pair.
+
+After update_all.sh will finish all the ticks will be inserted to the forex
+database plus it will create hourly candlesticks based on this data.
+
+Any ticks between FRIDAY 5:00 pm and SUNDAY 5:00 pm will be skipped since this
+is the weekend period for OANA
+
+
 The historical tick data are provided by oanda in a clear text format following
 this format:
 
