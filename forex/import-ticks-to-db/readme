@@ -1,3 +1,16 @@
+*******************************************************************************
+
+This directory contains the utilities to update a mysql database with the OANDA
+provided tick data.
+
+The requirement for this code to run is to have already created a mysql data
+base called forex. All other details are implemented here, so we do not need to
+create new tables or indexes.
+
+
+*******************************************************************************
+
+
 
 Fri Nov 29 09:49:44 EST 2013
 
