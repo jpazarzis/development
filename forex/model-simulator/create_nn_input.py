@@ -16,7 +16,7 @@ Both the training (1) and the testing (2) files are cleaned for conflicts
 
 '''
 import sys
-
+import os
 import tools.dbtools
 
 sql_select_entering_hours = '''select date, hour from EUR_USD 
@@ -102,7 +102,8 @@ def create_training_data(date, hour):
 
 def create_file(filename, data, include_header):
     f = open(filename.format(currency_pair),'w')
-    f.write('{0} {1} 1\n'.format(len(data), number_of_candles * 4))
+    if include_header:
+        f.write('{0} {1} 1\n'.format(len(data), number_of_candles * 4))
     for td in data:
         input_data = td[0]
         output_data = td[1]
@@ -121,7 +122,7 @@ if __name__ == '__main__':
     entering_hour = 8
     expiration_hour = 18 # see notes above
     number_of_candles = 24
-    delta_in_pips = 60
+    delta_in_pips = 40
     sql_select_entering_hours = sql_select_entering_hours.format(entering_hour)
     entering_hours = load_entering_hours()
     all_data = []
@@ -134,8 +135,10 @@ if __name__ == '__main__':
     cutoff = int(len(all_data) * 0.7)
     training_data = all_data[:cutoff]
     testing_data = all_data[cutoff:]
-    create_file('{0}_training.data'.format(currency_pair), training_data, True)
+    training_filename = '{0}_training.data'.format(currency_pair)
+    create_file(training_filename, training_data, True)
     create_file('{0}_testing.data'.format(currency_pair), testing_data, False)
+    os.system("data_cleaner.py {0}".format(training_filename))
 
 
 

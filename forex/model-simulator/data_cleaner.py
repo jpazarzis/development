@@ -13,6 +13,7 @@
 import itertools
 import math
 import sys
+import os
 
 class Data:
     '''
@@ -61,13 +62,17 @@ def make_distances(data):
     '''
     receives a list of data returning all possible pairs with their distances
     '''
+    count = 0
     distances = []
     for c in itertools.combinations(data,2):
         distances.append(Distance(c[0],c[1]))
+        count += 1
+        if count % 100000 == 0:
+            print count
     distances.sort(key = lambda d: d.distance)
     return distances
 
-def clean_data(data, distances, cleanup_rate = 0.8):
+def clean_data(data, distances, cleanup_rate = 0.80):
     '''
     cleans up the data removing the top conflicting pairs based in their
     Euclidean distance
@@ -100,8 +105,11 @@ if __name__ == '__main__':
         sys.exit(0)
     filename = sys.argv[1]
     data = load_data(filename)
+    print 'cleaning data'
+    print 'number of data: ',len(data)
     distances = make_distances(data)
     clean_data(data, distances)
     create_clean_file(data, filename+'.clean')
+    os.system('mv {0} {1}'.format(filename+'.clean' , filename))
 
 
