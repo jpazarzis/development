@@ -37,6 +37,7 @@
 #include <fann.h>
 #include "xmldocument.h"
 #include <iostream>
+#include "Logger.h"
 
 
 using namespace std;
@@ -49,7 +50,33 @@ std::string make_training_data_line( const CandleStickCollection& csc,
                        double delta){
 
     std::string strg;
+
+
+    auto d1 = csc.get_window(history_index0, history_index1, nullptr);
+    LOG << "__________________________" << EOL;
+    for(auto& cs :d1){
+            LOG << cs.timestamp() << " ";
+            LOG << cs.open() << " ";
+            LOG << cs.high() << " ";
+            LOG << cs.close() << " ";
+            LOG << cs.low() << " ";
+    }
+    LOG << "= = = = = = = " << EOL;
+
+
     auto d = csc.get_window(history_index0, history_index1, trivial_normalizer);
+
+    for(auto& cs :d){
+            LOG << cs.timestamp() << " ";
+            LOG << cs.open() << " ";
+            LOG << cs.high() << " ";
+            LOG << cs.close() << " ";
+            LOG << cs.low() << " ";
+    }
+    LOG << "__________________________" << EOL;
+
+
+
     strg += to_string(d);
     strg += "\n";
     d = csc.get_window(future_index0, future_index1);
@@ -67,6 +94,7 @@ void prepare_data_files(XmlNode& config){
     CandleStickCollection csc(candles_file);
     int history_index0 = 0 , history_index1 = 0, future_index0 = 0, future_index1 = 0;
     vector<string> training_data;
+    vector<string> training_data_timestamp;
     for(;;){
         history_index1 = history_index0 + history_size;
         future_index0 = history_index1;
@@ -80,10 +108,13 @@ void prepare_data_files(XmlNode& config){
                                                   future_index0, 
                                                   future_index1,
                                                   delta));
-        history_index0 = future_index1;
+        training_data_timestamp.push_back(csc[future_index0].timestamp());
+        //history_index0 = future_index1;
+        //history_index0 += future_size;
+        history_index0 += 24;
     }
 
-    const int split_index = training_data.size() * 0.80;
+    const int split_index = training_data.size() * 0.70;
 
     FILE *fp;
     fp=fopen(training_data_file.c_str(), "w");
@@ -92,12 +123,19 @@ void prepare_data_files(XmlNode& config){
         fprintf(fp,"%s\n",training_data[i].c_str());
     }
     fclose(fp);
-
+    cout << "forward test starts at: " << training_data_timestamp[split_index]<< endl;
     fp=fopen(forward_test_file.c_str(), "w");
     for(int i=split_index; i < training_data.size(); ++i){
         fprintf(fp,"%s\n",training_data[i].c_str());
     }
     fclose(fp);
+
+    char buffer[1024];
+    sprintf(buffer, "data_cleaner.py %s", training_data_file.c_str());
+    system(buffer);
+
+    sprintf(buffer, "mv %s.clean %s", training_data_file.c_str(), training_data_file.c_str());
+    system(buffer);
 }
 
 void train_neural_network(XmlNode& config){
@@ -133,16 +171,17 @@ void forward_test(XmlNode& config){
      ifstream myfile (forward_test_file.c_str());
      string line;
      int successes = 0, failures = 0;
+     int correct_ones = 0;
+     int wrong_ones = 0;
+     int correct_zeros = 0;
+     int wrong_zeros = 0;
+
      while ( getline (myfile,line) )
      {
         fann_type *calc_out;
         fann_type input[96]; // change this to be dynamic instead of hardcoded
-
         trim(line);
-
-        
-
-        struct fann *ann = fann_create_from_file(neural_network_file.c_str());
+         struct fann *ann = fann_create_from_file(neural_network_file.c_str());
          vector<string> strs;
          boost::split(strs, line, boost::is_any_of(" "));
          assert(strs.size() == 96);
@@ -158,21 +197,26 @@ void forward_test(XmlNode& config){
          printf("%s \n", strs[0].c_str());
 
          double c = calc_out[0];
+
          int desired = atoi(strs[0].c_str());
 
          if(c > 0.5 && desired == 1){
+             ++correct_ones;
              ++successes;
          }
 
          if(c > 0.5 && desired == 0){
+             ++wrong_zeros;
              ++failures;
          }
 
          if(c < 0.5 && desired == 1){
+             ++wrong_ones;
              ++failures;
          }
 
          if(c < 0.5 && desired == 0){
+             ++correct_zeros;
              ++successes;
          }
 
@@ -180,9 +224,12 @@ void forward_test(XmlNode& config){
          fann_destroy(ann);
      }
      myfile.close();
-
      cout << "success: " << successes << endl;
      cout << "failures: " << failures << endl;
+     cout << "correct_ones: " << correct_ones << endl;
+     cout << "wrong_ones: " << wrong_ones << endl;
+     cout << "correct_zeros: " << correct_zeros << endl;
+     cout << "wrong_zeros: " << wrong_zeros << endl;
 }
 
 int main(int argc, char *argv[]){
@@ -191,11 +238,12 @@ int main(int argc, char *argv[]){
         cout << "correct use: " << argv[0] << "[configuration.xml]" << endl;
         return -1;
     }
+    Logger::set_filename("forward_testing.log");
     XmlDocument configuration(argv[1]);
     XmlNode& config = configuration["neural_network_training_data"];
 
-    //prepare_data_files(config);
-    //train_neural_network(config);
+    prepare_data_files(config);
+    train_neural_network(config);
     forward_test(config);
 }
 

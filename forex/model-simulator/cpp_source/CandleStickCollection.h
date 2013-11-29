@@ -4,7 +4,7 @@
 // Creation date : Tue 12 Nov 2013 01:46:55 PM EST
 //
 // Summary
-//      Summary goes here
+//      Represents a collection of ticks that can be automatically normalized
 
 #ifndef CANDLESTICKCOLLECTION_INCLUDED
 #define CANDLESTICKCOLLECTION_INCLUDED
@@ -44,7 +44,7 @@ std::string get_target_for_high_move(const CANDLE_STICK_VECTOR& candle_sticks, d
     return "0";
 }
 
-
+// can be used either for back testing or for real time
 CANDLE_STICK_VECTOR trivial_normalizer(const CANDLE_STICK_VECTOR& candle_sticks){
 
     if(candle_sticks.size() <=1){
@@ -64,7 +64,8 @@ CANDLE_STICK_VECTOR trivial_normalizer(const CANDLE_STICK_VECTOR& candle_sticks)
     assert(min < max);
     CANDLE_STICK_VECTOR normalized;
     for(auto& cs: candle_sticks){
-        normalized.push_back(CandleStick( NORMALIZE(cs.open(), min,max),
+        normalized.push_back(CandleStick( cs.timestamp(),
+                                          NORMALIZE(cs.open(), min,max),
                                           NORMALIZE(cs.high(), min,max),
                                           NORMALIZE(cs.close(), min,max),
                                           NORMALIZE(cs.low(), min,max)
@@ -94,6 +95,12 @@ class CandleStickCollection final {
             return _candle_sticks.size();
         }
 
+        CandleStick operator[](int index) const {
+            return _candle_sticks[index];
+        }
+
+
+
         CANDLE_STICK_VECTOR get_window( int i0, 
                                         int i1,
                                         NORMALIZER normalizer = nullptr ) const{
@@ -115,7 +122,8 @@ class CandleStickCollection final {
                 std::vector<std::string> strs;
                 boost::split(strs, line, boost::is_any_of(","));
                 assert(strs.size() == 6);
-                
+
+                const std::string timestamp = strs[0];
                 const double open = atof(strs[2].c_str());
                 const double high = atof(strs[3].c_str());
                 const double close = atof(strs[4].c_str());
@@ -126,7 +134,7 @@ class CandleStickCollection final {
                 assert(close <= high);
                 assert(close >= low);
 
-               _candle_sticks.push_back(CandleStick(open, high, close, low)); 
+               _candle_sticks.push_back(CandleStick(timestamp,open, high, close, low)); 
              }
              myfile.close();
         }

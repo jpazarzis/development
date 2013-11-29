@@ -17,6 +17,10 @@ int TickPool::size() const
 
 Tick& TickPool::operator[](int index) 
 {
+    using namespace std;
+    if(index >= _size){
+        cout << "here: " << index << " " << _size << endl;
+    }
     assert(index >= 0 && index < _size);
     return _pool[index];
 }

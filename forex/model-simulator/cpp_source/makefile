@@ -24,14 +24,19 @@ TEST_FREE_MARGIN_DEPENDENCIES=test_free_margin.cpp Optimizable.h GeneticAlgorith
                          Logger.o toolkit.o Model.h FitnessCalculators.h xmldocument.h toolkit.o FitnessStatistics.h \
                          FreeMarginModel.h FreeMarginExecutor.h Position.o ParallelProcessor.h TickPool.o 
 
+
+nntrading:nntrading.cpp $(TEST_FREE_MARGIN_DEPENDENCIES) BuyBasedInNN.h CandleStickCollection.h CandleStick.h
+	$(CXX) $(FLAGS)  $(INCLUDE) -o nntrading nntrading.cpp  Position.o $(OBJ)  -lfann -lm
+
+
 test_candle_sticks:test_candle_sticks.cpp CandleStick.h CandleStickCollection.h
 	$(CXX) $(FLAGS)  $(INCLUDE) -o test_candle_sticks test_candle_sticks.cpp $(OBJ)
 
 test_free_margin:$(TEST_FREE_MARGIN_DEPENDENCIES) $(OBJ)
 	$(CXX) $(FLAGS)  $(INCLUDE) -o test_free_margin test_free_margin.cpp  Position.o $(OBJ)
 
-bftd:bftd.cpp xmldocument.h CandleStick.h CandleStickCollection.h
-	$(CXX) $(FLAGS)  $(INCLUDE) -o bftd bftd.cpp toolkit.o -lfann -lm
+bftd:bftd.cpp xmldocument.h CandleStick.h CandleStickCollection.h Logger.o
+	$(CXX) $(FLAGS)  $(INCLUDE) -o bftd bftd.cpp toolkit.o Logger.o -lfann -lm
 
 python_optimizer:python_optimizer.cpp $(HEADERS) PythonDrivenModel.h $(OBJ)
 	$(CXX) $(FLAGS)  $(INCLUDE) -o python_optimizer python_optimizer.cpp $(OBJ) $(PYTHON_LIB)

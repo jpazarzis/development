@@ -17,9 +17,16 @@
 
 class CandleStick  {
         double _open, _high, _close, _low;
+        std::string _timestamp;
     public:
-        CandleStick(double open, double high, double  close, double low):
+        CandleStick(const std::string& timestamp, 
+                    double open, double high, double  close, double low):
+                    _timestamp(timestamp),
                 _open(open), _high(high),  _close(close), _low(low) {
+        }
+
+        std::string timestamp() const {
+            return _timestamp;
         }
 
         double open() const {
@@ -40,7 +47,7 @@ class CandleStick  {
 
         std::string to_string() const {
             char buffer[1024];
-            sprintf(buffer,"%0.4f %0.4f %0.4f %0.4f ",_open, _high, _close, _low);
+            sprintf(buffer,"%0.5f %0.5f %0.5f %0.5f ",_open, _high, _close, _low);
             return buffer;
         }
 };
