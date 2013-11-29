@@ -57,7 +57,6 @@ def read_ticks():
     global skipped
     for tokens in csv.reader(open(ticks_filename,'r')):
         if len(time_stamp) and compare_timestamps(time_stamp, tokens[0]):
-            print 'skipping:', time_stamp, tokens[0]
             skipped += 1
             continue
 
@@ -90,12 +89,6 @@ if __name__ == '__main__':
             for i, tick in enumerate(read_ticks()):
                 f.write(','.join(tick))
                 f.write('\n')
-                if i > 100000:
-                    break
-
-                if i % 1000000 == 0:
-                    print i
-            print 'skipped:',skipped
 
             # Now we are ready to import the data to the data base...
             with open('import_data_template.sql', 'r') as content_file:
