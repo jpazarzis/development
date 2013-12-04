@@ -1,0 +1,28 @@
+<h3>Comparing Parlays based on their length and selections</h3>
+In this page we can check the behavior of several different systems based in
+number of selections and parlay length.
+<p/>
+Assuming we have M selected events (for example football games where we think we
+have an edge) we can create several different systems by changing the length of
+the parlay. For example if we have six games, we can select to combine them by 5
+playing all possible combinations consisting of 5 games. By checking the
+corresponding table for 6 selections and length of parlay 5 we can verify that
+we need to play 6 combinations (costing $1 each for a total of $6). 
+<p/>
+In this example, if we hit 5 out of the 6 games we will end up with just one
+winning combo returning $5. If we hit all 6 though, we will win 6 combinations
+for a total return of $32.
+<p/>
+The following abbreviations are used:
+<p/>
+<b>M</b>: count of winning events
+<p/>
+<b>WC</b>: count of winning combinations
+<p/>
+<b>PNL</b>: Profit or loss based in 1 unit bets
+<p/>
+
+
+
+
+
