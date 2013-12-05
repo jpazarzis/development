@@ -1,24 +1,108 @@
+<!DOCTYPE html>
 <html>
 <link rel="stylesheet" href="theme2.css" />
 </head>
-
 <script>
-
-number_of_races = 6
-selected_horses = [[], [], [], [], [], [] ]
-
+number_of_races = 4
+selected_horses = [[], [], [], []]
 unused_horses = [
                     [1,2,3,4,5,6,7,8,9,10,11,12,13,14], 
                     [1,2,3,4,5,6,7,8,9,10,11,12,13,14], 
                     [1,2,3,4,5,6,7,8,9,10,11,12,13,14], 
-                    [1,2,3,4,5,6,7,8,9,10,11,12,13,14], 
-                    [1,2,3,4,5,6,7,8,9,10,11,12,13,14], 
-                    [1,2,3,4,5,6,7,8,9,10,11,12,13,14], 
+                    [1,2,3,4,5,6,7,8,9,10,11,12,13,14] 
                 ]
 
 limitations = []
 
+function exists(list,element){
+        return list.indexOf(element) > -1;
+}
 
+function remove(list,element){
+    var index  = list.indexOf(element) > -1;
+    if (index > -1) {
+        list.splice(index, 1);
+    }
+}
+
+function RaceSelections (race_index) {
+    this.selections = [];
+    this.race_index = race_index;
+
+    this.to_string = function to_string() {
+        var s = '';
+        for(var i = 0; i < this.selections.length; ++i){
+            s += this.selections[i];
+            s += ' , ';
+        }
+        return s;
+    }
+
+    this.remove_left_overs = function remove_left_overs() {
+        for(var i = 0; i < this.selections.length; ++i){
+            if (!exists(selected_horses[this.race_index],this.selections[i])){
+                this.selections.splice(i, 1);
+                --i;
+            }
+        }
+    }
+
+    this.size = function size() {
+        return this.selections.length;    
+    }; 
+
+    this.add = function add(horse_number) {
+        this.selections.push(horse_number);    
+    };
+
+    this.contains = function contains(horse_number) {
+        return (this.selections.indexOf(horse_number) != -1);
+    };
+
+    this.remove = function remove(horse_number) {
+        var index = this.selections.indexOf(horse_number);
+        if (index > -1) {
+            this.selections.splice(index, 1);
+        }
+    };
+}
+
+function Limitation(){
+    this.race_selections = [];
+    this.from = 0;
+    this.to = 0;
+
+    this.get_max_matches = function get_max_matches(){
+        var count = 0;
+        for(var i = 0; i < this.race_selections.length; ++i){
+            if(this.race_selections[i].length > 0)
+                ++count;
+        }
+        return count;
+    }
+
+    this.to_string = function to_string() {
+        var s = '';
+        for(var i = 0; i < this.race_selections.length; ++i){
+            s += this.race_selections[i].to_string();
+            s += '\n';
+        }
+        return s;
+    }
+
+    for(var i = 0; i < number_of_races; ++i){
+        this.race_selections.push(new RaceSelections (i));
+    }
+
+    // used in the case where the user removed a horse from the full system
+    // to remove it from the limitation
+    this.remove_left_overs = function remove_left_overs() {
+        for(var i = 0; i < this.race_selections.length; ++i){
+            this.race_selections[i].remove_left_overs();
+        }
+
+    }
+}
 
 function count_full_system(){
     fs = 1;
@@ -26,7 +110,7 @@ function count_full_system(){
         var tokens = selected_horses[i];
         fs = fs * tokens.length;
     }
-    return fs;
+    return 'Full System Combos: ' +fs;
 }
 
 function create_add_horse_button(){
@@ -58,7 +142,6 @@ function get_system_as_html(system_name, system2_name){
         tokens.sort(sortNumber);
         for(j=0; j < tokens.length; ++j){
             handler = 'onclick=\'move_horse(' + i + ','+j+',\"'+system_name +'\", \"' +system2_name  +'")\'';
-            //handler = 'onclick="test()"'
             s += '<td><button ' +handler +'>' + tokens[j] + '</button></td>';
         }
         s += '</tr>';
@@ -86,6 +169,7 @@ function update_screen(){
     update_full_system();
     update_available_horses();
     update_general_info();
+    paint_all_limitations();
 }
 
 function select_number_of_races(n){
@@ -105,44 +189,145 @@ function select_number_of_races(n){
         }
     }
 
+    limitations = []
+
     update_screen();
 }
 
-function get_limitation_as_html(limitation){
-    s = '<table>';
-    for(i=0; i < limitation.length-2; ++i){
-        s += '<tr>';
-        k = i +1;
-        s += '<td>' + k + '</td>';
-        var tokens = limitation[i];
+
+function paint_selection_button(button){
+    if(button.selections.contains(button.horse_number)) {
+        button.style.background = 'red';
+    }
+    else {
+        button.style.background = 'solid gray';
+    }
+}
+
+function toggle_selection(button){
+    
+    if(button.selections.contains(button.horse_number)) {
+        button.selections.remove(button.horse_number);
+    }
+    else {
+        button.selections.add(button.horse_number);
+    }
+    paint_selection_button(button);
+}
+
+function make_limitation_control(limitation){
+    var table = document.createElement('table');
+    for(var race_index =0; race_index < number_of_races; ++race_index){
+        var table_row = document.createElement('tr');
+        var race_number_cell = document.createElement('td');
+        race_number_cell.appendChild(document.createTextNode(race_index+1))
+        table_row.appendChild(race_number_cell);
+        var tokens = selected_horses[race_index];
         tokens.sort(sortNumber);
         for(j=0; j < tokens.length; ++j){
-            s += '<td><button>' + tokens[j] + '</button></td>';
+            var cell = document.createElement('td');
+            var button = document.createElement('button');
+            button.className = "limitation_button";
+            button.appendChild(document.createTextNode(tokens[j]))
+            button.horse_number = tokens[j];
+            button.selections = limitation.race_selections[race_index];
+            button.onclick = function () { toggle_selection(this); };
+            cell.appendChild(button);
+            paint_selection_button(button);
+            table_row.appendChild(cell);
         }
-        s += '</tr>';
+        table.appendChild(table_row);
     }
-    s += '</table>';
-    return s;
+    return table;
+}
+
+function get_possible_matches_as_span(limitation){
+    var span = document.createElement('span');
+    var max_matches = number_of_races;
+    var from_select = document.createElement("select");
+    for(var i = 0; i < max_matches; ++i){
+        var option = document.createElement("option");
+        option.value= i;
+        option.innerHTML=i;
+        from_select.appendChild(option);
+    }
+
+
+    var label = document.createElement("Label");
+    label.innerHTML = "from";
+    label.className = 'from_to_label';
+    span.appendChild(label);
+    span.appendChild(from_select);
+    span.appendChild(document.createElement("br"));
+    
+    var to_select = document.createElement("select");
+    for(var i = 0; i < max_matches; ++i){
+        var option = document.createElement("option");
+        option.value= i;
+        option.innerHTML=i;
+        to_select.appendChild(option);
+    }
+
+    label = document.createElement("Label");
+    label.innerHTML = "to";
+    label.className = 'from_to_label';
+    
+    span.appendChild(label);
+    span.appendChild(to_select);
+    return span;
+}
+
+function delete_limitation(limitation_index){
+    limitations.splice(limitation_index, 1);
+    paint_all_limitations();
+}
+
+
+function paint_limitation(limitation){
+    var limitation_index = limitations.indexOf(limitation) + 1 ;
+    var label = document.createElement("div");
+    label.innerHTML = limitation_index;
+    label.className = 'title';
+    limitation.remove_left_overs();
+    var div = document.getElementById('limitation_div');
+    
+    var element = document.createElement('span');
+    element.appendChild(label);
+    element.appendChild(document.createElement("br"));
+
+    element.className = "limitation_span";
+    element.appendChild(make_limitation_control(limitation));
+    element.appendChild(document.createElement("hr"));
+    element.appendChild(get_possible_matches_as_span(limitation));
+
+    var button = document.createElement('button');
+    button.className = "limitation_button";
+    button.appendChild(document.createTextNode('delete'))
+    button.onclick = function () { delete_limitation(limitation_index - 1); };
+    element.appendChild(button);
+
+    div.appendChild(element);
+}
+
+function paint_all_limitations(){
+    var div = document.getElementById('limitation_div');
+    div.innerHTML = '';
+    for(var i = 0; i < limitations.length; ++i){
+        paint_limitation(limitations[i])
+        
+    }
 }
 
 function add_limitation(){
-    
-    limitation = selected_horses.slice(0)
-    limitation.push(0)
-    limitation.push(0)
-    limitations.push(limitation)
-    var div = document.getElementById('limitation_div');
-    var element = document.createElement('span');
-    element.innerHTML = get_limitation_as_html(limitation);
-    div.appendChild(element);
+    var limitation = new Limitation();
+    limitations.push(limitation);
+    paint_limitation(limitation);
 }
 
 </script>
 
 </head>
 <body onload="update_screen()">
-<div id='general_info'>
-</div>
 
 <div>
  <p>
@@ -169,26 +354,32 @@ function add_limitation(){
 
 
 <div>
-<span style='float:left;border:1px solid blue;margin-left:5px;margin-bottom:25px;background-color:#ddd;'>
-Selected<br/>
-<table id='full_system' style="line-height: 25px;">
+<span class='system_span'>
+<span class='title'>
+Full System
+</span>
+<table id='full_system'>
 </table>
 </div>
 </span>
-
-<span style='float:left;border:1px solid blue;margin-left:5px;margin-bottom:25px;background-color:#ddd;'>
-Available <br/>
+<span class='system_span'>
+<span class='title'>
+Available
+</span>
 <table id='available_horses'>
 </table>
 </span>
 </div>
 <br clear="all" /> 
+<br/>
+<div id='general_info'>
+</div>
+<br/>
 <div>
 <button onclick=add_limitation()>Add Limitation</button>
 </div>
+<br/>
 <div id='limitation_div'>
 </div>
-
-
 </body>
  </html>

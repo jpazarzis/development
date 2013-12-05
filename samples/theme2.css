@@ -1,0 +1,64 @@
+table
+{
+    font-family: verdana,arial,sans-serif;
+    font-size:15px;
+    color:#333333;
+    border-collapse: collapse;
+    border: 1px solid black;
+    line-height: 25px;
+}
+
+table td
+{
+    border: 1px solid black;
+}
+
+.system_span
+{
+    float:left;
+    border:1px solid gray;
+    margin-left:5px;
+    margin-bottom:25px;
+    background-color:#ddd;
+}
+
+.limitation_span
+{
+    float:left;
+    border:1px solid gray;
+    margin-left:5px;
+    margin-bottom:25px;
+    background-color:#ddd;
+    
+}
+
+.limitation_button
+{
+    border: 1px solid black;
+}
+
+.from_to_label
+{
+    font-family: verdana,arial,sans-serif;
+    font-size:11px;
+    color:#333333;
+    border: 0px ;
+    width: 30px;
+    display: inline-block;
+}
+
+.title
+{
+    float:left;
+    font-family: verdana,arial,sans-serif;
+    font-size:20px;
+    color:#00FFFF;
+    border: 0px ;
+    display: inline-block;
+    background-color:#0000FF;
+    text-align:center;
+    width:100%;
+    margin-bottom:8px;
+    font-weight:bold;
+
+}
