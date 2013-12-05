@@ -14,6 +14,11 @@ unused_horses = [
 
 limitations = []
 
+var assert = function(condition, message) { 
+    if (!condition)
+        throw Error("Assert failed" + (typeof message !== "undefined" ? ": " + message : ""));
+};
+
 function exists(list,element){
         return list.indexOf(element) > -1;
 }
@@ -56,7 +61,7 @@ function RaceSelections (race_index) {
     };
 
     this.contains = function contains(horse_number) {
-        return (this.selections.indexOf(horse_number) != -1);
+        return (this.selections.indexOf(horse_number) > -1);
     };
 
     this.remove = function remove(horse_number) {
@@ -69,17 +74,29 @@ function RaceSelections (race_index) {
 
 function Limitation(){
     this.race_selections = [];
-    this.from = 0;
-    this.to = 0;
+    this.max_matches_ctrl = null;
+    this.min_matches_ctrl = null;
 
     this.get_max_matches = function get_max_matches(){
-        var count = 0;
-        for(var i = 0; i < this.race_selections.length; ++i){
-            if(this.race_selections[i].length > 0)
-                ++count;
-        }
-        return count;
+        return this.max_matches_ctrl.value;    
     }
+
+    this.get_min_matches = function get_min_matches(){
+        return this.min_matches_ctrl.value;
+    }
+
+
+    this.check_combo = function check_combo(combo) {
+        var count = 0;
+        for(var i = 0; i < combo.length; ++i){
+            var selection = combo[i];
+            if(this.race_selections[i].contains(selection)){
+                count += 1;
+            }
+        }
+        return count >= this.get_min_matches() && count <= this.get_max_matches();
+    }
+
 
     this.to_string = function to_string() {
         var s = '';
@@ -165,6 +182,8 @@ function update_general_info(){
     d.innerHTML = count_full_system();
 }
 
+
+
 function update_screen(){
     update_full_system();
     update_available_horses();
@@ -200,12 +219,12 @@ function paint_selection_button(button){
         button.style.background = 'red';
     }
     else {
-        button.style.background = 'solid gray';
+        button.style.background = '#D1D1E0';
     }
 }
 
 function toggle_selection(button){
-    
+   
     if(button.selections.contains(button.horse_number)) {
         button.selections.remove(button.horse_number);
     }
@@ -245,7 +264,7 @@ function get_possible_matches_as_span(limitation){
     var span = document.createElement('span');
     var max_matches = number_of_races;
     var from_select = document.createElement("select");
-    for(var i = 0; i < max_matches; ++i){
+    for(var i = 0; i <= max_matches; ++i){
         var option = document.createElement("option");
         option.value= i;
         option.innerHTML=i;
@@ -259,9 +278,11 @@ function get_possible_matches_as_span(limitation){
     span.appendChild(label);
     span.appendChild(from_select);
     span.appendChild(document.createElement("br"));
+
+    limitation.min_matches_ctrl = from_select;
     
     var to_select = document.createElement("select");
-    for(var i = 0; i < max_matches; ++i){
+    for(var i = 0; i <= max_matches; ++i){
         var option = document.createElement("option");
         option.value= i;
         option.innerHTML=i;
@@ -271,6 +292,8 @@ function get_possible_matches_as_span(limitation){
     label = document.createElement("Label");
     label.innerHTML = "to";
     label.className = 'from_to_label';
+
+    limitation.max_matches_ctrl = to_select;
     
     span.appendChild(label);
     span.appendChild(to_select);
@@ -324,6 +347,51 @@ function add_limitation(){
     paint_limitation(limitation);
 }
 
+function combos(head, tail)
+{
+   if(tail.length == 0) 
+        return head;
+   
+   if(head.length == 0) {
+        head = []
+        for(var i = 0; i < tail[0].length; ++i){
+            head.push([tail[0][i]]);
+        }
+        return combos(head, tail.slice(1));
+   }
+    
+   var new_head = [];  
+   for(var i = 0; i < head.length; ++i) {
+        for(var j = 0; j < tail[0].length; ++j){
+            var x = head[i].slice(0);     
+            x.push(tail[0][j]);
+            new_head.push(x); 
+        }
+   }
+
+   return combos(new_head, tail.slice(1));
+}
+
+function count_combinations(){
+
+    full_system = combos([],selected_horses);
+    developed_system = []
+    for(var i = 0; i < full_system.length; ++i){
+        var accept = true;
+        for(var j = 0; j < limitations.length; ++j){
+            if(limitations[j].check_combo(full_system[i])==false){
+                accept = false;
+                break;
+            }
+        }
+        if(accept == true){
+            developed_system.push(full_system[i]);
+        }
+    }
+    var d = document.getElementById('developed_system_count');
+    d.innerHTML = 'Developed System Combos: '+ developed_system.length;
+}
+
 </script>
 
 </head>
@@ -374,9 +442,12 @@ Available
 <br/>
 <div id='general_info'>
 </div>
+<div id='developed_system_count'>
+</div>
 <br/>
 <div>
 <button onclick=add_limitation()>Add Limitation</button>
+<button onclick=count_combinations()>Count Combinations</button>
 </div>
 <br/>
 <div id='limitation_div'>
