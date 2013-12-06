@@ -8,146 +8,27 @@
 // /////////////////////////////////////////////////////////////////////////////////
 //
 // NOTES
-//
-// Price Normalization
-//
-//      Applies to a vector of prices. For example the bid prices of all the
-//      ticks of the day V = {p0, p1, ... pn}
-//
-//      If MAX = MAX(V) and MIN = MIN(V)
-//
-//      Then the normalized representation of each data point in V will be as
-//      follows:
-//
-//      NORM[i] (V[i] - MIN) / (MAX-MIN);
-//
-//      The open - high - low - close of the normal data will look as follows:
-//
-//      NORM[0] - 1 - 0 - NORM[n]
-//
-//      Based on this we only need the normal open - close to have a full
-//      description of what is called candle data (since high and low are always
-//      1 and 0)
-//      
-///////////////////////////////////////////////////////////////////////////////////
-//
-#include "CandleStickCollection.h"
+
 #include "toolkit.h"
 #include <floatfann.h>
 #include <fann.h>
 #include "xmldocument.h"
 #include <iostream>
 #include "Logger.h"
-
+#include <boost/algorithm/string.hpp>
 
 using namespace std;
 
-std::string make_training_data_line( const CandleStickCollection& csc, 
-                       int history_index0,
-                       int history_index1,
-                       int future_index0,
-                       int future_index1,
-                       double delta){
-
-    std::string strg;
-
-
-    auto d1 = csc.get_window(history_index0, history_index1, nullptr);
-    LOG << "__________________________" << EOL;
-    for(auto& cs :d1){
-            LOG << cs.timestamp() << " ";
-            LOG << cs.open() << " ";
-            LOG << cs.high() << " ";
-            LOG << cs.close() << " ";
-            LOG << cs.low() << " ";
-    }
-    LOG << "= = = = = = = " << EOL;
-
-
-    auto d = csc.get_window(history_index0, history_index1, trivial_normalizer);
-
-    for(auto& cs :d){
-            LOG << cs.timestamp() << " ";
-            LOG << cs.open() << " ";
-            LOG << cs.high() << " ";
-            LOG << cs.close() << " ";
-            LOG << cs.low() << " ";
-    }
-    LOG << "__________________________" << EOL;
-
-
-
-    strg += to_string(d);
-    strg += "\n";
-    d = csc.get_window(future_index0, future_index1);
-    strg += get_target_for_high_move(d,delta*0.0001);
-    return strg;
-}
-
-void prepare_data_files(XmlNode& config){
-    const string candles_file = config["candle_file"].value();
-    const string training_data_file = config["training_data_file"].value();
-    const string forward_test_file = config["forward_test_file"].value();
-    const int history_size = config["history_size"].value_to_int();
-    const int future_size = config["future_size"].value_to_int();
-    const double delta = config["delta"].value_to_double();
-    CandleStickCollection csc(candles_file);
-    int history_index0 = 0 , history_index1 = 0, future_index0 = 0, future_index1 = 0;
-    vector<string> training_data;
-    vector<string> training_data_timestamp;
-    for(;;){
-        history_index1 = history_index0 + history_size;
-        future_index0 = history_index1;
-        future_index1 =  future_index0 + future_size;
-        if(future_index1 >= csc.size()){
-            break;
-        }
-        training_data.push_back(make_training_data_line(csc, 
-                                                  history_index0, 
-                                                  history_index1, 
-                                                  future_index0, 
-                                                  future_index1,
-                                                  delta));
-        training_data_timestamp.push_back(csc[future_index0].timestamp());
-        //history_index0 = future_index1;
-        //history_index0 += future_size;
-        history_index0 += 24;
-    }
-
-    const int split_index = training_data.size() * 0.70;
-
-    FILE *fp;
-    fp=fopen(training_data_file.c_str(), "w");
-    fprintf(fp,"%i %i 1\n", split_index, history_size*4); 
-    for(int i=0; i < split_index; ++i){
-        fprintf(fp,"%s\n",training_data[i].c_str());
-    }
-    fclose(fp);
-    cout << "forward test starts at: " << training_data_timestamp[split_index]<< endl;
-    fp=fopen(forward_test_file.c_str(), "w");
-    for(int i=split_index; i < training_data.size(); ++i){
-        fprintf(fp,"%s\n",training_data[i].c_str());
-    }
-    fclose(fp);
-
-    char buffer[1024];
-    sprintf(buffer, "data_cleaner.py %s", training_data_file.c_str());
-    system(buffer);
-
-    sprintf(buffer, "mv %s.clean %s", training_data_file.c_str(), training_data_file.c_str());
-    system(buffer);
-}
 
 void train_neural_network(XmlNode& config){
-    const int history_size = config["history_size"].value_to_int();
     const string training_data_file = config["training_data_file"].value();
     const string neural_network_file = config["neural_network_file"].value();
     const float desired_error = (const float) config["desired_error"].value_to_double();
     const double hidden_neurons_factor = config["hidden_neurons_factor"].value_to_double();
-    const unsigned int num_input = history_size*4;
+    const unsigned int num_input = 96;
     const unsigned int num_output = 1;
     const unsigned int num_layers = config["number_of_layers"].value_to_int();;
-    const unsigned int num_neurons_hidden = (int)history_size*hidden_neurons_factor;
+    const unsigned int num_neurons_hidden = (int)num_input*hidden_neurons_factor;
     const unsigned int max_epochs = config["max_epochs"].value_to_int();
     const unsigned int epochs_between_reports = config["epochs_between_reports"].value_to_int();
 
@@ -166,15 +47,10 @@ void train_neural_network(XmlNode& config){
 void forward_test(XmlNode& config){
      const string forward_test_file = config["forward_test_file"].value();
      const string neural_network_file = config["neural_network_file"].value();
-     const int history_size = config["history_size"].value_to_int();
 
      ifstream myfile (forward_test_file.c_str());
      string line;
      int successes = 0, failures = 0;
-     int correct_ones = 0;
-     int wrong_ones = 0;
-     int correct_zeros = 0;
-     int wrong_zeros = 0;
 
      while ( getline (myfile,line) )
      {
@@ -201,35 +77,54 @@ void forward_test(XmlNode& config){
          int desired = atoi(strs[0].c_str());
 
          if(c > 0.5 && desired == 1){
-             ++correct_ones;
              ++successes;
          }
 
          if(c > 0.5 && desired == 0){
-             ++wrong_zeros;
              ++failures;
          }
 
-         if(c < 0.5 && desired == 1){
-             ++wrong_ones;
-             ++failures;
-         }
-
-         if(c < 0.5 && desired == 0){
-             ++correct_zeros;
-             ++successes;
-         }
 
 
          fann_destroy(ann);
      }
      myfile.close();
+
      cout << "success: " << successes << endl;
      cout << "failures: " << failures << endl;
-     cout << "correct_ones: " << correct_ones << endl;
-     cout << "wrong_ones: " << wrong_ones << endl;
-     cout << "correct_zeros: " << correct_zeros << endl;
-     cout << "wrong_zeros: " << wrong_zeros << endl;
+
+     double total = successes + failures;
+
+     printf("success : %10.2f\n", (successes /total)*100.0);
+
+}
+
+void update_trading_file(XmlNode& config) {
+     const string filename = config["trading_file"].value();
+     const string temp_filename = filename + ".to_execute";
+     const string neural_network_file = config["neural_network_file"].value();
+     FILE *fp =fopen(temp_filename.c_str(), "w");
+     ifstream myfile (filename.c_str());
+     string line;
+     while ( getline (myfile,line) ) {
+         fann_type *calc_out;
+         fann_type input[96]; // change this to be dynamic instead of hardcoded
+         struct fann *ann = fann_create_from_file(neural_network_file.c_str());
+         vector<string> strs;
+         boost::split(strs, line, boost::is_any_of(","));
+         assert(strs.size() == 100);
+         for(int i = 4; i < 100; ++i){
+            input[i-4] = atof(strs[i].c_str());
+         }
+         calc_out = fann_run(ann, input);
+         double c = calc_out[0];
+         if(c >0.5){
+             fprintf(fp,"%s,%s,%s,%s\n", strs[0].c_str(), strs[1].c_str(), strs[2].c_str(), strs[3].c_str());
+         }
+         fann_destroy(ann);
+     }
+     myfile.close();
+     fclose(fp);
 }
 
 int main(int argc, char *argv[]){
@@ -241,9 +136,8 @@ int main(int argc, char *argv[]){
     Logger::set_filename("forward_testing.log");
     XmlDocument configuration(argv[1]);
     XmlNode& config = configuration["neural_network_training_data"];
-
-    prepare_data_files(config);
     train_neural_network(config);
     forward_test(config);
+    update_trading_file(config);
 }
 

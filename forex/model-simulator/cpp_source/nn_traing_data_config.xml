@@ -1,20 +1,13 @@
 <configuration>
     <neural_network_training_data>
-        <candle_file>/home/john/projects/forex/historical-candles/EUR_USD_hourly_candles.csv</candle_file>
-        <training_data_file>training.data</training_data_file>
-       <!--  
-        <forward_test_file>forwardtest.data</forward_test_file>
-       --> 
-        <forward_test_file>already_trained.data</forward_test_file>
-        
+        <training_data_file>EUR_USD_training.data</training_data_file>
+        <forward_test_file>EUR_USD_testing.data</forward_test_file>
+        <trading_file>EUR_USD.trading_file</trading_file>
         <neural_network_file>trained_nn.net</neural_network_file>
-        <history_size>24</history_size>
-        <future_size>24</future_size>
-        <delta>80</delta>
-        <desired_error>0.002</desired_error>
+        <desired_error>0.013</desired_error>
         <max_epochs>500000</max_epochs>
         <epochs_between_reports>1000</epochs_between_reports>
-        <hidden_neurons_factor>1.3</hidden_neurons_factor>
+        <hidden_neurons_factor>1.5</hidden_neurons_factor>
         <number_of_layers>3</number_of_layers>
     </neural_network_training_data>
 </configuration>

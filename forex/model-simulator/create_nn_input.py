@@ -1,5 +1,4 @@
 #!/usr/bin/python
-
 '''
 John Pazarzis
 Fri Nov 29 10:18:54 EST 2013
@@ -13,7 +12,6 @@ Given a specific currency pair creates the following:
 (3) The actual neural network file containing its weights
 
 Both the training (1) and the testing (2) files are cleaned for conflicts
-
 '''
 import sys
 import os
@@ -44,18 +42,15 @@ sql_select_entering_price =''' select ask from  EUR_USD where date='{0}' AND hou
 # hours and a long as my entering hour is less than 14:00 (or 2:00pm) I must use
 # the same date....
 
-sql_select_max_bid_for_following_hours = ''' select max(bid) as bid from EUR_USD WHERE  
-                                                 (date = '{0}' AND  hour >= {1} ) or  
-                                                 ( date = '{0}' AND hour
-                                                 < {2} )'''
+sql_select_max_bid_for_following_hours = '''select max(bid) as bid from EUR_USD WHERE  date = '{0}' AND  hour >= {1} and hour < {2}'''
+
+                                        
 
 def load_entering_hours():
       return [ row for row in tools.dbtools.execute_query(sql_select_entering_hours)] 
 
 def create_training_data(date, hour):
-    
-    invalid_return = None, None
-
+    invalid_return = None,None, None
     # First get the corresponding candles 
     sql = sql_select_candles.format(date, hour,number_of_candles)
     input_vector = []
@@ -97,16 +92,16 @@ def create_training_data(date, hour):
     else:
          output = 0
 
-    return input_vector, output
+    return date, input_vector, output
 
 
-def create_file(filename, data, include_header):
-    f = open(filename.format(currency_pair),'w')
-    if include_header:
+def create_file(filename, data, is_training_file):
+    f = open(filename,'w')
+    if is_training_file:
         f.write('{0} {1} 1\n'.format(len(data), number_of_candles * 4))
     for td in data:
-        input_data = td[0]
-        output_data = td[1]
+        input_data = td[1]
+        output_data = td[2]
         for d in input_data:
             s = '{0:10.4f} '.format(d)
             s = s.strip();
@@ -115,6 +110,15 @@ def create_file(filename, data, include_header):
         f.write('{0}\n'.format(output_data))
     f.close()
 
+def create_trading_file(filename, data):
+    f = open(filename,'w')
+    for td in data:
+        date = td[0]
+        tokens = [date, str(entering_hour), str(expiration_hour), str(delta_in_pips) ]
+        input_data = td[1]
+        tokens.extend(['{0:10.4f} '.format(d).strip() for d in input_data])
+        f.write( '{0}\n'.format(','.join(tokens)))
+    f.close()
 
 if __name__ == '__main__':
     tools.dbtools.db_db="forex"
@@ -127,10 +131,10 @@ if __name__ == '__main__':
     entering_hours = load_entering_hours()
     all_data = []
     for eh in entering_hours:
-        input_vector, output_vector = create_training_data(eh.date, eh.hour)
+        date, input_vector, output_vector = create_training_data(eh.date, eh.hour)
         if input_vector is not None:
             assert(len(input_vector) == number_of_candles * 4)
-            all_data.append((input_vector, output_vector))
+            all_data.append((date, input_vector, output_vector))
 
     cutoff = int(len(all_data) * 0.7)
     training_data = all_data[:cutoff]
@@ -138,6 +142,7 @@ if __name__ == '__main__':
     training_filename = '{0}_training.data'.format(currency_pair)
     create_file(training_filename, training_data, True)
     create_file('{0}_testing.data'.format(currency_pair), testing_data, False)
+    create_trading_file('{0}.trading_file'.format(currency_pair), testing_data)
     os.system("data_cleaner.py {0}".format(training_filename))
 
 

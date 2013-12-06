@@ -1,0 +1,203 @@
+# On branch master
+# Changes to be committed:
+#   (use "git reset HEAD <file>..." to unstage)
+#
+#	modified:   ../model-simulator/cpp_source/bftd.cpp
+#	modified:   ../model-simulator/cpp_source/nn_traing_data_config.xml
+#	new file:   ../model-simulator/cpp_source/tick_reader.py
+#	new file:   ../model-simulator/cpp_source/trader.py
+#	modified:   ../model-simulator/create_nn_input.py
+#
+# Changes not staged for commit:
+#   (use "git add/rm <file>..." to update what will be committed)
+#   (use "git checkout -- <file>..." to discard changes in working directory)
+#
+#	deleted:    ../documentation/.~lock.genetic-program.odt#
+#	modified:   ../../genetic_progamming/gen_pro_sample
+#	modified:   ../../genetic_progamming/gen_pro_sample.cpp
+#	modified:   ../../racing/card_loader.py
+#	modified:   ../../racing/handicapping_factors.py
+#	modified:   ../../racing/process_factors.py
+#	modified:   ../../racing/race_results.py
+#	deleted:    ../../samples/amplify-test-assignment/.~lock.sample_data.csv#
+#	modified:   ../../samples/cpp-samples/boost_python_samples/calling_process_tick.cpp
+#	modified:   ../../samples/cpp-samples/boost_python_samples/makefile
+#	modified:   ../../samples/cpp-samples/makefile
+#	modified:   ../../samples/cpp-samples/test1.cpp
+#	modified:   ../../samples/decorator_sample.py
+#	modified:   ../../samples/exotic_studio.html
+#	modified:   ../../todo
+#	modified:   ../../tools/dbtools.py
+#
+# Untracked files:
+#   (use "git add <file>..." to include in what will be committed)
+#
+#	../../ai/__init__.py
+#	../../ai/create_data_to_predict_speed_figure.py
+#	../../ai/neuro_lab.py
+#	../../ai/nn.py
+#	../../ai/nn_trainer.py
+#	../../ai/nn_using_sigmoid.py
+#	../../ai/normalizers.py
+#	../../ai/test
+#	../../ai/test_nn.py
+#	../documentation/PRIMOP.odt
+#	../documentation/PRIMOP2.odt
+#	../documentation/PRIMOP2.pdf
+#	../documentation/nn.jpeg
+#	../historical-candles/
+#	../historical-ticks/
+#	test
+#	../model-simulator/cpp_source/'
+#	../model-simulator/cpp_source/CandleStick.h.orig
+#	../model-simulator/cpp_source/EUR_USD.trading_file
+#	../model-simulator/cpp_source/EUR_USD.trading_file.to_execute
+#	../model-simulator/cpp_source/EUR_USD_testing.data
+#	../model-simulator/cpp_source/EUR_USD_training.data
+#	../model-simulator/cpp_source/FreeMarginModel.h.orig
+#	../model-simulator/cpp_source/backtesting_data
+#	../model-simulator/cpp_source/balance_curve.csv
+#	../model-simulator/cpp_source/bftd
+#	../model-simulator/cpp_source/forward_testing.log
+#	../model-simulator/cpp_source/forwardtest.data
+#	../model-simulator/cpp_source/junk
+#	../model-simulator/cpp_source/junk.csv
+#	../model-simulator/cpp_source/log_file
+#	../model-simulator/cpp_source/model_optimizer
+#	../model-simulator/cpp_source/nntrading
+#	../model-simulator/cpp_source/optimization.log
+#	../model-simulator/cpp_source/python_optimizer
+#	../model-simulator/cpp_source/running_balance.csv
+#	../model-simulator/cpp_source/tags
+#	../model-simulator/cpp_source/test.clean2
+#	../model-simulator/cpp_source/test_candle_sticks
+#	../model-simulator/cpp_source/test_free_margin
+#	../model-simulator/cpp_source/trained_nn.net
+#	../model-simulator/cpp_source/trained_nn.net.old
+#	../model-simulator/cpp_source/training.data
+#	../tags
+#	../utilities/EUR_USD.db
+#	../utilities/EUR_USD_candles.db
+#	../utilities/create_candles_db.py
+#	../utilities/create_tick_db.py
+#	../utilities/junk
+#	../utilities/sample.data
+#	../utilities/sample_queries
+#	../utilities/test
+#	../utilities/test.clean
+#	../utilities/test.clean2
+#	../utilities/test_ticks.csv
+#	../utilities/testing.db
+#	../../genetic_progamming/ComparisonExpression.h
+#	../../genetic_progamming/Expression.h
+#	../../genetic_progamming/ExpressionFactory.h
+#	../../genetic_progamming/LogicalExpression.h
+#	../../genetic_progamming/gen_pro_sample.cpp.orig
+#	../../genetic_progamming/gen_pro_sample.orig
+#	../../genetic_progamming/junk
+#	../../genetic_progamming/junk2
+#	../../include/fitness-example.dia
+#	../../makefile
+#	../../racing/cpp-code/JPUtilities.cpp
+#	../../racing/cpp-code/JPUtilities.h
+#	../../racing/cpp-code/Starter.cpp
+#	../../racing/cpp-code/Starter.h
+#	../../racing/cpp-code/horse.h
+#	../../racing/cpp-code/main
+#	../../racing/cpp-code/main.cpp
+#	../../racing/cpp-code/makefile
+#	../../racing/cpp-code/parsable.h
+#	../../racing/cpp-code/pastperformance.h
+#	../../racing/cpp-code/pool.h
+#	../../racing/cpp-code/statutils.h
+#	../../racing/cpp-code/tags
+#	../../racing/cpp-code/test/Starter.cpp.orig
+#	../../racing/cpp-code/test/Starter.h.orig
+#	../../racing/cpp-code/test/horse.h.orig
+#	../../racing/cpp-code/test/multicap_reader
+#	../../racing/cpp-code/test/multicap_reader.cpp.orig
+#	../../racing/cpp-code/test/parsable.h.orig
+#	../../racing/cpp-code/test/pastperformance.h.orig
+#	../../racing/cpp-code/test/pool.h.orig
+#	../../racing/cpp-code/test/statutils.h.orig
+#	../../racing/cpp-code/test/utilities.cpp.orig
+#	../../racing/cpp-code/test/utilities.h.orig
+#	../../racing/cpp-code/utilities.cpp
+#	../../racing/cpp-code/utilities.h
+#	../../racing/evaluate_factor.py
+#	../../racing/horizontal_exotics/
+#	../../racing/junk
+#	../../racing/junk.csv
+#	../../racing/race_metrics.py
+#	../../racing/race_metrics_utility.py
+#	../../racing/race_selectors.py
+#	../../racing/tags
+#	../../racing/test_mystery.py
+#	../../samples/Button-Add-icon.png
+#	../../samples/Data.fs
+#	../../samples/Data.fs.index
+#	../../samples/Data.fs.lock
+#	../../samples/Data.fs.tmp
+#	../../samples/Knapsack.py
+#	../../samples/amplify-test-assignment/transformer.zip
+#	../../samples/betting_simulator.py
+#	../../samples/combinatorics_sample.py
+#	../../samples/compare_parlays.html
+#	../../samples/cpp-samples/bookstore.xml
+#	../../samples/cpp-samples/boost_python_samples/World.cpp.orig
+#	../../samples/cpp-samples/boost_python_samples/World.so
+#	../../samples/cpp-samples/boost_python_samples/call_python
+#	../../samples/cpp-samples/boost_python_samples/call_python.cpp.orig
+#	../../samples/cpp-samples/boost_python_samples/calling_process_tick
+#	../../samples/cpp-samples/boost_python_samples/calling_process_tick.cpp.orig
+#	../../samples/cpp-samples/boost_python_samples/hello_ext.so
+#	../../samples/cpp-samples/boost_python_samples/junk
+#	../../samples/cpp-samples/boost_python_samples/multithread_python_calling
+#	../../samples/cpp-samples/boost_python_samples/multithread_python_calling.cpp.orig
+#	../../samples/cpp-samples/boost_python_samples/process_tick_sample.py.orig
+#	../../samples/cpp-samples/boost_python_samples/test_model.py
+#	../../samples/cpp-samples/boost_python_samples/vanila_call_python
+#	../../samples/cpp-samples/boost_python_samples/vanila_call_python.cpp.orig
+#	../../samples/cpp-samples/fann-samples/back_test
+#	../../samples/cpp-samples/fann-samples/backtesting_data
+#	../../samples/cpp-samples/fann-samples/fann_test
+#	../../samples/cpp-samples/fann-samples/simple_execution
+#	../../samples/cpp-samples/fann-samples/training_data.net
+#	../../samples/cpp-samples/fann-samples/xor_float.net
+#	../../samples/cpp-samples/fann_test
+#	../../samples/cpp-samples/fann_test.cpp
+#	../../samples/cpp-samples/fann_test_old.cpp
+#	../../samples/cpp-samples/funtional_use
+#	../../samples/cpp-samples/ga_sample1
+#	../../samples/cpp-samples/junk
+#	../../samples/cpp-samples/multi_threaded_pool_consumer
+#	../../samples/cpp-samples/parallel_processor
+#	../../samples/cpp-samples/pool_sample
+#	../../samples/cpp-samples/print_leap_years.py
+#	../../samples/cpp-samples/quadratic_equation.log
+#	../../samples/cpp-samples/tags
+#	../../samples/cpp-samples/test1
+#	../../samples/cpp-samples/test_construction_boost_date
+#	../../samples/cpp-samples/test_smart_pointers
+#	../../samples/cpp-samples/test_smart_pointers.cpp
+#	../../samples/cpp-samples/test_time
+#	../../samples/cpp-samples/test_time.cpp.orig
+#	../../samples/cpp-samples/threading1
+#	../../samples/cpp-samples/xor.data
+#	../../samples/cpp-samples/xor_float.net
+#	../../samples/html_file_reader_example.html
+#	../../samples/longest_repeated_string.py
+#	../../samples/my_db.db
+#	../../samples/test.html
+#	../../samples/test2.html
+#	../../samples/test2.hyml
+#	../../samples/test2.xml
+#	../../samples/test_sql_lite.py
+#	../../samples/with_test.py
+#	../../tags
+#	../../tools/..html
+#	../../tools/csv2html.py
+#	../../tools/dbtools.html
+#	../../tools/tags
+#	../../tools/to_delete/
+#	../../vim_notes

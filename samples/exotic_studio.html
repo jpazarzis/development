@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <link rel="stylesheet" href="theme2.css" />
+<script type='text/javascript' src='compression_logic.js'></script>
 </head>
 <script>
 number_of_races = 4
@@ -372,8 +373,8 @@ function combos(head, tail)
    return combos(new_head, tail.slice(1));
 }
 
-function count_combinations(){
 
+function get_all_combinations(){
     full_system = combos([],selected_horses);
     developed_system = []
     for(var i = 0; i < full_system.length; ++i){
@@ -388,8 +389,29 @@ function count_combinations(){
             developed_system.push(full_system[i]);
         }
     }
+    return developed_system
+}
+
+function count_combinations(){
+    developed_system = get_all_combinations();
     var d = document.getElementById('developed_system_count');
     d.innerHTML = 'Developed System Combos: '+ developed_system.length;
+}
+
+
+function develop_system(){
+    var developed_system = get_all_combinations();
+    /*
+    s = '[';
+    for(var i = 0; i < developed_system.length; ++i){
+        s += '[' + developed_system[i] + '],';
+    }
+    s += ']';
+    alert(s);
+    */
+
+    var d = document.getElementById('compressed_system_div');
+    d.innerHTML = get_compressed(developed_system);
 }
 
 </script>
@@ -447,10 +469,18 @@ Available
 <br/>
 <div>
 <button onclick=add_limitation()>Add Limitation</button>
-<button onclick=count_combinations()>Count Combinations</button>
+<button onclick=count_combinations()>Count</button>
+<button onclick=develop_system()>Develop</button>
 </div>
 <br/>
 <div id='limitation_div'>
 </div>
+<br/>
+<br clear="all" /> 
+<div id='compressed_system_div' style='float:left'>
+</div>
+<br clear="all" /> 
+
+
 </body>
  </html>
