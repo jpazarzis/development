@@ -50,19 +50,21 @@ function zip_combos(combinations){
 
 }
 
-function get_as_system(s){
-   var str = '';
+function get_as_system(i,s){
+   var str = 'Ticket# ' + i +'\n';
+   var combinations = 1;
    for(var i = 0; i < s.length; ++i){     
+     combinations = combinations * s[i].length;
      for(var j = 0; j < s[i].length; ++j){
           var n = ''+s[i][j];
           if(n.length == 1)
             n=' '+n;
           str += n + ' ';
      }
-     str += '<br/>';
+     str += '\n';
    }
-   str += '<br/>';
-   str += '<hr/>';     
+   str += 'combinations: ' + combinations;
+   str += '\n---\n';
    return str;
 }
 
@@ -73,7 +75,7 @@ function get_diff(a1,a2){
     }
     var diff = [];
     for(var i = 0; i < length; ++i){
-        if(a1[i] & a2[i] != a1[i]){
+        if(a1[i] != a2[i] ){
             diff.push(i);
         }   
     }
@@ -84,44 +86,73 @@ function compress(arr,position) {
     if(position >= arr.length-1){
         return;
     }
-    while(true){
-        var length_before = arr.length;
-        for(var i = position+1 ; i < arr.length; ++i){
-            
+    var continue_compressing = true;
+    while(continue_compressing)
+    {
+        continue_compressing = false;
+        for(var i = position ; i < arr.length; ++i)
+        {
             var diff_indexes = get_diff(arr[position], arr[i]);
-            if(diff_indexes.length == 1){
+            if(diff_indexes.length == 1)
+            {
+                continue_compressing = true;
                 var index = diff_indexes[0];
                 arr[position][index] = arr[position][index] | arr[i][index];
                 arr.splice(i,1);
-                i = i -1;
+                i = i-1;
             }   
         }
-        if(length_before == arr.length){
-            break;
-        }            
     }
     compress(arr, position + 1);
 }
 
 function get_compressed(arr){
         arr = zip_combos(arr);
+        var l = arr.length
         while(true){
-           var l1 = arr.length;
-           compress(arr,0);
-           if(l1 == arr.length) break;
+            compress(arr,0);
+            if(l != arr.length){
+                l = arr.length;
+            }
+            else {
+                break;
+            }
         }
         arr = unzip_combos(arr);
+        writeln(arr.length)
         var s = '';
         for(var i = 0; i < arr.length; ++i){
-            s += '<div>';
-
-            s += get_as_system(arr[i]);
-            s += '</div>';
+            s += get_as_system(i,arr[i]);
         }
         return s;
 }
 
-var arr = [[1,1,1,1],[1,1,1,3],[1,1,1,4],[1,1,3,1],[1,1,3,3],[1,1,3,4],[1,3,1,1],[1,3,1,3],[1,3,1,4],[3,1,1,1],[3,1,1,3],[3,1,1,4],[3,1,3,1],[3,1,3,3],[3,1,3,4],[3,3,1,1],[3,3,1,3],[3,3,1,4]];
+var arr = [[1,1,1,1],[1,1,1,3],[1,1,1,4],[1,1,1,5],[1,1,3,1],[1,1,3,3],[1,1,3,4],[1,1,3,5],[1,3,1,1],[1,3,1,3],[1,3,1,4],[1,3,1,5],[1,3,3,1],[1,3,3,3],[1,3,3,4],[1,3,3,5],[2,1,1,1],[2,1,1,3],[2,1,1,4],[2,1,1,5],[2,1,3,1],[2,1,3,3],[2,1,3,4],[2,1,3,5],[3,1,1,1],[3,1,1,3],[3,1,1,4],[3,1,1,5],[3,1,3,1],[3,1,3,3],[3,1,3,4],[3,1,3,5],[4,1,1,1],[4,1,1,3],[4,1,1,4],[4,1,1,5],[4,1,3,1],[4,1,3,3],[4,1,3,4],[4,1,3,5]];
 writeln(get_compressed(arr));
+
+/*
+Race    Selections
+    ----    ----------
+    1.  1 2 3 4 
+    2.  1 
+    3.  1 3 
+    4.  1 3 4 5 
+
+    Combinations  : 32
+    Cost Per Unit : $1
+    Ticket Cost   : $32
+
+===================================================================
+
+Ticket #2
+
+    Race    Selections
+    ----    ----------
+    1.  1 
+    2.  3 
+    3.  1 3 
+    4.  1 3 4 5 
+
+    */
 
 
