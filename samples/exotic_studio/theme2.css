@@ -60,5 +60,33 @@ table td
     width:100%;
     margin-bottom:8px;
     font-weight:bold;
-
 }
+
+.counter_div
+{
+    display:inline-block; 
+    background-color:#558C89;
+    margin-left:5px;
+    margin-bottom:25px;
+}
+
+.counter_label
+{
+   display:inline-block; 
+    vertical-align:middle 
+    font-family: verdana,arial,sans-serif;
+    font-size:15px;
+    color:white;
+}
+
+.counter
+{
+    color:white;
+    background-color:blue;
+    font-size:30px;
+    margin-left:5px;
+    margin-bottom:25px;
+    font-weight:bold;
+}
+
+

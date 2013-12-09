@@ -128,7 +128,9 @@ function count_full_system(){
         var tokens = selected_horses[i];
         fs = fs * tokens.length;
     }
-    return 'Full System Combos: ' +fs;
+    if(fs == 0)
+        return '';
+    return fs;
 }
 
 function create_add_horse_button(){
@@ -137,6 +139,11 @@ function create_add_horse_button(){
 }
 
 function move_horse(row_index,col_index,from_system_name,to_system_name){
+    var d = document.getElementById('compressed_system_div');
+    d.innerHTML = '';
+    var d = document.getElementById('developed_system_count');
+    d.innerHTML = '0';
+
     from_system= this[from_system_name];
     to_system= this[to_system_name];
     horse_number = from_system[row_index][col_index];
@@ -178,8 +185,8 @@ function update_available_horses(){
     fst.innerHTML = get_system_as_html('unused_horses','selected_horses');
 }
 
-function update_general_info(){
-    var d = document.getElementById('general_info');
+function update_full_system_count(){
+    var d = document.getElementById('full_system_count');
     d.innerHTML = count_full_system();
 }
 
@@ -188,11 +195,17 @@ function update_general_info(){
 function update_screen(){
     update_full_system();
     update_available_horses();
-    update_general_info();
+    update_full_system_count();
     paint_all_limitations();
 }
 
 function select_number_of_races(n){
+
+    var d = document.getElementById('compressed_system_div');
+    d.innerHTML = '';
+
+    var d = document.getElementById('developed_system_count');
+    d.innerHTML = '0';
 
     number_of_races = n
 
@@ -225,7 +238,10 @@ function paint_selection_button(button){
 }
 
 function toggle_selection(button){
-   
+    var d = document.getElementById('compressed_system_div');
+    d.innerHTML = '';
+    var d = document.getElementById('developed_system_count');
+    d.innerHTML = '0';
     if(button.selections.contains(button.horse_number)) {
         button.selections.remove(button.horse_number);
     }
@@ -233,6 +249,8 @@ function toggle_selection(button){
         button.selections.add(button.horse_number);
     }
     paint_selection_button(button);
+    count_combinations();
+
 }
 
 function make_limitation_control(limitation){
@@ -295,6 +313,9 @@ function get_possible_matches_as_span(limitation){
     label.className = 'from_to_label';
 
     limitation.max_matches_ctrl = to_select;
+
+    from_select.setAttribute("onclick","count_combinations();");
+    to_select.setAttribute("onclick","count_combinations();");
     
     span.appendChild(label);
     span.appendChild(to_select);
@@ -322,13 +343,25 @@ function paint_limitation(limitation){
     element.className = "limitation_span";
     element.appendChild(make_limitation_control(limitation));
     element.appendChild(document.createElement("hr"));
+
+
+    
     element.appendChild(get_possible_matches_as_span(limitation));
 
-    var button = document.createElement('button');
-    button.className = "limitation_button";
-    button.appendChild(document.createTextNode('delete'))
-    button.onclick = function () { delete_limitation(limitation_index - 1); };
-    element.appendChild(button);
+    var button1 = document.createElement('button');
+    button1.innerHTML = '<img src="delete.jpeg" width="22px" height="22px"  />';
+    button1.onclick = function () { delete_limitation(limitation_index - 1); };
+    element.appendChild(button1);
+
+    var button2 = document.createElement('button');
+    button2.innerHTML = '<img src="add.jpeg" width="22px" height="22px"  />';
+    button2.onclick = function() { add_limitation();}
+    element.appendChild(button2);
+
+
+    
+
+    
 
     div.appendChild(element);
 }
@@ -395,12 +428,13 @@ function get_all_combinations(){
 function count_combinations(){
     developed_system = get_all_combinations();
     var d = document.getElementById('developed_system_count');
-    d.innerHTML = 'Developed System Combos: '+ developed_system.length;
+    d.innerHTML = developed_system.length;
 }
 
 
 function develop_system(){
     var developed_system = get_all_combinations();
+    
     /*
     s = '[';
     for(var i = 0; i < developed_system.length; ++i){
@@ -409,6 +443,10 @@ function develop_system(){
     s += ']';
     alert(s);
     */
+    
+
+    var d = document.getElementById('developed_system_count');
+    d.innerHTML = developed_system.length;
 
     var d = document.getElementById('compressed_system_div');
     d.innerHTML = get_compressed(developed_system);
@@ -441,6 +479,20 @@ function develop_system(){
                  value = "pick6">pick6</input> 
         </p>       
 </div>
+<div class='counter_div'>
+<button onclick="add_limitation();">
+<img src="add.jpeg" width="30px" height="30px"  />
+</button>
+
+<button onclick="develop_system();">
+<img src="develop.jpeg" width="30px" height="30px"  />
+</button>
+
+<span class='counter_label'>Full</span>
+<span class='counter' id='full_system_count'></span>
+<span class='counter_label'>Developed</span>
+<span class='counter' id='developed_system_count'></span>
+</div>
 
 
 <div>
@@ -461,17 +513,11 @@ Available
 </span>
 </div>
 <br clear="all" /> 
-<br/>
-<div id='general_info'>
-</div>
-<div id='developed_system_count'>
-</div>
-<br/>
 <div>
-<button onclick=add_limitation()>Add Limitation</button>
-<button onclick=count_combinations()>Count</button>
-<button onclick=develop_system()>Develop</button>
-</div>
+
+
+
+
 <br/>
 <div id='limitation_div'>
 </div>

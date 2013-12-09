@@ -51,10 +51,13 @@ function zip_combos(combinations){
 }
 
 function get_as_system(i,s){
-   var str = 'Ticket# ' + i +'\n';
+   var str = '<pre style="display: inline-block; border:3px solid blue; margin-top:3px; margin-bottom:3px; margin-right:3px; margin-left:3px; padding: 5px;">\n';
+   var ticket_number = i + 1;
+   str += 'Ticket: <b>' + ticket_number +'</b>\n\n';
    var combinations = 1;
    for(var i = 0; i < s.length; ++i){     
      combinations = combinations * s[i].length;
+
      for(var j = 0; j < s[i].length; ++j){
           var n = ''+s[i][j];
           if(n.length == 1)
@@ -63,9 +66,10 @@ function get_as_system(i,s){
      }
      str += '\n';
    }
-   str += 'combinations: ' + combinations;
-   str += '\n---\n';
-   return str;
+   str += 'combinations: <b>' + combinations + '</b>';
+   str += '\n';
+   str += '</pre>\n';
+   return  str;
 }
 
 function get_diff(a1,a2){
@@ -119,16 +123,15 @@ function get_compressed(arr){
             }
         }
         arr = unzip_combos(arr);
-        writeln(arr.length)
         var s = '';
         for(var i = 0; i < arr.length; ++i){
             s += get_as_system(i,arr[i]);
         }
-        return s;
+        return  s;
 }
 
-var arr = [[1,1,1,1],[1,1,1,3],[1,1,1,4],[1,1,1,5],[1,1,3,1],[1,1,3,3],[1,1,3,4],[1,1,3,5],[1,3,1,1],[1,3,1,3],[1,3,1,4],[1,3,1,5],[1,3,3,1],[1,3,3,3],[1,3,3,4],[1,3,3,5],[2,1,1,1],[2,1,1,3],[2,1,1,4],[2,1,1,5],[2,1,3,1],[2,1,3,3],[2,1,3,4],[2,1,3,5],[3,1,1,1],[3,1,1,3],[3,1,1,4],[3,1,1,5],[3,1,3,1],[3,1,3,3],[3,1,3,4],[3,1,3,5],[4,1,1,1],[4,1,1,3],[4,1,1,4],[4,1,1,5],[4,1,3,1],[4,1,3,3],[4,1,3,4],[4,1,3,5]];
-writeln(get_compressed(arr));
+//var arr = [[1,1,1,1],[1,1,1,3],[1,1,1,4],[1,1,1,5],[1,1,3,1],[1,1,3,3],[1,1,3,4],[1,1,3,5],[1,3,1,1],[1,3,1,3],[1,3,1,4],[1,3,1,5],[1,3,3,1],[1,3,3,3],[1,3,3,4],[1,3,3,5],[2,1,1,1],[2,1,1,3],[2,1,1,4],[2,1,1,5],[2,1,3,1],[2,1,3,3],[2,1,3,4],[2,1,3,5],[3,1,1,1],[3,1,1,3],[3,1,1,4],[3,1,1,5],[3,1,3,1],[3,1,3,3],[3,1,3,4],[3,1,3,5],[4,1,1,1],[4,1,1,3],[4,1,1,4],[4,1,1,5],[4,1,3,1],[4,1,3,3],[4,1,3,4],[4,1,3,5]];
+//writeln(get_compressed(arr));
 
 /*
 Race    Selections
