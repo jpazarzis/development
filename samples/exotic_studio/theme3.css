@@ -18,10 +18,10 @@ table td
     float:left;
     font-family: verdana,arial,sans-serif;
     font-size:20px;
-    color:#00FFFF;
+    color:#CCFFFF;
     border: 0px ;
     display: inline-block;
-    background-color:#0000FF;
+    background-color:#006699;
     text-align:left;
     width:100%;
     margin-bottom:8px;
@@ -38,13 +38,14 @@ table td
 body {
     width: 820px;
     margin: 0 auto;
+    background-color:#00CCCC;
 }
 
 .group_div
 {
     border: 1px solid black;
     overflow:hidden; 
-    background-color:red;
+    background-color:#996666;
 }
 
 .limitation_span
@@ -56,3 +57,60 @@ body {
     background-color:#ddd;
     
 }
+
+.race_number
+{
+    border: 0px;
+    background:#555555;
+    color:white;
+}
+
+.limitation_button
+{
+    border: 0px solid black;
+    background:#ddd;
+}
+
+.limitation_selected_button
+{
+    border: 0px solid black;
+    background:red;
+    font-weight:bold;
+}
+
+
+.matches_counter_unselected
+{
+    border: 0px;
+    background:#778899;
+    color:#696969;
+    
+}
+
+.matches_counter_selected
+{
+    border: 0px;
+    background:blue;
+    color:white;
+    font-weight:bold;
+    
+}
+
+
+.matching_table
+{
+    font-family: verdana,arial,sans-serif;
+    font-size:15px;
+    color:#ddd;
+    background-color:#778899;
+    border: 0px ;
+    line-height: 25px;
+    width:100%;
+}
+
+.matching_table td
+{
+    border: 0px;
+}
+
+

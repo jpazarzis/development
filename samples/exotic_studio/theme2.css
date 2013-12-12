@@ -35,6 +35,13 @@ table td
 .limitation_button
 {
     border: 1px solid black;
+    background:blue;
+}
+
+.limitation_selected_button
+{
+    border: 1px solid red;
+    background:red;
 }
 
 .from_to_label
