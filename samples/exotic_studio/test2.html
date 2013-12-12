@@ -10,6 +10,83 @@
 var full_system = null;
 
 
+function develop_tickets(){
+    $('#ticketsCtrl').html(get_compressed(get_developed_system()));
+}
+
+function combos(head, tail)
+{
+   if(tail.length == 0) 
+        return head;
+   
+   if(head.length == 0) {
+        head = []
+        for(var i = 0; i < tail[0].length; ++i){
+            head.push([tail[0][i]]);
+        }
+        return combos(head, tail.slice(1));
+   }
+    
+   var new_head = [];  
+   for(var i = 0; i < head.length; ++i) {
+        for(var j = 0; j < tail[0].length; ++j){
+            var x = head[i].slice(0);     
+            x.push(tail[0][j]);
+            new_head.push(x); 
+        }
+   }
+
+   return combos(new_head, tail.slice(1));
+}
+
+function get_developed_system(){
+   var selected_horses = [];
+    for(var i = 0; i < full_system.numberOfRaces; ++i){
+        var race_selections = full_system.selections[i];
+        var selections_per_race = [];
+        for(var j = 0; j < race_selections.length; ++j){
+            if(race_selections[j].is_selected){
+                selections_per_race.push(race_selections[j].horse_number);
+            }
+        }
+        if(selections_per_race.length == 0){
+            return 0;
+        }
+        selected_horses.push(selections_per_race);
+    }
+    
+    // Based in the selected horses create all possible combinations
+    var fs = combos([],selected_horses);
+
+    // Now for each combination of the full system go through all the groups 
+    // and check how many of them are matching
+
+    developed_system = []
+
+    for(var i = 0; i < fs.length; ++i){
+            var matching_groups = 0;
+            for(var j = 0; j < full_system.groups.length; ++j){
+                    if(full_system.groups[j].is_matching(fs[i])){
+                        matching_groups +=1;
+                    }
+            }
+            if(matching_groups == full_system.groups.length){
+                developed_system.push(fs[i]);
+            }
+    }
+
+    return developed_system;
+
+}
+
+function count_system(){
+    // First get the selected horses from the full system
+    $("#developedSystemCountCtrl").html('');
+    var developed_system = get_developed_system();
+    $("#developedSystemCountCtrl").html( 'Developed System Combos <span class="counter">' + developed_system.length + '</span>');
+}
+
+
 function exists_in_array(list,element){
         return list.indexOf(element) > -1;
 }
@@ -29,6 +106,25 @@ function Limitation(parentDiv){
         this.table = document.createElement("table");
         this.span.appendChild(this.table);
         this.matching_counts = []
+
+        this.is_matching = function(combination){
+            if(this.matching_counts.length == 0){
+                return true;
+            }
+            var count_matches = 0;
+            for(var i = 0; i < this.table.rows.length; ++i){
+                if(exists_in_array(this.table.rows[i].selections,combination[i])){
+                    count_matches+=1;
+                }
+            }
+
+            /*
+            if(exists_in_array(this.matching_counts,count_matches))
+                alert('matching counts: ' + this.matching_counts + " count matches: " + count_matches);
+            */
+
+            return exists_in_array(this.matching_counts,count_matches);
+        }
 
         this.paintButton = function(button){
             if(exists_in_array(button.parentNode.parentNode.selections,button.horse_number)){
@@ -52,6 +148,7 @@ function Limitation(parentDiv){
                         parentRow.selections.push(this.horse_number);
                     }
                     button.parent_limitation.paintButton(button);
+                    count_system();
                 }
                 return button;
         }
@@ -104,6 +201,7 @@ function Limitation(parentDiv){
                     this.parentLimitation.matching_counts.push(this.matches);
                     this.className = "matches_counter_selected";
                 }
+                count_system();
             }
 
             cell.appendChild(button);
@@ -159,7 +257,7 @@ function Group(){
 
         this.div = document.createElement("div");
         this.div.className = "group_div";
-        this.div.style.minHeight = ($('#full_system_table').height() + 300) +'px';
+        this.div.style.minHeight = ($('#full_system_table').height() + 80) +'px';
 
         this.titleSpan = document.createElement("span");
         this.titleSpan.className = 'title';
@@ -167,6 +265,15 @@ function Group(){
 
         $('#groupsCtrl').append(document.createElement("br"));
         $('#groupsCtrl').append(this.div);
+
+        this.is_matching = function(combination){
+            for(var i = 0; i < this.limitations.length; ++i){
+                if(!this.limitations[i].is_matching(combination)){
+                    return false;
+                }
+            }
+            return true;
+        }
 
         this.updateTitle = function(groupIndex){
             this.titleSpan.innerHTML = '';
@@ -178,6 +285,7 @@ function Group(){
             button.group = this;
             button.onclick = function(){
                 this.group.limitations.push(new Limitation(this.group.div));
+                count_system();
             }
             this.titleSpan.appendChild(button);
 
@@ -189,6 +297,7 @@ function Group(){
                   full_system.remove_group(this.group);
                   var parentElement = document.getElementById("groupsCtrl");                    
                   parentElement.removeChild(this.group.div);
+                  count_system();
 
             }
             this.titleSpan.appendChild(button);
@@ -248,6 +357,7 @@ function makeFullSystem(numberOfRaces,maxHorsesPerRace){
                                 full_system.toggle_selection(this.race_index, this.horse_index);
                                 this.paint_it();
                                 full_system.updateCountView();
+                                count_system();
                             };
                             button.paint_it();
                             cell.appendChild(button);
@@ -263,7 +373,7 @@ function makeFullSystem(numberOfRaces,maxHorsesPerRace){
 
             this.updateCountView = function(){
                 var full_system_count = this.countFullSystem();
-                $("#statusCtrl").html(full_system_count);
+                $("#fullSystemCount").html('combos <span class="counter">' + full_system_count+ '</span>');
             }
 
             this.selections_per_race = function (race_index){
@@ -307,36 +417,80 @@ function makeFullSystem(numberOfRaces,maxHorsesPerRace){
 
 
 $(document).ready(function(){
-    makeFullSystem(4,20);
-    full_system.updateFullSystemView();
+    select_number_of_races(4);
 })
+
+
+function select_number_of_races(n){
+    makeFullSystem(n,20);
+    full_system.updateFullSystemView();
+    $('#groupsCtrl').html('');
+    $('#ticketsCtrl').html('');
+}
+
 </script>
 
 </head>
 <body style='width=720px'>
 
 
-<div class='counter_div'>
+<div>
+ <p>
+           <input type = "radio"
+                 name = "radSize"
+                 id = "sizeSmall"
+                 value = "pick3"
+                 onchange="select_number_of_races(3)"
+                  >pick3 </input>
+
+          <input type = "radio"
+                 name = "radSize"
+                 id = "sizeSmall"
+                 value = "pick4"
+                 onchange="select_number_of_races(4)"
+                 checked = "checked" >pick4 </input>
+
+          <input type = "radio"
+                 name = "radSize"
+                 id = "sizeSmall"
+                 onchange="select_number_of_races(5)"
+                 value = "pick5">pick5 </input> 
+
+          <input type = "radio"
+                 name = "radSize"
+                 id = "sizeSmall"
+                 onchange="select_number_of_races(6)"
+                 value = "pick6">pick6</input> 
+        </p>       
 </div>
 
-<div id='statusCtrl'>
 
-</div>
 
-<div id='optionsCtrl'>
-<button title="develop tickets"  onclick="develop_tickets();">
-<img src="develop.jpeg" width="30px" height="30px"  />
-</button>
-</div>
+
+
+
+
+
 
 
 <div class='group_div'>
-<span class='title'>Full System</span>
+<span class='title'>Full System
+
+<span id='fullSystemCount'>
+</span>
+
+<span id='developedSystemCountCtrl'>
+</span>
+
+</span>
+
+
+
 <div id='fullSystemCtrl' class='limitation_span'>
 </div>
 <br clear="all" /> 
 </div>
-
+<br clear="all" /> 
 <div>
 <span class='title'><button title="add group of limitations" onclick="full_system.add_group();">
 <img src="add.jpeg" width="20px" height="20px"  />
@@ -346,8 +500,12 @@ $(document).ready(function(){
 </div>
 <br clear="all" /> 
 
+<div>
+<span class='title'><button title="develop tickets"  onclick="develop_tickets();">
+<img src="develop.jpeg" width="20px" height="20px"  />
+</button>Tickets</span>
 <div id='ticketsCtrl'>
-<span class='title'>Tickets</span>
+</div>
 </div>
 
 

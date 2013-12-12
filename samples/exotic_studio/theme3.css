@@ -28,6 +28,16 @@ table td
     font-weight:bold;
 }
 
+.counter
+{
+    color:#006699;
+    background-color:#CCFFFF;
+    display: inline-block;
+    width: 60px;
+    text-align:center;
+}
+
+
 .container
 {
     float:left;
