@@ -7,7 +7,49 @@
 
 <script>
 
+function exists_in_array(list,element){
+        return list.indexOf(element) > -1;
+}
+
+
+function remove_from_array(list,element){
+    var index  = list.indexOf(element);
+    if (index > -1) {
+        list.splice(index, 1);
+    }
+}
+
 var full_system = null;
+
+
+function updateGroupMatchesCtrl(){
+    var count = full_system.groups.length;
+    full_system.group_matches.length = 0;
+    full_system.group_matches.push(1);
+    $("#group_matches_span").html('');
+    $("#group_matches_span").append(document.createTextNode("Group Matches :"));
+    for(var i = 1; i <= count; ++i){
+                var button = document.createElement("button");
+                button.appendChild(document.createTextNode(i));
+                button.matches = i;
+                button.paint = function(){
+                    this.className = exists_in_array(full_system.group_matches,this.matches) ? 
+                                        "matches_counter_selected" : "matches_counter_unselected";
+                }
+                button.onclick = function(){
+                    if(exists_in_array(full_system.group_matches,this.matches)){
+                            remove_from_array(full_system.group_matches,this.matches);
+                    } else {
+                        full_system.group_matches.push(this.matches);
+                    }
+                    this.paint();
+                    count_system();
+                    $('#ticketsCtrl').html('');
+                }
+                button.paint();
+                $("#group_matches_span").append(button);
+    }
+}
 
 
 function develop_tickets(){
@@ -70,7 +112,8 @@ function get_developed_system(){
                         matching_groups +=1;
                     }
             }
-            if(matching_groups == full_system.groups.length){
+            
+            if(exists_in_array(full_system.group_matches,matching_groups)){
                 developed_system.push(fs[i]);
             }
     }
@@ -87,17 +130,7 @@ function count_system(){
 }
 
 
-function exists_in_array(list,element){
-        return list.indexOf(element) > -1;
-}
 
-
-function remove_from_array(list,element){
-    var index  = list.indexOf(element);
-    if (index > -1) {
-        list.splice(index, 1);
-    }
-}
 
 function Limitation(parentDiv){
         this.parentDiv = parentDiv;
@@ -149,6 +182,7 @@ function Limitation(parentDiv){
                     }
                     button.parent_limitation.paintButton(button);
                     count_system();
+                    $('#ticketsCtrl').html('');
                 }
                 return button;
         }
@@ -202,6 +236,7 @@ function Limitation(parentDiv){
                     this.className = "matches_counter_selected";
                 }
                 count_system();
+                $('#ticketsCtrl').html('');
             }
 
             cell.appendChild(button);
@@ -286,6 +321,7 @@ function Group(){
             button.onclick = function(){
                 this.group.limitations.push(new Limitation(this.group.div));
                 count_system();
+                $('#ticketsCtrl').html('');
             }
             this.titleSpan.appendChild(button);
 
@@ -298,6 +334,7 @@ function Group(){
                   var parentElement = document.getElementById("groupsCtrl");                    
                   parentElement.removeChild(this.group.div);
                   count_system();
+                  $('#ticketsCtrl').html('');
 
             }
             this.titleSpan.appendChild(button);
@@ -315,6 +352,8 @@ function makeFullSystem(numberOfRaces,maxHorsesPerRace){
             this.numberOfRaces = numberOfRaces;
             this.selections = []
             this.groups = []
+            this.group_matches = [];
+            
 
             for(var i = 0; i < this.numberOfRaces; ++i){
                         var race_selections = []
@@ -358,6 +397,7 @@ function makeFullSystem(numberOfRaces,maxHorsesPerRace){
                                 this.paint_it();
                                 full_system.updateCountView();
                                 count_system();
+                                $('#ticketsCtrl').html('');
                             };
                             button.paint_it();
                             cell.appendChild(button);
@@ -405,11 +445,13 @@ function makeFullSystem(numberOfRaces,maxHorsesPerRace){
             this.add_group = function(){
                 this.groups.push(new Group());
                 this.updateGroupTitles();
+                updateGroupMatchesCtrl();
             }
 
             this.remove_group = function (g){
                 remove_from_array(this.groups,g);
                 this.updateGroupTitles();
+                updateGroupMatchesCtrl();
             }
             
         }
@@ -426,6 +468,7 @@ function select_number_of_races(n){
     full_system.updateFullSystemView();
     $('#groupsCtrl').html('');
     $('#ticketsCtrl').html('');
+    updateGroupMatchesCtrl();
 }
 
 </script>
@@ -492,9 +535,19 @@ function select_number_of_races(n){
 </div>
 <br clear="all" /> 
 <div>
+
 <span class='title'><button title="add group of limitations" onclick="full_system.add_group();">
 <img src="add.jpeg" width="20px" height="20px"  />
-</button>Groups Of Limitations</span>
+</button>Groups Of Limitations
+
+    <span id='group_matches_span' class='group_matching'>
+    </span>
+
+
+</span>
+
+
+
 <div id='groupsCtrl'>
 </div>
 </div>
@@ -504,9 +557,10 @@ function select_number_of_races(n){
 <span class='title'><button title="develop tickets"  onclick="develop_tickets();">
 <img src="develop.jpeg" width="20px" height="20px"  />
 </button>Tickets</span>
-<div id='ticketsCtrl'>
+<div id='ticketsCtrl' class='tickets_view'>
 </div>
 </div>
+
 
 
 </body>
