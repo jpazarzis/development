@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<link rel="stylesheet" href="theme3.css" />
+<script type='text/javascript' src='compression_logic.js'></script>
+
+<script>
+
+var full_system = null;
+
+function remove_from_array(list,element){
+    var index  = list.indexOf(element);
+    if (index > -1) {
+        list.splice(index, 1);
+    }
+}
+
+
+
+function Limitation(parentDiv){
+        this.parentDiv = parentDiv;
+        this.span = document.createElement("span");
+        this.span.className = 'limitation_span';
+        this.table = document.createElement("table");
+        this.span.appendChild(this.table);
+        for(var i = 0; i < full_system.numberOfRaces; ++i){
+            var row = document.createElement("tr");
+            this.table.appendChild(row);
+            var s = full_system.selections_per_race(i);
+            for(var j = 0; j < s.length; ++j){
+                var cell = document.createElement("td");
+                cell.appendChild(document.createTextNode(s[j].horse_number));
+                cell.horse_number = s[j].horse_number;
+                row.appendChild(cell);
+        }
+        this.parentDiv.appendChild(this.span);
+    } 
+
+    this.insertOrRemoveHorse = function(race_index, horse_number, is_selected){
+            if(is_selected){
+                var cell = document.createElement("td");
+                cell.appendChild(document.createTextNode(horse_number));
+                cell.horse_number = horse_number;
+                this.table.rows[race_index].appendChild(cell);       
+            } else {
+                for(var i = 0; i < this.table.rows[race_index].cells.length ; ++i){
+                    if(this.table.rows[race_index].cells[i].horse_number ==  horse_number){
+                        this.table.rows[race_index].deleteCell(i);
+                        break;
+                    }
+                }
+            }
+        }
+}
+
+
+function Group(){
+        this.limitations = []
+        this.div = document.createElement("div");
+        this.div.className = "group_div";
+        this.div.style.minHeight = ($('#full_system_table').height() + 100) +'px';
+
+        // add title span
+        this.titleSpan = document.createElement("span");
+        this.titleSpan.className = 'title';
+        this.div.appendChild(this.titleSpan);
+
+
+        $('#groupsCtrl').append(document.createElement("br"));
+        $('#groupsCtrl').append(this.div);
+
+        this.updateTitle = function(groupIndex){
+            this.titleSpan.innerHTML = '';
+            this.titleSpan.appendChild(document.createTextNode('Group# ' + groupIndex));
+
+            var button = document.createElement("button");
+            button.className = "full_system_button";
+            button.appendChild(document.createTextNode('Add Limitation'));
+            button.group = this;
+            button.onclick = function(){
+                this.group.limitations.push(new Limitation(this.group.div));
+            }
+            this.titleSpan.appendChild(button);
+
+            button = document.createElement("button");
+            button.className = "full_system_button";
+            button.appendChild(document.createTextNode('Delete Group'));
+            button.group = this;
+            button.onclick = function(){    
+                  full_system.remove_group(this.group);
+                  var parentElement = document.getElementById("groupsCtrl");                    
+                  parentElement.removeChild(this.group.div);
+
+            }
+            this.titleSpan.appendChild(button);
+
+
+        }
+
+        this.insertOrRemoveHorse = function(race_index, horse_number, is_selected){
+            for(var i=0; i < this.limitations.length; ++i){
+                this.limitations[i].insertOrRemoveHorse(race_index, horse_number, is_selected);
+            }
+        }
+}
+
+function makeFullSystem(numberOfRaces,maxHorsesPerRace){
+    full_system = new function(){
+            this.numberOfRaces = numberOfRaces;
+            this.selections = []
+            this.groups = []
+
+            for(var i = 0; i < this.numberOfRaces; ++i){
+                        var race_selections = []
+                        for(var j = 0; j < maxHorsesPerRace; ++j){
+                            race_selections.push( 
+                                { 
+                                    horse_number: j+1, 
+                                    is_selected: false 
+                                });
+                        }
+                        this.selections.push(race_selections);
+             }
+
+            this.updateFullSystemView = function(){
+                    var selections = full_system.selections;
+                    var table = document.createElement("table");
+                    table.id = 'full_system_table';
+                    for(var i=0; i < selections.length; ++i){
+                        var row = document.createElement("tr");
+                        var cell = document.createElement("td");
+                        cell.appendChild(document.createTextNode(i+1));
+                        row.appendChild(cell);
+                        for(var j=0; j < selections[i].length; ++j){
+                            var cell = document.createElement("td");
+                            var button = document.createElement("button");
+                            button.className = "full_system_button";
+                            button.appendChild(document.createTextNode(selections[i][j].horse_number));
+                            button.race_index = i;
+                            button.horse_index = j;
+                            button.paint_it = function (){
+                                var si = full_system.selections[this.race_index][this.horse_index];
+                                this.style.background = si.is_selected ? 'green': 'gray';
+                            }
+                            button.onclick = function () { 
+                                full_system.toggle_selection(this.race_index, this.horse_index);
+                                this.paint_it();
+                                full_system.updateCountView();
+                            };
+                            button.paint_it();
+                            cell.appendChild(button);
+                            row.appendChild(cell);
+                        }
+                        table.appendChild(row);
+                    }
+                    $('#fullSystemCtrl').html('');
+                    $('#fullSystemCtrl').append(document.createElement("br"));
+                    $('#fullSystemCtrl').append(table);
+                    this.updateCountView();
+            }
+
+            this.updateCountView = function(){
+                var full_system_count = this.countFullSystem();
+                $("#statusCtrl").html(full_system_count);
+            }
+
+            this.selections_per_race = function (race_index){
+                return this.selections[race_index].filter(function(s) { return s.is_selected; });
+            }
+
+            this.countFullSystem = function (){
+                var counter = 1;
+                for(var race_index = 0; race_index < this.selections.length; ++race_index){
+                    counter *= this.selections_per_race(race_index).length;
+                }
+                return counter;
+            }
+
+            this.toggle_selection = function (race_index, horse_index){
+                this.selections[race_index][horse_index].is_selected = !this.selections[race_index][horse_index].is_selected;
+
+                for(var i = 0; i < this.groups.length; ++i){
+                    this.groups[i].insertOrRemoveHorse(race_index, this.selections[race_index][horse_index].horse_number, this.selections[race_index][horse_index].is_selected);
+                }
+            }
+
+            this.updateGroupTitles = function(){
+                for(var i = 0; i < this.groups.length; ++i){
+                    this.groups[i].updateTitle(i+1);
+                }
+            }
+
+            this.add_group = function(){
+                this.groups.push(new Group());
+                this.updateGroupTitles();
+            }
+
+            this.remove_group = function (g){
+                remove_from_array(this.groups,g);
+                this.updateGroupTitles();
+            }
+            
+        }
+}
+
+
+$(document).ready(function(){
+    makeFullSystem(4,20);
+    full_system.updateFullSystemView();
+})
+</script>
+
+</head>
+<body style='width=720px'>
+
+
+<div class='counter_div'>
+</div>
+
+<div id='statusCtrl'>
+
+</div>
+
+<div id='optionsCtrl'>
+<button title="develop tickets"  onclick="develop_tickets();">
+<img src="develop.jpeg" width="30px" height="30px"  />
+</button>
+</div>
+
+
+<div id='fullSystemCtrl'>
+<span class='title'>Full System</span>
+</div>
+
+
+<div>
+<span class='title'><button title="add group of limitations" onclick="full_system.add_group();">
+<img src="add.jpeg" width="20px" height="20px"  />
+</button>Groups Of Limitations</span>
+<div id='groupsCtrl'>
+</div>
+</div>
+
+
+<div id='ticketsCtrl'>
+<span class='title'>Tickets</span>
+</div>
+
+
+</body>
+ </html>
+

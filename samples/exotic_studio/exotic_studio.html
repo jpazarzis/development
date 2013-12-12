@@ -4,8 +4,12 @@
 <script type='text/javascript' src='compression_logic.js'></script>
 </head>
 <script>
+
+
 number_of_races = 4
+
 selected_horses = [[], [], [], []]
+
 unused_horses = [
                     [1,2,3,4,5,6,7,8,9,10,11,12,13,14], 
                     [1,2,3,4,5,6,7,8,9,10,11,12,13,14], 
@@ -25,7 +29,7 @@ function exists(list,element){
 }
 
 function remove(list,element){
-    var index  = list.indexOf(element) > -1;
+    var index  = list.indexOf(element);
     if (index > -1) {
         list.splice(index, 1);
     }
@@ -75,6 +79,8 @@ function RaceSelections (race_index) {
 
 function Limitation(){
     this.race_selections = [];
+    this.matches = []
+
     this.max_matches_ctrl = null;
     this.min_matches_ctrl = null;
 
@@ -95,7 +101,7 @@ function Limitation(){
                 count += 1;
             }
         }
-        return count >= this.get_min_matches() && count <= this.get_max_matches();
+        return exists(this.matches,count); 
     }
 
 
@@ -279,48 +285,44 @@ function make_limitation_control(limitation){
     return table;
 }
 
-function get_possible_matches_as_span(limitation){
-    var span = document.createElement('span');
-    var max_matches = number_of_races;
-    var from_select = document.createElement("select");
-    for(var i = 0; i <= max_matches; ++i){
-        var option = document.createElement("option");
-        option.value= i;
-        option.innerHTML=i;
-        from_select.appendChild(option);
-    }
 
+function get_possible_matches_as_span2(limitation){
+    var span = document.createElement('span');
+    
 
     var label = document.createElement("Label");
-    label.innerHTML = "from";
+    label.innerHTML = "Matches";
     label.className = 'from_to_label';
     span.appendChild(label);
-    span.appendChild(from_select);
     span.appendChild(document.createElement("br"));
 
-    limitation.min_matches_ctrl = from_select;
-    
-    var to_select = document.createElement("select");
-    for(var i = 0; i <= max_matches; ++i){
-        var option = document.createElement("option");
-        option.value= i;
-        option.innerHTML=i;
-        to_select.appendChild(option);
+    for(var i = 0; i <= number_of_races; ++i){
+        var button = document.createElement('button');
+        button.className = "limitation_button";
+        button.appendChild(document.createTextNode(i));
+        button.limitation = limitation;
+        button.value = i;
+        button.style.background = 'gray';
+
+        button.onclick = function() { 
+            var v = Number(this.value);
+            if(exists(this.limitation.matches,v)){
+                remove(this.limitation.matches,v);
+                this.style.background = 'gray';
+            } else {
+                this.limitation.matches.push(v);
+                this.style.background = 'green';
+                console.log('matches: ' + this.limitation.matches);
+            }
+            count_combinations();
+        }
+        span.appendChild(button);
     }
-
-    label = document.createElement("Label");
-    label.innerHTML = "to";
-    label.className = 'from_to_label';
-
-    limitation.max_matches_ctrl = to_select;
-
-    from_select.setAttribute("onclick","count_combinations();");
-    to_select.setAttribute("onclick","count_combinations();");
-    
-    span.appendChild(label);
-    span.appendChild(to_select);
+    span.appendChild(document.createElement("br"));
     return span;
 }
+
+
 
 function delete_limitation(limitation_index){
     limitations.splice(limitation_index, 1);
@@ -343,10 +345,8 @@ function paint_limitation(limitation){
     element.className = "limitation_span";
     element.appendChild(make_limitation_control(limitation));
     element.appendChild(document.createElement("hr"));
-
-
-    
-    element.appendChild(get_possible_matches_as_span(limitation));
+    element.appendChild(get_possible_matches_as_span2(limitation));
+    element.appendChild(document.createElement("hr"));
 
     var button1 = document.createElement('button');
     button1.innerHTML = '<img src="delete.jpeg" width="22px" height="22px"  />';
@@ -422,7 +422,7 @@ function get_all_combinations(){
             developed_system.push(full_system[i]);
         }
     }
-    return developed_system
+    return developed_system;
 }
 
 function count_combinations(){
@@ -455,7 +455,26 @@ function develop_system(){
 </script>
 
 </head>
+
+
+
 <body onload="update_screen()">
+
+<div class='counter_div'>
+<button onclick="add_limitation();">
+<img src="add.jpeg" width="30px" height="30px"  />
+</button>
+
+<button onclick="develop_system();">
+<img src="develop.jpeg" width="30px" height="30px"  />
+</button>
+
+<span class='counter_label'>Full</span>
+<span class='counter' id='full_system_count'></span>
+<span class='counter_label'>Developed</span>
+<span class='counter' id='developed_system_count'></span>
+</div>
+
 
 <div>
  <p>
@@ -478,20 +497,6 @@ function develop_system(){
                  onchange="select_number_of_races(6)"
                  value = "pick6">pick6</input> 
         </p>       
-</div>
-<div class='counter_div'>
-<button onclick="add_limitation();">
-<img src="add.jpeg" width="30px" height="30px"  />
-</button>
-
-<button onclick="develop_system();">
-<img src="develop.jpeg" width="30px" height="30px"  />
-</button>
-
-<span class='counter_label'>Full</span>
-<span class='counter' id='full_system_count'></span>
-<span class='counter_label'>Developed</span>
-<span class='counter' id='developed_system_count'></span>
 </div>
 
 
@@ -519,14 +524,14 @@ Available
 
 
 <br/>
+<div class='title'>Limitations</div>
 <div id='limitation_div'>
 </div>
 <br/>
 <br clear="all" /> 
+<div class='title'>Tickets</div>
 <div id='compressed_system_div' style='float:left'>
 </div>
 <br clear="all" /> 
-
-
 </body>
  </html>

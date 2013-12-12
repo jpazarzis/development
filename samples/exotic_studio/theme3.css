@@ -1,0 +1,58 @@
+table
+{
+    font-family: verdana,arial,sans-serif;
+    font-size:15px;
+    color:#333333;
+    border-collapse: collapse;
+    border: 1px solid black;
+    line-height: 25px;
+}
+
+table td
+{
+    border: 1px solid black;
+}
+
+.title
+{
+    float:left;
+    font-family: verdana,arial,sans-serif;
+    font-size:20px;
+    color:#00FFFF;
+    border: 0px ;
+    display: inline-block;
+    background-color:#0000FF;
+    text-align:left;
+    width:100%;
+    margin-bottom:8px;
+    font-weight:bold;
+}
+
+.container
+{
+    float:left;
+    display: inline-block;
+    
+}
+
+body {
+    width: 820px;
+    margin: 0 auto;
+}
+
+.group_div
+{
+    border: 1px solid black;
+    overflow:hidden; 
+    background-color:red;
+}
+
+.limitation_span
+{
+    float:left;
+    border:1px solid gray;
+    margin-left:5px;
+    margin-bottom:25px;
+    background-color:#ddd;
+    
+}
