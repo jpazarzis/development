@@ -27,7 +27,7 @@ function updateGroupMatchesCtrl(){
     full_system.group_matches.length = 0;
     full_system.group_matches.push(1);
     $("#group_matches_span").html('');
-    $("#group_matches_span").append(document.createTextNode("Group Matches :"));
+    $("#group_matches_span").append(document.createTextNode("Group Matches "));
     for(var i = 1; i <= count; ++i){
                 var button = document.createElement("button");
                 button.appendChild(document.createTextNode(i));
@@ -126,7 +126,11 @@ function count_system(){
     // First get the selected horses from the full system
     $("#developedSystemCountCtrl").html('');
     var developed_system = get_developed_system();
-    $("#developedSystemCountCtrl").html( 'Developed System Combos <span class="counter">' + developed_system.length + '</span>');
+    if (developed_system===undefined || developed_system.length === undefined){
+    }
+    else {
+        $("#developedSystemCountCtrl").html( 'Developed System Combos <span class="counter">' + developed_system.length + '</span>');
+    }
 }
 
 
@@ -136,9 +140,33 @@ function Limitation(parentDiv){
         this.parentDiv = parentDiv;
         this.span = document.createElement("span");
         this.span.className = 'limitation_span';
+
+        // Create Limitation Title
+        this.titleSpan = document.createElement("span");
+        this.titleSpan.appendChild(document.createTextNode("Limitation"));
+        this.titleSpan.className = 'limitation_title';
+
+        this.span.appendChild(this.titleSpan);
+
+        //Create selections table
         this.table = document.createElement("table");
         this.span.appendChild(this.table);
         this.matching_counts = []
+
+        this.updateTitle = function(groupIndex, limitationIndex){
+            this.titleSpan.innerHTML = ''; 
+            this.titleSpan.appendChild(document.createTextNode(groupIndex +  "."+limitationIndex ));
+
+            var button = document.createElement("button");
+            button.className = 'add_button';
+            button.title = 'add new limitation to this group';
+            this.titleSpan.appendChild(button);
+
+            var button = document.createElement("button");
+            button.className = 'delete_button';
+            button.title="delete this limitation";
+            this.titleSpan.appendChild(button);
+        }
 
         this.is_matching = function(combination){
             if(this.matching_counts.length == 0){
@@ -151,11 +179,7 @@ function Limitation(parentDiv){
                 }
             }
 
-            /*
-            if(exists_in_array(this.matching_counts,count_matches))
-                alert('matching counts: ' + this.matching_counts + " count matches: " + count_matches);
-            */
-
+        
             return exists_in_array(this.matching_counts,count_matches);
         }
 
@@ -186,6 +210,8 @@ function Limitation(parentDiv){
                 }
                 return button;
         }
+
+
 
         // Create the table containing the full system selections.
         // Note that each row contains an array called selections
@@ -310,24 +336,33 @@ function Group(){
             return true;
         }
 
+        this.updateTitleForAllLimitations = function(){
+           for(var i = 0; i < this.limitations.length; ++i){
+                this.limitations[i].updateTitle(this.groupIndex,i+1);
+            }
+        }
+
+
         this.updateTitle = function(groupIndex){
             this.titleSpan.innerHTML = '';
             this.titleSpan.appendChild(document.createTextNode('Group# ' + groupIndex));
+            this.groupIndex = groupIndex;
 
             var button = document.createElement("button");
-            button.className = "full_system_button";
-            button.appendChild(document.createTextNode('Add Limitation'));
+            button.className = 'add_button';
+            button.title = 'add new limitation to this group';
             button.group = this;
             button.onclick = function(){
                 this.group.limitations.push(new Limitation(this.group.div));
                 count_system();
                 $('#ticketsCtrl').html('');
+                this.group.updateTitleForAllLimitations();
             }
             this.titleSpan.appendChild(button);
 
             button = document.createElement("button");
-            button.className = "full_system_button";
-            button.appendChild(document.createTextNode('Delete Group'));
+            button.className = "delete_button";
+            button.title = "delete this group";
             button.group = this;
             button.onclick = function(){    
                   full_system.remove_group(this.group);
@@ -338,6 +373,9 @@ function Group(){
 
             }
             this.titleSpan.appendChild(button);
+
+
+            this.updateTitleForAllLimitations();
         }
 
         this.insertOrRemoveHorse = function(race_index, horse_number, is_selected){
@@ -536,14 +574,14 @@ function select_number_of_races(n){
 <br clear="all" /> 
 <div>
 
-<span class='title'><button title="add group of limitations" onclick="full_system.add_group();">
-<img src="add.jpeg" width="20px" height="20px"  />
-</button>Groups Of Limitations
+<span class='title'>
 
+<button  class='add_button' title="add group of limitations" onclick="full_system.add_group();">
+</button>
+
+Groups Of Limitations
     <span id='group_matches_span' class='group_matching'>
     </span>
-
-
 </span>
 
 
@@ -554,9 +592,13 @@ function select_number_of_races(n){
 <br clear="all" /> 
 
 <div>
-<span class='title'><button title="develop tickets"  onclick="develop_tickets();">
-<img src="develop.jpeg" width="20px" height="20px"  />
-</button>Tickets</span>
+<span class='title'>
+
+<button class= 'create_tickets_button' title="develop tickets"  onclick="develop_tickets();">
+
+</button>
+
+Tickets</span>
 <div id='ticketsCtrl' class='tickets_view'>
 </div>
 </div>

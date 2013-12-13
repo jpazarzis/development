@@ -28,6 +28,62 @@ table td
     font-weight:bold;
 }
 
+.limitation_title
+{
+    float:left;
+    font-family: verdana,arial,sans-serif;
+    font-size:11px;
+    color:#CCFFFF;
+    border: 0px ;
+    display: inline-block;
+    background-color:#006699;
+    text-align:left;
+    width:100%;
+    margin-bottom:8px;
+    font-weight:bold;
+}
+
+.delete_button {
+    background-image: url(delete.png); /* 16px x 16px */
+    background-color: transparent; /* make the button transparent */
+    background-repeat: no-repeat;  /* make the background image appear only once */
+    background-position: 0px 0px;  /* equivalent to 'top left' */
+    border: none;           /* assuming we don't want any borders */
+    cursor: pointer;        /* make the cursor like hovering over an <a> element */
+    height: 16px;           /* make this the size of your image */
+    padding-left: 16px;     /* make text start to the right of the image */
+    vertical-align: middle; /* align the text vertically centered */
+    margin-left:16px;
+   
+}
+
+.add_button {
+    background-image: url(add.png); /* 16px x 16px */
+    background-color: transparent; /* make the button transparent */
+    background-repeat: no-repeat;  /* make the background image appear only once */
+    background-position: 0px 0px;  /* equivalent to 'top left' */
+    border: none;           /* assuming we don't want any borders */
+    cursor: pointer;        /* make the cursor like hovering over an <a> element */
+    height: 16px;           /* make this the size of your image */
+    padding-left: 16px;     /* make text start to the right of the image */
+    vertical-align: middle; /* align the text vertically centered */
+    margin-left:16px;
+}
+
+
+.create_tickets_button {
+    background-image: url(gear.png); /* 16px x 16px */
+    background-color: transparent; /* make the button transparent */
+    background-repeat: no-repeat;  /* make the background image appear only once */
+    background-position: 0px 0px;  /* equivalent to 'top left' */
+    border: none;           /* assuming we don't want any borders */
+    cursor: pointer;        /* make the cursor like hovering over an <a> element */
+    height: 16px;           /* make this the size of your image */
+    padding-left: 16px;     /* make text start to the right of the image */
+    vertical-align: middle; /* align the text vertically centered */
+    margin-left:16px;
+}
+
 .counter
 {
     color:#006699;
