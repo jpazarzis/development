@@ -129,7 +129,7 @@ function count_system(){
     if (developed_system===undefined || developed_system.length === undefined){
     }
     else {
-        $("#developedSystemCountCtrl").html( 'Developed System Combos <span class="counter">' + developed_system.length + '</span>');
+        $("#developedSystemCountCtrl").html( 'Developed <span class="counter">' + developed_system.length + '</span>');
     }
 }
 
@@ -478,7 +478,7 @@ function makeFullSystem(numberOfRaces,maxHorsesPerRace){
 
             this.updateCountView = function(){
                 var full_system_count = this.countFullSystem();
-                $("#fullSystemCount").html('combos <span class="counter">' + full_system_count+ '</span>');
+                $("#fullSystemCount").html('<span class="counter">' + full_system_count+ '</span>');
             }
 
             this.selections_per_race = function (race_index){
@@ -540,50 +540,18 @@ function select_number_of_races(n){
 
 </head>
 <body style='width=720px'>
+<div class='wrapper'>
 
-
-<div>
- <p>
-           <input type = "radio"
-                 name = "radSize"
-                 id = "sizeSmall"
-                 value = "pick3"
-                 onchange="select_number_of_races(3)"
-                  >pick3 </input>
-
-          <input type = "radio"
-                 name = "radSize"
-                 id = "sizeSmall"
-                 value = "pick4"
-                 onchange="select_number_of_races(4)"
-                 checked = "checked" >pick4 </input>
-
-          <input type = "radio"
-                 name = "radSize"
-                 id = "sizeSmall"
-                 onchange="select_number_of_races(5)"
-                 value = "pick5">pick5 </input> 
-
-          <input type = "radio"
-                 name = "radSize"
-                 id = "sizeSmall"
-                 onchange="select_number_of_races(6)"
-                 value = "pick6">pick6</input> 
-        </p>       
+<div class='select_system_type'>
+          <input type = "radio" id = "sizeSmall" name = "radSize" value = "pick3" onchange="select_number_of_races(3);" >pick3 </input>
+          <input type = "radio" id = "sizeSmall" name = "radSize" value = "pick4" onchange="select_number_of_races(4);" checked = "checked" >pick4 </input>
+          <input type = "radio" id = "sizeSmall" name = "radSize" value = "pick5" onchange="select_number_of_races(5);" >pick5 </input> 
+          <input type = "radio" id = "sizeSmall" name = "radSize" value = "pick6" onchange="select_number_of_races(6);" >pick6</input> 
 </div>
-
-
-
-
-
-
-
-
-
+<br clear="all" /> 
 
 <div class='group_div'>
-<span class='title'>Full System
-
+<span class='title'>Full 
 <span id='fullSystemCount'>
 </span>
 
@@ -599,19 +567,16 @@ function select_number_of_races(n){
 <br clear="all" /> 
 </div>
 <br clear="all" /> 
+
+
 <div>
-
 <span class='title'>
-
 <button  class='add_button' title="add group of limitations" onclick="full_system.add_group();">
 </button>
-
 Groups Of Limitations
     <span id='group_matches_span' class='group_matching'>
     </span>
 </span>
-
-
 
 <div id='groupsCtrl'>
 </div>
@@ -631,7 +596,7 @@ Tickets</span>
 </div>
 
 
-
+</div>
 </body>
  </html>
 

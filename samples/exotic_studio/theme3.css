@@ -17,7 +17,7 @@ table td
 {
     float:left;
     font-family: verdana,arial,sans-serif;
-    font-size:20px;
+    font-size:14px;
     color:#CCFFFF;
     border: 0px ;
     display: inline-block;
@@ -26,6 +26,21 @@ table td
     width:100%;
     margin-bottom:8px;
     font-weight:bold;
+}
+
+.select_system_type
+{
+    float:left;
+    font-family: verdana,arial,sans-serif;
+    font-size:12px;
+    color:#CCFFFF;
+    border: 0px ;
+    display: inline-block;
+    background-color:#006699;
+    text-align:left;
+    width:100%;
+    margin-bottom:2px;
+    font-weight:normal;
 }
 
 .limitation_title
@@ -94,7 +109,7 @@ table td
     background-position: 0px 0px;  /* equivalent to 'top left' */
     border: none;           /* assuming we don't want any borders */
     cursor: pointer;        /* make the cursor like hovering over an <a> element */
-    height: 16px;           /* make this the size of your image */
+    height: 24px;           /* make this the size of your image */
     padding-left: 16px;     /* make text start to the right of the image */
     vertical-align: middle; /* align the text vertically centered */
     margin-left:16px;
@@ -118,16 +133,25 @@ table td
 }
 
 body {
+    /*width: 820px;*/
+    background-color:white;
+    margin-left:auto;
+    margin-right:auto;
+    background-image:url('main-background.jpg');
+}
+
+.wrapper {
+    overflow: auto;
+    margin: auto;
     width: 820px;
-    margin: 0 auto;
-    background-color:#00CCCC;
+    
 }
 
 .group_div
 {
     border: 1px solid black;
     overflow:hidden; 
-    background-color:#996666;
+    background-image:url(background.png);
 }
 
 .limitation_span
@@ -212,6 +236,7 @@ body {
     float: right;
     height:30px;
     padding-left:5px;
+    background-image:url(background.png);
 
 }
 
