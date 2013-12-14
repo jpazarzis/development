@@ -376,6 +376,7 @@ function Group(){
             this.titleSpan.appendChild(document.createTextNode('Group# ' + groupIndex));
             this.groupIndex = groupIndex;
 
+
             var button = document.createElement("button");
             button.className = 'add_limitation_button';
             button.title = 'add new limitation to this group';
@@ -401,6 +402,11 @@ function Group(){
             }
             this.titleSpan.appendChild(button);
 
+            button = document.createElement("button");
+            button.className = "add_button";
+            button.title = "add group of limitations";
+            button.onclick = function(){    full_system.add_group(); }
+            this.titleSpan.appendChild(button);
 
             this.updateTitleForAllLimitations();
         }
