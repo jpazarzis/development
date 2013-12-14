@@ -134,10 +134,9 @@ table td
 
 body {
     /*width: 820px;*/
-    background-color:white;
+    background-color:#99FFFF;
     margin-left:auto;
     margin-right:auto;
-    background-image:url('main-background.jpg');
 }
 
 .wrapper {
@@ -151,7 +150,9 @@ body {
 {
     border: 1px solid black;
     overflow:hidden; 
-    background-image:url(background.png);
+    background-image:url('background.jpeg');
+    background-color:blue;
+
 }
 
 .limitation_span
