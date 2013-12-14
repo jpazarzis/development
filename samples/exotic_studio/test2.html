@@ -136,10 +136,11 @@ function count_system(){
 
 
 
-function Limitation(parentDiv){
+function Limitation(parentDiv , group){
         this.parentDiv = parentDiv;
         this.span = document.createElement("span");
         this.span.className = 'limitation_span';
+        this.group = group;
 
         // Create Limitation Title
         this.titleSpan = document.createElement("span");
@@ -158,13 +159,25 @@ function Limitation(parentDiv){
             this.titleSpan.appendChild(document.createTextNode(groupIndex +  "."+limitationIndex ));
 
             var button = document.createElement("button");
-            button.className = 'add_button';
+            button.className = 'add_limitation_button';
             button.title = 'add new limitation to this group';
+            button.group = this.group;
+            button.onclick = function(){
+                this.group.addNewLimitation();
+            }
+
             this.titleSpan.appendChild(button);
 
             var button = document.createElement("button");
             button.className = 'delete_button';
             button.title="delete this limitation";
+            button.limitation = this;
+            button.group = this.group;
+            button.onclick = function(){
+                this.group.deleteLimitation(this.limitation);
+                this.limitation.parentDiv.removeChild(this.limitation.span);
+            }
+
             this.titleSpan.appendChild(button);
         }
 
@@ -342,6 +355,21 @@ function Group(){
             }
         }
 
+        this.deleteLimitation = function(limitation){
+                remove_from_array(this.limitations,limitation);
+                count_system();
+                $('#ticketsCtrl').html('');
+                this.updateTitleForAllLimitations();
+        }
+
+
+        this.addNewLimitation = function(){
+                this.limitations.push(new Limitation(this.div,this));
+                count_system();
+                $('#ticketsCtrl').html('');
+                this.updateTitleForAllLimitations();
+        }
+
 
         this.updateTitle = function(groupIndex){
             this.titleSpan.innerHTML = '';
@@ -349,15 +377,14 @@ function Group(){
             this.groupIndex = groupIndex;
 
             var button = document.createElement("button");
-            button.className = 'add_button';
+            button.className = 'add_limitation_button';
             button.title = 'add new limitation to this group';
             button.group = this;
-            button.onclick = function(){
-                this.group.limitations.push(new Limitation(this.group.div));
-                count_system();
-                $('#ticketsCtrl').html('');
-                this.group.updateTitleForAllLimitations();
+            
+            button.onclick = function (){
+                this.group.addNewLimitation();
             }
+
             this.titleSpan.appendChild(button);
 
             button = document.createElement("button");

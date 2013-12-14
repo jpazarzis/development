@@ -50,7 +50,7 @@ table td
     background-position: 0px 0px;  /* equivalent to 'top left' */
     border: none;           /* assuming we don't want any borders */
     cursor: pointer;        /* make the cursor like hovering over an <a> element */
-    height: 16px;           /* make this the size of your image */
+    height: 24px;           /* make this the size of your image */
     padding-left: 16px;     /* make text start to the right of the image */
     vertical-align: middle; /* align the text vertically centered */
     margin-left:16px;
@@ -69,6 +69,22 @@ table td
     vertical-align: middle; /* align the text vertically centered */
     margin-left:16px;
 }
+
+.add_limitation_button {
+    background-image: url(add_limitation.png); /* 16px x 16px */
+    background-color: transparent; /* make the button transparent */
+    background-repeat: no-repeat;  /* make the background image appear only once */
+    background-position: 0px 0px;  /* equivalent to 'top left' */
+    border: none;           /* assuming we don't want any borders */
+    cursor: pointer;        /* make the cursor like hovering over an <a> element */
+    height: 24px;           /* make this the size of your image */
+    padding-left: 16px;     /* make text start to the right of the image */
+    vertical-align: middle; /* align the text vertically centered */
+    margin-left:16px;
+}
+
+
+
 
 
 .create_tickets_button {
