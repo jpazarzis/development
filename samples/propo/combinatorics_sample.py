@@ -4,25 +4,22 @@ from math import factorial
 from itertools import combinations
 from itertools import product
 
+import cProfile
+
 class Combo:
     def __init__(self, combos):
-        self.combos = combos
-
+        self.combos = 0
+        for i in combos:
+            self.combos = self.combos | (1 << (i-1))
+            
     def update_matches(self, combosList):
         self.matches = [ x for x in combosList if self in x ]
 
     def __contains__(self, other):
-        c1,c2 = self.combos, other.combos
-        if len(c1) == 0:
-            return False
-        if len(c2) == 0:
-            return False
-        for x in c2:
-            if x not in c1:
-                return False
-        return True
+        return other.combos & self.combos == other.combos
+
     
-def old_f(N,K,L):
+def count_combos(N,K,L):
     a = range(1,N+1)
     combos3 = [Combo(c) for c in  combinations(a,K)]
     combos2 = [Combo(c) for c in  combinations(a,L)]
@@ -53,9 +50,12 @@ def old_f(N,K,L):
 
 
 if __name__=='__main__':
-    #old_f(16,3,2)
-    #old_f(18,3,2)
-    old_f(10,5,4)
+    #count_combos(16,3,2)
+    #count_combos(18,3,2)
+    #count_combos(12,5,4)
+
+    cProfile.run('count_combos(10,5,4)')
+
 
 
 
