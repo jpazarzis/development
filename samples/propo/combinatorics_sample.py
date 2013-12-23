@@ -23,10 +23,9 @@ def count_combos(N,K,L):
     a = range(1,N+1)
     combos3 = [Combo(c) for c in  combinations(a,K)]
     combos2 = [Combo(c) for c in  combinations(a,L)]
+    map( lambda c2: c2.update_matches(combos3), combos2)    
     final_combos = []
     while len(combos3) > 0:
-        map( lambda c2: c2.update_matches(combos3), combos2)    
-
         combos2.sort(key=lambda x: len(x.matches), reverse = True)
         if len(combos2) > 0 :
             combos2 = [ c for c in combos2 if len(c.matches) >0 ]
@@ -43,18 +42,34 @@ def count_combos(N,K,L):
 
         map(lambda x:combos3.remove(x), top_combos[0].matches)
 
+        for m in top_combos[0].matches[:]:
+            for cc in combos2:
+                if m in cc.matches:
+                    cc.matches.remove(m)
+
         final_combos.append(top_combos[0])
         combos2.remove(top_combos[0])
-    print len(final_combos)
+    return len(final_combos)
 
 
 
 if __name__=='__main__':
     #count_combos(16,3,2)
     #count_combos(18,3,2)
-    #count_combos(12,5,4)
+    #count_combos(13,5,4)
 
-    cProfile.run('count_combos(10,5,4)')
+    #cProfile.run('count_combos(12,5,4)')
+
+    for N in range(7,12):
+        print '-'*80
+        print N, 'GAMES'
+        
+        for K in range(5,N):
+            print
+            for L in range(4,K):
+                print K,L, 'count:',count_combos(N,K,L)
+
+        
 
 
 
