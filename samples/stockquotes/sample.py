@@ -4,13 +4,17 @@ import json
 import pprint
 import httplib2
 
-def quote_retriever(ticker_symbol):   
-    url = 'http://finance.google.com/finance/info?q=%s' % ticker_symbol
-    resp, content = httplib2.Http().request(url)   
-    content = content.replace('//', '')
-    return json.loads(content)[0]['l_cur']
-    
+def get_stock_content(symbol):
+    url = 'http://finance.google.com/finance/info?q=%s' % symbol
+    resp, content = httplib2.Http().request(url)
+    return content
 
+def get_price(doc):
+    doc = doc.replace('//', '')
+    return json.loads(doc)[0]['l_cur']
+
+def quote_retriever(symbol):   
+    return get_price(get_stock_content(symbol))   
 
 class Quote:
     def __init__(self, symbol):
