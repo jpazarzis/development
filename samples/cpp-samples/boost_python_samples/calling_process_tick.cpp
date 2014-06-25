@@ -7,7 +7,10 @@ using namespace std;
 void test(int count = 1)
 {
     double bid = 10.1, ask = 10.1, triggering_delta = 10.1, minute_to_trade = 1, expiration_minute = 1;
-    PythonSignalCaller pm("process_tick_sample");
+    PythonSignalCaller pm;
+
+    //pm.set_module("process_tick_sample");
+    pm.set_module("test_model");
 
     for(int i = 0; i < count; ++i)
     {

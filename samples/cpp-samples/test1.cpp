@@ -1,58 +1,44 @@
 #include <iostream>
 #include <memory>
 #include <vector>
+#include <string>
+#include <functional>
 using namespace std;
-class A
-{
-    public:
-        A() {
-            std::cout << "making A " << std::endl;
-        }
-
-        ~A(){
-            std::cout << "destructing A" << std::endl;
-        }
-
-        void speak() {
-            std::cout << "hello" << std::endl;
-        }
-
-};
 
 
-void f(const std::unique_ptr<A>& p)
-{
-    std::unique_ptr<A> junk = std::forward(p);
-    p->speak();
+vector<double> test(vector<double>& v1){
+    vector<double> v;
+    for(auto x: v1){
+        v.push_back(x+1);
+    }
+
+    return v;
 }
 
-/*
-std::unique_ptr<A> g(const std::unique_ptr<A>& p)
-{   
-    auto junk = std::move(p);
-    return std::move(p);
+void print_num(int i)
+{
+    std::cout << i << '\n';
 }
-*/
-
-
 
 int main(){
-      using A_PTR = std::unique_ptr<A> ;
-      vector<A_PTR > v;
-      
-      A_PTR junk (new A());
 
-      A_PTR junk2 = move(junk);
+    vector<double> v = {1,2,3};
+
+    std::function<void(int)> f_display = print_num;
+
+    function<vector<double>(vector<double>&)> f ;
+    string s;
+    s.c_
+
+    f = &test;
+    
+    for(auto x :test(v)){
+        cout << x << " " ;
+    }
+
+    cout << endl;
 
 
 
-      v.push_back(move(junk));
-      v.push_back(A_PTR(new A()));
-      v.push_back(A_PTR(new A()));
-
-      for(auto& p: v)
-        f(p);
-        
-       return 0;
 }
 

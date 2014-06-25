@@ -1,22 +1,28 @@
 #!/usr/bin/python
 
-def decorate(func):
-    print 'inside:',func.__name__
-    def wrapper(*args):
-        print 'executing:',func.__name__
-        return func(*args)
-    return wrapper
-
-@decorate
-def my_func(par):
-    print par
+def add_tag(tag):
+    def add_html(f):
+        def inner_f(name):
+            return tag+name+tag
+        return inner_f
+    return add_html
 
 
+@add_tag('html')
+def gethello(name):
+    return 'hello ' + name
 
-#my_func = decorate(my_func)
-
-my_func('hello')
 
 
+if __name__ == '__main__':
+    f1 = gethello
+    print f1('john')
+
+    @add_tag('junk')
+    def gethello(name):
+            return f1(name) 
+
+
+    print gethello('john')
 
 

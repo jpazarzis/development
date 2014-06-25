@@ -47,6 +47,14 @@ test_construction_boost_date:test_construction_boost_date.cpp toolkit.h
 test1: test1.cpp
 	$(CXX) $(FLAGS) -o test1 test1.cpp
 
+test2: test2.cpp
+	$(CXX) $(FLAGS) -o test2 test2.cpp
+
+convert_int_to_bin_array_sample: convert_int_to_bin_array_sample.cpp
+	$(CXX) $(FLAGS) -o convert_int_to_bin_array_sample convert_int_to_bin_array_sample.cpp
+
+
+
 xmlsample: xmlsample.cpp xmldocument.h toolkit.h
 	$(CXX) $(FLAGS) $(INCLUDE) -o $@ $^
 

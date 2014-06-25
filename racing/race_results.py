@@ -23,14 +23,11 @@ def retrieve_results(race):
     track, date = race.parent.track, race.parent.date
     if not card_exists_in_db(track,date):
         return False
-
-    results = get_results('AQU','20100101',1)
-
+    results = get_results(track, date, race.number)
     if len(results) == 0:
         return False
 
     starters_after_scratches = []
-
     for starter in race:
         pn = starter.program_number
         if pn in results:
@@ -45,7 +42,6 @@ def retrieve_results(race):
 
     race.starters = starters_after_scratches
     race.results_available = True
-
     return True
 
 

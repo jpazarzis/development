@@ -1,3 +1,12 @@
+Fri Nov 15 09:41:43 EST 2013
+~ Created an program using FANN for forecasting
+~ Created a Free Marging trading compomenent
+
+Mon Nov  4 11:22:45 EST 2013
+~ At this point I have completed the code to use a Python script to describe a
+model and optimize and forward test it from C++. The problem though is that it
+is very slow in comparison to the pure C++ solution, so I doubt it can be found
+useful, unless I find a way to speed it up further...
 
 Tue Oct 29 10:22:38 EDT 2013
 ~ Completed the multi threaded version of the optimizer that can now calculate

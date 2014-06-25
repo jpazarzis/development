@@ -31,6 +31,11 @@ def close_connection():
         db_connection=None
 
 
+def execute_non_query(sql,*args):
+        connect_if_needed()
+        cur = db_connection.cursor(mdb.cursors.DictCursor)
+        cur.execute(sql.format(*args))
+
 def execute_query2(sql,*args):
         connect_if_needed()
         cur = db_connection.cursor(mdb.cursors.DictCursor)

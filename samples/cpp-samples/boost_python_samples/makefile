@@ -5,7 +5,7 @@ PYTHON_INCLUDE = /usr/include/python$(PYTHON_VERSION)
 #EXTENTION = C
 EXTENTION = cpp
 
-INCLUDE=-I$(DEVELOPMENT_ROOT)/include -I/usr/include
+INCLUDE=-I$(DEVELOPMENT_ROOT)/include -I/usr/include -I$(DEVELOPMENT_ROOT)/forex/model-simulator/cpp_source
 VPATH = $(DEVELOPMENT_ROOT)/include
 
 

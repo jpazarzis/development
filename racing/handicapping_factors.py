@@ -58,6 +58,9 @@ def assign_factors(race):
     for starter in race:
         evaluate(starter)
 
+
+    
+
 def evaluate(starter):
     global factors
 
@@ -226,6 +229,14 @@ def short_layoff(starter):
         return LONG_LAYOFF_DAYS >= days_off >= SHORT_LAYOFF_DAYS
     except:
         return False
+
+
+def layoff_over_700(starter):
+    try:
+        return 700 <= int(starter.days_off)
+    except:
+        return False
+
 
 def _layoff_by_days(starter, days_off):
     try:
@@ -413,6 +424,17 @@ def just_broke_the_maiden(starter):
         return starter.past_performances[0].finish_position == 1 and int(starter.life_time_wins) ==  1
     except:
         return False
+
+def last_race_was_claimer(starter):
+    try:
+        if len(starter.past_performances) == 0:
+            return False
+        pp = starter.past_performances[0]
+        cp = pp.claiming_price.strip()
+        return cp and float(pp.claiming_price) > 0
+    except:
+        return False
+
 
 def class_drop(starter):
     try:

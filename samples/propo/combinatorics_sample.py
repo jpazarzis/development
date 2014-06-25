@@ -5,6 +5,7 @@ from itertools import combinations
 from itertools import product
 
 import cProfile
+import sys
 
 class Combo:
     def __init__(self, combos):
@@ -16,7 +17,7 @@ class Combo:
         self.matches = [ x for x in combosList if self in x ]
 
     def __contains__(self, other):
-        return other.combos & self.combos == other.combos
+        return (other.combos & self.combos) == other.combos
 
     
 def count_combos(N,K,L):
@@ -26,6 +27,7 @@ def count_combos(N,K,L):
     map( lambda c2: c2.update_matches(combos3), combos2)    
     final_combos = []
     while len(combos3) > 0:
+        #print len(combos3)
         combos2.sort(key=lambda x: len(x.matches), reverse = True)
         if len(combos2) > 0 :
             combos2 = [ c for c in combos2 if len(c.matches) >0 ]
@@ -54,7 +56,12 @@ def count_combos(N,K,L):
 
 
 if __name__=='__main__':
-    #count_combos(16,3,2)
+
+    print count_combos(13,5,4)
+    #cProfile.run('print count_combos(10,5,4)')
+    sys.exit(0)
+    print count_combos(16,8,4) # 72 stiles
+    sys.exit(0)
     #count_combos(18,3,2)
     #count_combos(13,5,4)
 

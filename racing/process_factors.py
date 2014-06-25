@@ -140,16 +140,30 @@ def combine_factors(*foos):
                 return False
         return True
     return f
+
+def final_odds_less_than_natural(starter):
+    natural_probability = 1.0 / (len( starter.parent.starters))
+    return starter.crowd_probability <= natural_probability
+
+def final_odds_more_than_natural(starter):
+    natural_probability = 1.0 / (len( starter.parent.starters))
+    return starter.crowd_probability > natural_probability
+
     
 if __name__ == '__main__':
     recency_factors = [layoff, long_layoff, second_of_layoff, third_of_layoff, deep_form_cycle]
     performance_factors = [recent_races_are_bad,recent_races_are_good]
+
+    f = lambda starter : just_broke_the_maiden(starter) and last_race_was_claimer(starter)
+
+
     
     factors = []
-    for f1 in recency_factors:
-        for f2 in performance_factors:
-            composite_factor = combine_factors(f1,f2)
-            composite_factor.__name__ = '{0}_and_{1}'.format(f1.__name__, f2.__name__)
-            factors.append(composite_factor)
 
+    #for f1 in recency_factors:
+    #    for f2 in performance_factors:
+    #        composite_factor = combine_factors(f1,f2)
+    #        composite_factor.__name__ = '{0}_and_{1}'.format(f1.__name__, f2.__name__)
+    #        factors.append(composite_factor)
+    factors = [final_odds_less_than_natural, final_odds_more_than_natural]
     analyze(factors)

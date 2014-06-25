@@ -37,8 +37,9 @@ def race_feed():
            for filename in cards_for_year(year):
                 try:
                     c=Card(filename)
-                    for race in c.races:
-                        yield race
+                    if c.results_available:
+                        for race in c.races:
+                            yield race
                 except Exception as ex :
                     print ex
 

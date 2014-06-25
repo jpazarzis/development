@@ -319,9 +319,9 @@ class Starter:
                 self.morning_line_odds = self.odds
                 self.past_performances=tuple(pp)
 
-
         def __iter__(self):
             return iter(self.past_performances)
+
 
         def finalize(self):
             for pp in self:
@@ -409,7 +409,9 @@ class PastPerformance:
             s +=fancy_format(self.opening_call_metric, '{0:10} '.format(format_time(self.four_fulrongs_fraction)))
             s +=fancy_format(self.final_time_metric, '{0:10} '.format(format_time(self.final_time)))
             s +=fancy_format(self.closing_time_metric, '{0:>8} '.format(format_time(get_closing_time_for_starter(self))))
-            s+= get_fractions_for_starter(self)
+
+            s += '{0} {1} {2} {3}'.format(self.start_call_position, self.second_call_position, self.stretch_position, self.finish_position)
+
 
             return s
 
@@ -426,6 +428,9 @@ class Race:
     def __iter__(self):
         return iter(self.starters)
 
+
+    def get_race_condition(self):   
+        return self.starters[0].get_race_condition()
 
     def retrieve_results(self):
         race_results.retrieve_results(self)
@@ -497,9 +502,9 @@ class Card:
 
 if __name__ == '__main__':
     from globals import *
-    c = Card('{0}/2010/AQU0101.MCP'.format(REPOSITORY_PATH))
+    c = Card('{0}/2011/AQU0305.DRF'.format(REPOSITORY_PATH))
 
-    print c[2]
+    print c[4 ]
 
 
 
